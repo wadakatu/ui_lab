@@ -1,383 +1,475 @@
 /**
- * Rubik's Cube Knob Controller
- * A 3D rotating cube that functions as an interactive knob control
+ * Rubik's Cube Mixer
+ * Interactive 3D cube where each face controls a mixer parameter
+ * Face layers rotate during drag, providing visual feedback
  */
 
-class RubiksCubeKnob {
+class RubiksCubeMixer {
   constructor() {
     // DOM Elements
+    this.scene = document.getElementById('scene');
     this.cube = document.getElementById('cube');
-    this.cubeContainer = document.getElementById('cubeContainer');
-    this.cubeStage = document.querySelector('.cube-stage');
     this.cubeGlow = document.getElementById('cubeGlow');
-    this.interaction = document.getElementById('cubeInteraction');
-    this.valueDisplay = document.getElementById('valueDisplay');
-    this.rotXDisplay = document.getElementById('rotX');
-    this.rotYDisplay = document.getElementById('rotY');
+    this.rotationHint = document.getElementById('rotationHint');
+    this.activeDisplay = document.getElementById('activeDisplay');
+    this.activeFace = document.getElementById('activeFace');
+    this.activeValue = document.getElementById('activeValue');
+    this.activeLabel = document.getElementById('activeLabel');
+    this.ringFill = document.getElementById('ringFill');
 
-    // Stats elements
-    this.rotationCountDisplay = document.getElementById('rotationCount');
-    this.momentumDisplay = document.getElementById('momentum');
-    this.currentFaceDisplay = document.getElementById('currentFace');
-    this.modeDisplay = document.getElementById('modeDisplay');
+    // Cube state
+    this.cubies = [];
+    this.cubeRotation = { x: -25, y: -35 };
+    this.isRotatingView = false;
+    this.isRotatingFace = false;
+    this.lastMouse = { x: 0, y: 0 };
 
-    // State
-    this.rotationX = -20;
-    this.rotationY = -30;
-    this.value = 0;
-    this.isDragging = false;
-    this.isScrambling = false;
-    this.lastX = 0;
-    this.lastY = 0;
+    // Face parameters
+    this.faceParams = {
+      top: { name: 'VOLUME', value: 50, color: '#f5f5f5' },
+      front: { name: 'BASS', value: 50, color: '#ff1744' },
+      right: { name: 'TREBLE', value: 50, color: '#2979ff' },
+      left: { name: 'MID', value: 50, color: '#00e676' },
+      back: { name: 'REVERB', value: 50, color: '#ff9100' },
+      bottom: { name: 'PAN', value: 50, color: '#ffea00' }
+    };
 
-    // Momentum physics
-    this.velocityX = 0;
-    this.velocityY = 0;
-    this.friction = 0.95;
-    this.sensitivity = 0.5;
-
-    // Stats
-    this.rotationCount = 0;
-    this.lastRotationY = -30;
-
-    // Bind methods
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.handleMouseUp = this.handleMouseUp.bind(this);
-    this.handleWheel = this.handleWheel.bind(this);
-    this.handleDoubleClick = this.handleDoubleClick.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleTouchStart = this.handleTouchStart.bind(this);
-    this.handleTouchMove = this.handleTouchMove.bind(this);
-    this.handleTouchEnd = this.handleTouchEnd.bind(this);
-    this.animationLoop = this.animationLoop.bind(this);
+    this.activeFaceKey = null;
+    this.currentDragFace = null;
+    this.dragStartValue = 0;
+    this.dragStartY = 0;
+    this.currentLayerRotation = 0;
 
     this.init();
   }
 
   init() {
-    // Mouse events
-    this.interaction.addEventListener('mousedown', this.handleMouseDown);
-    document.addEventListener('mousemove', this.handleMouseMove);
-    document.addEventListener('mouseup', this.handleMouseUp);
+    this.createCube();
+    this.setupEventListeners();
+    this.updateAllMeters();
+  }
 
-    // Touch events
-    this.interaction.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
-    document.addEventListener('touchend', this.handleTouchEnd);
+  createCube() {
+    const size = 3;
+    const cubieSize = 200 / 3;
+    const offset = (size - 1) / 2;
 
-    // Wheel and keyboard
-    this.interaction.addEventListener('wheel', this.handleWheel, { passive: false });
-    this.interaction.addEventListener('dblclick', this.handleDoubleClick);
-    this.interaction.addEventListener('keydown', this.handleKeyDown);
+    for (let x = 0; x < size; x++) {
+      for (let y = 0; y < size; y++) {
+        for (let z = 0; z < size; z++) {
+          if (x === 1 && y === 1 && z === 1) continue;
 
-    // Start animation loop
-    this.animationLoop();
+          const cubie = document.createElement('div');
+          cubie.className = 'cubie';
+          cubie.dataset.x = x;
+          cubie.dataset.y = y;
+          cubie.dataset.z = z;
 
-    // Initial render
-    this.updateCube();
-    this.updateDisplays();
+          const posX = (x - offset) * cubieSize;
+          const posY = (y - offset) * cubieSize;
+          const posZ = (z - offset) * cubieSize;
+
+          cubie.style.transform = `translate3d(${posX}px, ${posY}px, ${posZ}px)`;
+          cubie.dataset.baseTransform = `translate3d(${posX}px, ${posY}px, ${posZ}px)`;
+
+          if (z === 2) this.addFace(cubie, 'front');
+          if (z === 0) this.addFace(cubie, 'back');
+          if (x === 2) this.addFace(cubie, 'right');
+          if (x === 0) this.addFace(cubie, 'left');
+          if (y === 0) this.addFace(cubie, 'top');
+          if (y === 2) this.addFace(cubie, 'bottom');
+
+          this.cube.appendChild(cubie);
+          this.cubies.push(cubie);
+        }
+      }
+    }
+  }
+
+  addFace(cubie, faceName) {
+    const face = document.createElement('div');
+    face.className = `cubie-face ${faceName}`;
+    face.dataset.face = faceName;
+    cubie.appendChild(face);
+  }
+
+  setupEventListeners() {
+    this.scene.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+
+    this.scene.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    document.addEventListener('touchend', this.handleTouchEnd.bind(this));
+
+    this.scene.addEventListener('dblclick', this.handleDoubleClick.bind(this));
+    this.scene.addEventListener('contextmenu', e => e.preventDefault());
   }
 
   handleMouseDown(e) {
-    if (this.isScrambling) return;
+    e.preventDefault();
+    this.lastMouse = { x: e.clientX, y: e.clientY };
 
-    this.isDragging = true;
-    this.lastX = e.clientX;
-    this.lastY = e.clientY;
-    this.velocityX = 0;
-    this.velocityY = 0;
+    if (e.button === 2) {
+      this.isRotatingView = true;
+      return;
+    }
 
-    this.updateMode('DRAGGING');
-    this.interaction.style.cursor = 'grabbing';
+    const faceEl = e.target.closest('.cubie-face');
+    if (faceEl) {
+      this.startFaceInteraction(faceEl.dataset.face, e.clientX, e.clientY);
+    } else {
+      this.isRotatingView = true;
+    }
   }
 
   handleMouseMove(e) {
-    if (!this.isDragging) return;
-
-    const deltaX = e.clientX - this.lastX;
-    const deltaY = e.clientY - this.lastY;
-
-    this.velocityX = deltaY * this.sensitivity;
-    this.velocityY = deltaX * this.sensitivity;
-
-    this.rotationX += this.velocityX;
-    this.rotationY += this.velocityY;
-
-    this.lastX = e.clientX;
-    this.lastY = e.clientY;
-
-    this.updateCube();
-    this.calculateValue();
-    this.updateDisplays();
-    this.trackRotations();
+    if (this.isRotatingView) {
+      const deltaX = e.clientX - this.lastMouse.x;
+      const deltaY = e.clientY - this.lastMouse.y;
+      this.cubeRotation.y += deltaX * 0.5;
+      this.cubeRotation.x -= deltaY * 0.5;
+      this.updateCubeRotation();
+      this.lastMouse = { x: e.clientX, y: e.clientY };
+    } else if (this.isRotatingFace && this.currentDragFace) {
+      this.updateFaceInteraction(e.clientX, e.clientY);
+    }
   }
 
   handleMouseUp() {
-    if (!this.isDragging) return;
-
-    this.isDragging = false;
-    this.updateMode('MOMENTUM');
-    this.interaction.style.cursor = 'grab';
+    this.isRotatingView = false;
+    if (this.isRotatingFace) {
+      this.endFaceInteraction();
+    }
   }
 
   handleTouchStart(e) {
-    if (this.isScrambling) return;
     e.preventDefault();
-
     const touch = e.touches[0];
-    this.isDragging = true;
-    this.lastX = touch.clientX;
-    this.lastY = touch.clientY;
-    this.velocityX = 0;
-    this.velocityY = 0;
+    this.lastMouse = { x: touch.clientX, y: touch.clientY };
 
-    this.updateMode('DRAGGING');
+    const faceEl = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.cubie-face');
+    if (faceEl) {
+      this.startFaceInteraction(faceEl.dataset.face, touch.clientX, touch.clientY);
+    } else {
+      this.isRotatingView = true;
+    }
   }
 
   handleTouchMove(e) {
-    if (!this.isDragging) return;
     e.preventDefault();
-
     const touch = e.touches[0];
-    const deltaX = touch.clientX - this.lastX;
-    const deltaY = touch.clientY - this.lastY;
 
-    this.velocityX = deltaY * this.sensitivity;
-    this.velocityY = deltaX * this.sensitivity;
-
-    this.rotationX += this.velocityX;
-    this.rotationY += this.velocityY;
-
-    this.lastX = touch.clientX;
-    this.lastY = touch.clientY;
-
-    this.updateCube();
-    this.calculateValue();
-    this.updateDisplays();
-    this.trackRotations();
+    if (this.isRotatingView) {
+      const deltaX = touch.clientX - this.lastMouse.x;
+      const deltaY = touch.clientY - this.lastMouse.y;
+      this.cubeRotation.y += deltaX * 0.5;
+      this.cubeRotation.x -= deltaY * 0.5;
+      this.updateCubeRotation();
+      this.lastMouse = { x: touch.clientX, y: touch.clientY };
+    } else if (this.isRotatingFace && this.currentDragFace) {
+      this.updateFaceInteraction(touch.clientX, touch.clientY);
+    }
   }
 
   handleTouchEnd() {
-    if (!this.isDragging) return;
-
-    this.isDragging = false;
-    this.updateMode('MOMENTUM');
-  }
-
-  handleWheel(e) {
-    if (this.isScrambling) return;
-    e.preventDefault();
-
-    const delta = e.deltaY * 0.1;
-    this.rotationY += delta;
-
-    this.updateCube();
-    this.calculateValue();
-    this.updateDisplays();
-    this.trackRotations();
-  }
-
-  handleKeyDown(e) {
-    if (this.isScrambling) return;
-
-    const step = e.shiftKey ? 10 : 5;
-
-    switch (e.key) {
-      case 'ArrowLeft':
-        e.preventDefault();
-        this.rotationY -= step;
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        this.rotationY += step;
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this.rotationX -= step;
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        this.rotationX += step;
-        break;
-      case ' ':
-        e.preventDefault();
-        this.scramble();
-        break;
-      default:
-        return;
+    this.isRotatingView = false;
+    if (this.isRotatingFace) {
+      this.endFaceInteraction();
     }
-
-    this.updateCube();
-    this.calculateValue();
-    this.updateDisplays();
-    this.trackRotations();
   }
 
   handleDoubleClick() {
-    this.scramble();
+    this.randomize();
   }
 
-  async scramble() {
-    if (this.isScrambling) return;
+  startFaceInteraction(face, clientX, clientY) {
+    this.isRotatingFace = true;
+    this.currentDragFace = face;
+    this.dragStartValue = this.faceParams[face].value;
+    this.dragStartX = clientX;
+    this.dragStartY = clientY;
+    this.currentLayerRotation = 0;
 
-    this.isScrambling = true;
-    this.updateMode('SCRAMBLING');
-    this.cube.classList.add('scrambling');
-    this.cubeStage.classList.add('scrambling');
+    this.setActiveFace(face);
+    this.showRotationHint(face);
+    this.highlightLayer(face, true);
+  }
 
-    // Random scramble rotations
-    const moves = 12;
-    const duration = 150;
+  updateFaceInteraction(clientX, clientY) {
+    const face = this.currentDragFace;
+    if (!face) return;
 
-    for (let i = 0; i < moves; i++) {
-      const randomX = (Math.random() - 0.5) * 180;
-      const randomY = (Math.random() - 0.5) * 180;
-
-      this.rotationX += randomX;
-      this.rotationY += randomY;
-
-      this.updateCube();
-      this.calculateValue();
-      this.updateDisplays();
-
-      await this.sleep(duration);
+    // Calculate rotation based on drag
+    let delta;
+    if (face === 'top' || face === 'bottom') {
+      delta = (clientX - this.dragStartX) * 0.8;
+    } else {
+      delta = (this.dragStartY - clientY) * 0.8;
     }
 
-    // Reset to initial position with smooth animation
-    await this.sleep(200);
+    // Invert for certain faces
+    if (face === 'left' || face === 'back' || face === 'bottom') {
+      delta = -delta;
+    }
 
-    this.rotationX = -20;
-    this.rotationY = -30;
-    this.value = 0;
-    this.velocityX = 0;
-    this.velocityY = 0;
+    this.currentLayerRotation = delta;
 
-    this.updateCube();
-    this.updateDisplays();
+    // Rotate the layer visually
+    this.rotateLayer(face, delta);
 
-    this.cube.classList.remove('scrambling');
-    this.cubeStage.classList.remove('scrambling');
-    this.isScrambling = false;
-    this.updateMode('IDLE');
+    // Calculate value from rotation
+    let newValue = this.dragStartValue + (delta / 3.6);
+    newValue = Math.max(0, Math.min(100, newValue));
+    this.faceParams[face].value = Math.round(newValue);
+
+    this.updateMeter(face);
+    this.updateActiveDisplay(face);
+    this.updateFaceGlow(face);
+  }
+
+  endFaceInteraction() {
+    const face = this.currentDragFace;
+    if (face) {
+      // Snap back with animation
+      this.snapLayerBack(face);
+      this.highlightLayer(face, false);
+    }
+
+    this.isRotatingFace = false;
+    this.currentDragFace = null;
+    this.currentLayerRotation = 0;
+    this.hideRotationHint();
+  }
+
+  rotateLayer(faceName, angle) {
+    const axis = this.getAxis(faceName);
+    const layerIndex = this.getLayerIndex(faceName);
+
+    this.cubies.forEach(cubie => {
+      const pos = {
+        x: parseInt(cubie.dataset.x),
+        y: parseInt(cubie.dataset.y),
+        z: parseInt(cubie.dataset.z)
+      };
+
+      if (this.isInLayer(pos, axis, layerIndex)) {
+        const baseTransform = cubie.dataset.baseTransform;
+        const rotateTransform = this.getRotateTransform(axis, angle, faceName);
+        cubie.style.transform = `${rotateTransform} ${baseTransform}`;
+        cubie.style.transition = 'none';
+      }
+    });
+  }
+
+  snapLayerBack(faceName) {
+    const axis = this.getAxis(faceName);
+    const layerIndex = this.getLayerIndex(faceName);
+
+    this.cubies.forEach(cubie => {
+      const pos = {
+        x: parseInt(cubie.dataset.x),
+        y: parseInt(cubie.dataset.y),
+        z: parseInt(cubie.dataset.z)
+      };
+
+      if (this.isInLayer(pos, axis, layerIndex)) {
+        const baseTransform = cubie.dataset.baseTransform;
+        cubie.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        cubie.style.transform = baseTransform;
+      }
+    });
+  }
+
+  getAxis(face) {
+    if (face === 'top' || face === 'bottom') return 'y';
+    if (face === 'left' || face === 'right') return 'x';
+    return 'z';
+  }
+
+  getLayerIndex(face) {
+    if (face === 'right' || face === 'bottom' || face === 'front') return 2;
+    return 0;
+  }
+
+  isInLayer(pos, axis, layerIndex) {
+    return pos[axis] === layerIndex;
+  }
+
+  getRotateTransform(axis, angle, face) {
+    let adjustedAngle = angle;
+    if (face === 'left' || face === 'back' || face === 'top') {
+      adjustedAngle = -angle;
+    }
+
+    switch (axis) {
+      case 'x': return `rotateX(${adjustedAngle}deg)`;
+      case 'y': return `rotateY(${adjustedAngle}deg)`;
+      case 'z': return `rotateZ(${adjustedAngle}deg)`;
+    }
+  }
+
+  highlightLayer(faceName, highlight) {
+    const axis = this.getAxis(faceName);
+    const layerIndex = this.getLayerIndex(faceName);
+
+    this.cubies.forEach(cubie => {
+      const pos = {
+        x: parseInt(cubie.dataset.x),
+        y: parseInt(cubie.dataset.y),
+        z: parseInt(cubie.dataset.z)
+      };
+
+      if (this.isInLayer(pos, axis, layerIndex)) {
+        cubie.querySelectorAll('.cubie-face').forEach(face => {
+          if (highlight) {
+            face.classList.add('active');
+          } else {
+            face.classList.remove('active');
+          }
+        });
+      }
+    });
+  }
+
+  updateFaceGlow(faceName) {
+    const value = this.faceParams[faceName].value;
+    const glowIntensity = value / 100;
+    const color = this.faceParams[faceName].color;
+
+    document.querySelectorAll(`.cubie-face.${faceName}`).forEach(face => {
+      face.style.filter = `brightness(${1 + glowIntensity * 0.4})`;
+      face.style.boxShadow = `0 0 ${glowIntensity * 20}px ${color}`;
+    });
+  }
+
+  updateCubeRotation() {
+    this.cube.style.transform = `rotateX(${this.cubeRotation.x}deg) rotateY(${this.cubeRotation.y}deg)`;
+  }
+
+  setActiveFace(face) {
+    this.activeFaceKey = face;
+    const param = this.faceParams[face];
+
+    const faceIcon = this.activeFace.querySelector('.face-icon');
+    faceIcon.className = `face-icon ${face}`;
+
+    const faceName = this.activeFace.querySelector('.face-name');
+    faceName.textContent = face.toUpperCase();
+
+    this.activeLabel.textContent = param.name;
+
+    document.querySelectorAll('.mixer-channel').forEach(ch => {
+      ch.classList.toggle('active', ch.dataset.face === face);
+    });
+
+    this.updateActiveDisplay(face);
+  }
+
+  updateActiveDisplay(face) {
+    const param = this.faceParams[face];
+    let displayValue = param.value;
+
+    if (face === 'bottom') {
+      if (param.value < 45) {
+        displayValue = `L${Math.round((50 - param.value) * 2)}`;
+      } else if (param.value > 55) {
+        displayValue = `R${Math.round((param.value - 50) * 2)}`;
+      } else {
+        displayValue = 'C';
+      }
+    }
+
+    this.activeValue.textContent = displayValue;
+
+    const circumference = 283;
+    const percentage = param.value / 100;
+    this.ringFill.style.strokeDashoffset = circumference * (1 - percentage);
+    this.ringFill.style.stroke = param.color;
+  }
+
+  updateMeter(face) {
+    const param = this.faceParams[face];
+    const meterFill = document.getElementById(`meter-${face}`);
+    const meterGlow = document.getElementById(`glow-${face}`);
+    const valueDisplay = document.getElementById(`value-${face}`);
+
+    if (!meterFill) return;
+
+    if (face === 'bottom') {
+      const panValue = param.value - 50;
+      meterFill.style.height = `${Math.abs(panValue)}%`;
+      meterFill.style.top = panValue >= 0 ? '50%' : 'auto';
+      meterFill.style.bottom = panValue < 0 ? '50%' : 'auto';
+
+      if (param.value < 45) {
+        valueDisplay.textContent = `L${Math.round((50 - param.value) * 2)}`;
+      } else if (param.value > 55) {
+        valueDisplay.textContent = `R${Math.round((param.value - 50) * 2)}`;
+      } else {
+        valueDisplay.textContent = 'C';
+      }
+    } else {
+      meterFill.style.height = `${param.value}%`;
+      if (meterGlow) meterGlow.style.height = `${param.value}%`;
+      valueDisplay.textContent = param.value;
+    }
+  }
+
+  updateAllMeters() {
+    Object.keys(this.faceParams).forEach(face => this.updateMeter(face));
+  }
+
+  showRotationHint(face) {
+    const param = this.faceParams[face];
+    this.rotationHint.querySelector('.hint-face').textContent = param.name;
+    this.rotationHint.querySelector('.hint-direction').textContent = '↕ drag';
+    this.rotationHint.classList.add('visible');
+  }
+
+  hideRotationHint() {
+    this.rotationHint.classList.remove('visible');
+  }
+
+  async randomize() {
+    const faces = Object.keys(this.faceParams);
+
+    // Quick rotation animations
+    for (let i = 0; i < 8; i++) {
+      const face = faces[Math.floor(Math.random() * faces.length)];
+      const angle = (Math.random() - 0.5) * 180;
+
+      this.rotateLayer(face, angle);
+      await this.sleep(80);
+
+      // Random value
+      const targetValue = Math.floor(Math.random() * 100);
+      this.faceParams[face].value = targetValue;
+      this.updateMeter(face);
+      this.updateFaceGlow(face);
+
+      if (this.activeFaceKey === face) {
+        this.updateActiveDisplay(face);
+      }
+    }
+
+    // Snap all back
+    faces.forEach(face => this.snapLayerBack(face));
+
+    // Glow flash
+    this.cubeGlow.style.opacity = '1';
+    this.cubeGlow.style.transform = 'scale(1.5)';
+    setTimeout(() => {
+      this.cubeGlow.style.opacity = '';
+      this.cubeGlow.style.transform = '';
+    }, 300);
   }
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
-  animationLoop() {
-    // Apply momentum when not dragging
-    if (!this.isDragging && !this.isScrambling) {
-      if (Math.abs(this.velocityX) > 0.01 || Math.abs(this.velocityY) > 0.01) {
-        this.rotationX += this.velocityX;
-        this.rotationY += this.velocityY;
-
-        this.velocityX *= this.friction;
-        this.velocityY *= this.friction;
-
-        this.updateCube();
-        this.calculateValue();
-        this.updateDisplays();
-        this.trackRotations();
-      } else if (this.velocityX !== 0 || this.velocityY !== 0) {
-        this.velocityX = 0;
-        this.velocityY = 0;
-        this.updateMode('IDLE');
-      }
-    }
-
-    // Update momentum display
-    const totalMomentum = Math.sqrt(this.velocityX ** 2 + this.velocityY ** 2);
-    this.momentumDisplay.textContent = totalMomentum.toFixed(2);
-
-    // Update glow based on momentum
-    const glowIntensity = Math.min(1, totalMomentum / 5);
-    this.cubeGlow.style.opacity = 0.8 + glowIntensity * 0.2;
-    this.cubeGlow.style.transform = `scale(${1 + glowIntensity * 0.3})`;
-
-    requestAnimationFrame(this.animationLoop);
-  }
-
-  updateCube() {
-    this.cube.style.transform = `rotateX(${this.rotationX}deg) rotateY(${this.rotationY}deg)`;
-  }
-
-  calculateValue() {
-    // Normalize rotation to 0-100 value
-    // Use Y rotation as primary value source
-    const normalizedY = ((this.rotationY % 360) + 360) % 360;
-    this.value = Math.round((normalizedY / 360) * 100);
-
-    // Update ARIA
-    this.interaction.setAttribute('aria-valuenow', this.value);
-  }
-
-  updateDisplays() {
-    // Value display (padded to 3 digits)
-    this.valueDisplay.textContent = String(this.value).padStart(3, '0');
-
-    // Rotation displays
-    const displayRotX = Math.round(this.rotationX % 360);
-    const displayRotY = Math.round(this.rotationY % 360);
-    this.rotXDisplay.textContent = `${displayRotX}°`;
-    this.rotYDisplay.textContent = `${displayRotY}°`;
-
-    // Current face
-    this.currentFaceDisplay.textContent = this.getCurrentFace();
-  }
-
-  getCurrentFace() {
-    // Determine which face is most visible
-    const normX = ((this.rotationX % 360) + 360) % 360;
-    const normY = ((this.rotationY % 360) + 360) % 360;
-
-    // Simplified face detection
-    if (normX > 45 && normX < 135) return 'BOTTOM';
-    if (normX > 225 && normX < 315) return 'TOP';
-
-    if (normY >= 315 || normY < 45) return 'FRONT';
-    if (normY >= 45 && normY < 135) return 'RIGHT';
-    if (normY >= 135 && normY < 225) return 'BACK';
-    if (normY >= 225 && normY < 315) return 'LEFT';
-
-    return 'FRONT';
-  }
-
-  trackRotations() {
-    // Count full rotations
-    const currentFullRotations = Math.floor(Math.abs(this.rotationY) / 360);
-    const lastFullRotations = Math.floor(Math.abs(this.lastRotationY) / 360);
-
-    if (currentFullRotations > lastFullRotations) {
-      this.rotationCount += currentFullRotations - lastFullRotations;
-      this.rotationCountDisplay.textContent = this.rotationCount;
-    }
-
-    this.lastRotationY = this.rotationY;
-  }
-
-  updateMode(mode) {
-    this.modeDisplay.textContent = mode;
-
-    // Color code the mode
-    switch (mode) {
-      case 'DRAGGING':
-        this.modeDisplay.style.color = '#ff2d95';
-        break;
-      case 'MOMENTUM':
-        this.modeDisplay.style.color = '#00f0ff';
-        break;
-      case 'SCRAMBLING':
-        this.modeDisplay.style.color = '#ffea00';
-        break;
-      default:
-        this.modeDisplay.style.color = '#ffffff';
-    }
-  }
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  new RubiksCubeKnob();
+  new RubiksCubeMixer();
 });

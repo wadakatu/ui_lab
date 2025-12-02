@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rubik's Cube Knob | UI Lab</title>
+  <title>Rubik's Cube Mixer | UI Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,131 +23,120 @@
       <span>Back to Lab</span>
     </a>
     <div class="header-title">
-      <span class="tag">Retro</span>
-      <h1>Rubik's Cube</h1>
+      <span class="tag">Interactive</span>
+      <h1>Cube Mixer</h1>
     </div>
   </header>
 
   <main class="main">
     <section class="demo-section">
+      <!-- Mixer Display Panel -->
+      <div class="mixer-panel">
+        <div class="mixer-channel" data-face="top">
+          <div class="channel-label">VOLUME</div>
+          <div class="channel-meter">
+            <div class="meter-fill" id="meter-top"></div>
+            <div class="meter-glow" id="glow-top"></div>
+          </div>
+          <div class="channel-value" id="value-top">0</div>
+          <div class="channel-color" style="background: var(--cube-white)"></div>
+        </div>
+        <div class="mixer-channel" data-face="front">
+          <div class="channel-label">BASS</div>
+          <div class="channel-meter">
+            <div class="meter-fill" id="meter-front"></div>
+            <div class="meter-glow" id="glow-front"></div>
+          </div>
+          <div class="channel-value" id="value-front">0</div>
+          <div class="channel-color" style="background: var(--cube-red)"></div>
+        </div>
+        <div class="mixer-channel" data-face="right">
+          <div class="channel-label">TREBLE</div>
+          <div class="channel-meter">
+            <div class="meter-fill" id="meter-right"></div>
+            <div class="meter-glow" id="glow-right"></div>
+          </div>
+          <div class="channel-value" id="value-right">0</div>
+          <div class="channel-color" style="background: var(--cube-blue)"></div>
+        </div>
+        <div class="mixer-channel" data-face="left">
+          <div class="channel-label">MID</div>
+          <div class="channel-meter">
+            <div class="meter-fill" id="meter-left"></div>
+            <div class="meter-glow" id="glow-left"></div>
+          </div>
+          <div class="channel-value" id="value-left">0</div>
+          <div class="channel-color" style="background: var(--cube-green)"></div>
+        </div>
+        <div class="mixer-channel" data-face="back">
+          <div class="channel-label">REVERB</div>
+          <div class="channel-meter">
+            <div class="meter-fill" id="meter-back"></div>
+            <div class="meter-glow" id="glow-back"></div>
+          </div>
+          <div class="channel-value" id="value-back">0</div>
+          <div class="channel-color" style="background: var(--cube-orange)"></div>
+        </div>
+        <div class="mixer-channel" data-face="bottom">
+          <div class="channel-label">PAN</div>
+          <div class="channel-meter pan-meter">
+            <div class="meter-fill pan-fill" id="meter-bottom"></div>
+            <div class="meter-center"></div>
+          </div>
+          <div class="channel-value" id="value-bottom">C</div>
+          <div class="channel-color" style="background: var(--cube-yellow)"></div>
+        </div>
+      </div>
+
       <div class="cube-stage">
         <!-- Glow effect behind cube -->
         <div class="cube-glow" id="cubeGlow"></div>
 
-        <!-- 3D Cube container -->
-        <div class="cube-container" id="cubeContainer">
+        <!-- 3D Scene container -->
+        <div class="scene" id="scene">
           <div class="cube" id="cube">
-            <!-- Front face (Red) -->
-            <div class="cube-face front">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <!-- Back face (Orange) -->
-            <div class="cube-face back">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <!-- Right face (Blue) -->
-            <div class="cube-face right">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <!-- Left face (Green) -->
-            <div class="cube-face left">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <!-- Top face (White) -->
-            <div class="cube-face top">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <!-- Bottom face (Yellow) -->
-            <div class="cube-face bottom">
-              <div class="face-grid">
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-                <span></span><span></span><span></span>
-              </div>
-            </div>
+            <!-- Each cubie (small cube) will be generated by JS -->
           </div>
         </div>
 
-        <!-- Interaction overlay -->
-        <div class="cube-interaction" id="cubeInteraction" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"></div>
-      </div>
-
-      <!-- Value display -->
-      <div class="value-display">
-        <div class="lcd-screen">
-          <span class="lcd-label">LEVEL</span>
-          <span class="lcd-value" id="valueDisplay">000</span>
-        </div>
-        <div class="rotation-indicator">
-          <div class="axis-display">
-            <span class="axis-label">X</span>
-            <span class="axis-value" id="rotX">0°</span>
-          </div>
-          <div class="axis-display">
-            <span class="axis-label">Y</span>
-            <span class="axis-value" id="rotY">0°</span>
-          </div>
+        <!-- Face rotation hint -->
+        <div class="rotation-hint" id="rotationHint">
+          <span class="hint-face"></span>
+          <span class="hint-direction"></span>
         </div>
       </div>
 
       <!-- Control info -->
       <div class="control-info">
         <div class="control-hint">
-          <kbd>Drag</kbd>
-          <span>rotate cube</span>
+          <kbd>Drag face</kbd>
+          <span>rotate layer</span>
         </div>
         <div class="control-hint">
-          <kbd>Scroll</kbd>
-          <span>fine tune</span>
+          <kbd>Right-drag</kbd>
+          <span>rotate view</span>
         </div>
         <div class="control-hint">
           <kbd>Dbl-click</kbd>
-          <span>scramble</span>
+          <span>randomize</span>
         </div>
       </div>
     </section>
 
-    <!-- Stats panel -->
-    <aside class="stats-panel">
-      <h2>Cube Stats</h2>
-      <div class="stat-grid">
-        <div class="stat-item">
-          <span class="stat-label">Rotations</span>
-          <span class="stat-value" id="rotationCount">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Momentum</span>
-          <span class="stat-value" id="momentum">0.00</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Face</span>
-          <span class="stat-value" id="currentFace">FRONT</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Mode</span>
-          <span class="stat-value" id="modeDisplay">IDLE</span>
-        </div>
+    <!-- Active parameter display -->
+    <aside class="active-display" id="activeDisplay">
+      <div class="active-face" id="activeFace">
+        <div class="face-icon"></div>
+        <div class="face-name">READY</div>
       </div>
+      <div class="active-value-ring">
+        <svg viewBox="0 0 100 100">
+          <circle class="ring-bg" cx="50" cy="50" r="45"/>
+          <circle class="ring-fill" id="ringFill" cx="50" cy="50" r="45"/>
+        </svg>
+        <div class="active-value" id="activeValue">--</div>
+      </div>
+      <div class="active-label" id="activeLabel">SELECT A FACE</div>
     </aside>
   </main>
 
