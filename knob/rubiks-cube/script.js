@@ -37,8 +37,14 @@ class RubiksCubeMixer {
     this.activeFaceKey = null;
     this.currentDragFace = null;
     this.dragStartValue = 0;
-    this.dragStartY = 0;
     this.currentLayerRotation = 0;
+
+    // Hybrid drag state
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+    this.cubeCenter = { x: 0, y: 0 };
+    this.lastAngle = 0;
+    this.accumulatedDelta = 0;
 
     this.init();
   }
@@ -102,8 +108,33 @@ class RubiksCubeMixer {
     document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
     document.addEventListener('touchend', this.handleTouchEnd.bind(this));
 
+    // Mouse wheel for fine control
+    this.scene.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
+
     this.scene.addEventListener('dblclick', this.handleDoubleClick.bind(this));
     this.scene.addEventListener('contextmenu', e => e.preventDefault());
+  }
+
+  handleWheel(e) {
+    e.preventDefault();
+    const faceEl = e.target.closest('.cubie-face');
+    if (!faceEl) return;
+
+    const face = faceEl.dataset.face;
+    const delta = -e.deltaY * 0.1; // Scroll sensitivity
+
+    let newValue = this.faceParams[face].value + delta;
+    newValue = Math.max(0, Math.min(100, newValue));
+    this.faceParams[face].value = Math.round(newValue);
+
+    this.setActiveFace(face);
+    this.updateMeter(face);
+    this.updateActiveDisplay(face);
+    this.updateFaceGlow(face);
+
+    // Quick visual feedback
+    this.rotateLayer(face, delta * 3);
+    setTimeout(() => this.snapLayerBack(face), 100);
   }
 
   handleMouseDown(e) {
@@ -190,36 +221,69 @@ class RubiksCubeMixer {
     this.dragStartX = clientX;
     this.dragStartY = clientY;
     this.currentLayerRotation = 0;
+    this.accumulatedDelta = 0;
+
+    // Calculate cube center for circular drag
+    const sceneRect = this.scene.getBoundingClientRect();
+    this.cubeCenter = {
+      x: sceneRect.left + sceneRect.width / 2,
+      y: sceneRect.top + sceneRect.height / 2
+    };
+    this.lastAngle = this.getAngleFromCenter(clientX, clientY);
+    this.lastMouse = { x: clientX, y: clientY };
 
     this.setActiveFace(face);
     this.showRotationHint(face);
     this.highlightLayer(face, true);
   }
 
+  getAngleFromCenter(clientX, clientY) {
+    const dx = clientX - this.cubeCenter.x;
+    const dy = clientY - this.cubeCenter.y;
+    return Math.atan2(dx, -dy) * (180 / Math.PI);
+  }
+
   updateFaceInteraction(clientX, clientY) {
     const face = this.currentDragFace;
     if (!face) return;
 
-    // Calculate rotation based on drag
+    // Calculate circular (angular) delta
+    const currentAngle = this.getAngleFromCenter(clientX, clientY);
+    let angularDelta = currentAngle - this.lastAngle;
+    if (angularDelta > 180) angularDelta -= 360;
+    if (angularDelta < -180) angularDelta += 360;
+
+    // Calculate linear delta (vertical movement)
+    const linearDelta = (this.lastMouse.y - clientY) * 0.8;
+
+    // Hybrid: combine both inputs
+    // Use whichever is more significant, with a slight bias toward linear for precision
+    const absAngular = Math.abs(angularDelta);
+    const absLinear = Math.abs(linearDelta);
+
     let delta;
-    if (face === 'top' || face === 'bottom') {
-      delta = (clientX - this.dragStartX) * 0.8;
+    if (absAngular > absLinear * 1.5) {
+      // Circular motion is dominant
+      delta = angularDelta;
+    } else if (absLinear > absAngular * 1.5) {
+      // Linear motion is dominant
+      delta = linearDelta;
     } else {
-      delta = (this.dragStartY - clientY) * 0.8;
+      // Combined: average both inputs
+      delta = (angularDelta + linearDelta) / 2;
     }
 
-    // Invert for certain faces
-    if (face === 'left' || face === 'back' || face === 'bottom') {
-      delta = -delta;
-    }
+    this.accumulatedDelta += delta;
+    this.lastAngle = currentAngle;
+    this.lastMouse = { x: clientX, y: clientY };
 
-    this.currentLayerRotation = delta;
+    // Visual layer rotation (capped for aesthetics)
+    const visualRotation = Math.max(-90, Math.min(90, this.accumulatedDelta));
+    this.currentLayerRotation = visualRotation;
+    this.rotateLayer(face, visualRotation);
 
-    // Rotate the layer visually
-    this.rotateLayer(face, delta);
-
-    // Calculate value from rotation
-    let newValue = this.dragStartValue + (delta / 3.6);
+    // Calculate value: 360 degrees = 100 value
+    let newValue = this.dragStartValue + (this.accumulatedDelta / 3.6);
     newValue = Math.max(0, Math.min(100, newValue));
     this.faceParams[face].value = Math.round(newValue);
 
@@ -423,7 +487,7 @@ class RubiksCubeMixer {
   showRotationHint(face) {
     const param = this.faceParams[face];
     this.rotationHint.querySelector('.hint-face').textContent = param.name;
-    this.rotationHint.querySelector('.hint-direction').textContent = '↕ drag';
+    this.rotationHint.querySelector('.hint-direction').textContent = '↕ ↻ drag';
     this.rotationHint.classList.add('visible');
   }
 
