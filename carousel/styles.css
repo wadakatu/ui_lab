@@ -1,0 +1,117 @@
+:root {
+  --page-bg: #0f1115;
+  --text: #e6e8ef;
+  --muted: #a5adcc;
+  --accent: #6ea8fe;
+  --track-bg: #151923;
+  --control-bg: rgba(0, 0, 0, 0.35);
+  --control-bg-hover: rgba(0, 0, 0, 0.5);
+  --dot: #7f8db3;
+  --dot-active: #ffffff;
+  --radius: 12px;
+  --shadow: 0 8px 30px rgba(0,0,0,0.25);
+  --slide-h: min(70vh, 520px);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 600px at 10% -10%, #1a2030 0%, #0f1115 40%, #0f1115 100%);
+  color: var(--text);
+}
+
+.page-header { text-align: center; padding: 28px 16px 12px; }
+.page-header h1 { margin: 0 0 6px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 700; }
+.page-header p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.container { max-width: 960px; margin: 20px auto 80px; padding: 0 16px; }
+
+.carousel {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--track-bg);
+  box-shadow: var(--shadow);
+}
+
+.carousel__track {
+  display: flex;
+  will-change: transform;
+  transition: transform 420ms cubic-bezier(.22, .61, .36, 1);
+}
+
+.carousel__slide {
+  flex: 0 0 100%;
+  min-height: var(--slide-h);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+/* Nice, distinct slide backgrounds */
+.carousel__slide:nth-child(1) { background: linear-gradient(135deg, #1f5eff, #a86af9); }
+.carousel__slide:nth-child(2) { background: linear-gradient(135deg, #00c2a8, #6dd5fa); }
+.carousel__slide:nth-child(3) { background: linear-gradient(135deg, #ff6a88, #ff99ac); }
+.carousel__slide:nth-child(4) { background: linear-gradient(135deg, #ffd26f, #f7971e); }
+.carousel__slide:nth-child(5) { background: linear-gradient(135deg, #5ee7df, #b490ca); }
+
+.slide__content {
+  text-align: center;
+  color: #0b0f16;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: clamp(16px, 3vw, 28px) clamp(16px, 4vw, 36px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.slide__content h2 { margin: 0 0 8px; font-size: clamp(22px, 3.2vw, 34px); }
+.slide__content p { margin: 0; font-size: clamp(14px, 2.2vw, 18px); color: #111827; }
+
+.carousel__control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px 14px;
+  background: var(--control-bg);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  line-height: 1;
+  backdrop-filter: blur(4px);
+  transition: background 160ms ease, transform 160ms ease;
+}
+.carousel__control:hover { background: var(--control-bg-hover); }
+.carousel__control:active { transform: translateY(-50%) scale(0.97); }
+.carousel__control--prev { left: 10px; }
+.carousel__control--next { right: 10px; }
+
+.carousel__dots {
+  position: absolute;
+  left: 0; right: 0; bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.carousel__dot {
+  width: 8px; height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--dot);
+  opacity: 0.8;
+  cursor: pointer;
+}
+.carousel__dot[aria-current="true"] { background: var(--dot-active); opacity: 1; }
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel:hover .carousel__control { background: var(--control-bg-hover); }
+}
+
+@media (max-width: 640px) {
+  .container { margin-bottom: 40px; }
+  .carousel__control { padding: 8px 12px; }
+}
+

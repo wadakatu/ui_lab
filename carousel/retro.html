@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pachislot Carousel</title>
+    <link rel="stylesheet" href="retro.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Pachislot Carousel</h1>
+      <p>レバーで回す、パチスロ筐体風カルーセル</p>
+      <p class="backlink"><a href="./">← シンプル版へ戻る</a></p>
+    </header>
+
+    <main class="container">
+      <div class="pachi" aria-roledescription="carousel">
+        <div class="pachi__marquee" aria-hidden="true">
+          <span class="marq__left"></span>
+          <span class="marq__title">NEON JACKPOT</span>
+          <span class="marq__right"></span>
+        </div>
+
+        <div class="pachi__viewport crt">
+          <div class="pachi__track" data-track>
+            <section class="pachi__slide pachi__slide--grid" aria-roledescription="slide"><h2 class="pix">NEON GRID</h2><p class="pix-sub">READY ▸</p></section>
+            <section class="pachi__slide pachi__slide--sunset" aria-roledescription="slide"><h2 class="pix">SUNSET CITY</h2><p class="pix-sub">BONUS+</p></section>
+            <section class="pachi__slide pachi__slide--wire" aria-roledescription="slide"><h2 class="pix">VECTOR</h2><p class="pix-sub">x2 SPEED</p></section>
+            <section class="pachi__slide pachi__slide--stripe" aria-roledescription="slide"><h2 class="pix">STRIPE</h2><p class="pix-sub">SPARK</p></section>
+            <section class="pachi__slide pachi__slide--plaid" aria-roledescription="slide"><h2 class="pix">PLAID</h2><p class="pix-sub">COIN +1</p></section>
+          </div>
+        </div>
+
+        <aside class="pachi__lever" aria-label="レバー操作">
+          <div class="lever__panel">
+            <div class="lever__slot">
+              <div class="lever__mount" aria-hidden="true"></div>
+              <div class="lever__arm" data-arm aria-label="レバー" role="button" tabindex="0">
+                <div class="lever__rod"></div>
+                <div class="lever__knob"></div>
+              </div>
+            </div>
+            <div class="lever__lamp" data-lamp aria-hidden="true"></div>
+            <div class="lever__label pix-sub">PULL</div>
+          </div>
+        </aside>
+
+        <div class="pachi__panel">
+          <button class="pachi__btn" data-stop type="button" aria-label="ストップ">STOP</button>
+          <div class="pachi__meters">
+            <div class="meter meter--credits"><span class="meter__label">CRED</span><span class="meter__val" data-cred>000</span></div>
+            <div class="meter meter--last"><span class="meter__label">LAST</span><span class="meter__val" data-last>—</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="retro.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,100 @@
+:root {
+  --bg: #0e1016;
+  --ink: #e6e8ef;
+  --muted: #9aa3c1;
+  --accent: #7aa2ff;
+  --orb-bg: radial-gradient(1200px 600px at 0% -30%, #1a2132 0%, #0e1016 50%, #0e1016 100%);
+  --shadow: 0 12px 40px rgba(0,0,0,.35);
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  background: var(--orb-bg);
+}
+
+.page-header { text-align:center; padding: 28px 16px 10px; }
+.page-header h1 { margin: 0 0 6px; font-size: clamp(22px, 3vw, 32px); }
+.page-header p { margin: 0; color: var(--muted); font-size: 14px; }
+.page-header .backlink { margin-top: 8px; font-size: 13px; }
+.page-header a { color: var(--accent); text-decoration: none; }
+
+.container { max-width: 1100px; margin: 20px auto 80px; padding: 0 16px; }
+
+.orbit {
+  position: relative;
+  height: min(72vh, 620px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  box-shadow: var(--shadow);
+}
+
+.orbit__stage {
+  width: 100%; height: 100%;
+  position: relative;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+
+.orbit__stage::before {
+  content: "";
+  position: absolute; inset: -20% -20% auto -20%; height: 60%;
+  background: radial-gradient(60% 100% at 50% 0%, rgba(122,162,255,0.25), rgba(122,162,255,0) 70%);
+  filter: blur(24px);
+  transform: translate3d(0,0,0);
+  pointer-events: none;
+}
+
+.orbit__card {
+  position: absolute; top: 50%; left: 50%;
+  transform-style: preserve-3d;
+  width: clamp(220px, 36vw, 420px);
+  padding: clamp(18px, 3vw, 28px) clamp(18px, 4vw, 36px);
+  border-radius: 18px;
+  background: rgba(255,255,255,.85);
+  color: #0c1020;
+  box-shadow: 0 10px 24px rgba(0,0,0,.2);
+  text-align: center;
+  will-change: transform, opacity, filter;
+  user-select: none;
+}
+.orbit__card h2 { margin: 0 0 6px; font-size: clamp(20px, 2.4vw, 28px); }
+.orbit__card p { margin: 0; color: #111827; font-size: clamp(13px, 1.8vw, 16px); }
+
+/* depth styling via custom properties set by JS */
+.orbit__card {
+  transform: translate3d(-50%, -50%, 0) rotateY(var(--ry, 0deg)) translateZ(var(--z, 0px)) translateY(var(--y, 0px)) scale(var(--scale, 1));
+  opacity: var(--alpha, 1);
+  filter: blur(var(--blur, 0px)) saturate(var(--sat, 1));
+  z-index: var(--zindex, 0);
+}
+
+.orbit__control {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,.35);
+  color: #fff; border: 0; border-radius: 10px;
+  padding: 10px 14px; line-height: 1; cursor: pointer;
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+}
+.orbit__control--prev { left: 10px; }
+.orbit__control--next { right: 10px; }
+
+.orbit__dots {
+  position: absolute; left: 0; right: 0; bottom: 10px;
+  display: flex; justify-content: center; gap: 8px;
+  z-index: 1500;
+}
+.orbit__dot {
+  width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0;
+  background: #7f8db3; opacity: .8; cursor: pointer;
+}
+.orbit__dot[aria-current="true"] { background: #fff; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit__card { transition: none !important; }
+}

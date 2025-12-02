@@ -1,0 +1,124 @@
+:root {
+  --bg: #0b0e14;
+  --ink: #e6e8ef;
+  --muted: #a2aac7;
+  --accent: #78f3c0;
+  --accent2: #ff4e4e;
+  --crt-glow: rgba(120, 243, 192, 0.35);
+  --cabinet-metal: linear-gradient(180deg, #3a3f49 0%, #20242b 10%, #161a21 50%, #20242b 90%, #3a3f49 100%);
+  --radius: 18px;
+  --shadow: 0 18px 50px rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(1200px 600px at 0% -30%, #171c2b 0%, var(--bg) 60%) no-repeat;
+}
+
+.page-header { text-align:center; padding: 28px 16px 10px; }
+.page-header h1 { margin: 0 0 6px; font-size: clamp(22px, 3vw, 32px); }
+.page-header p { margin: 0; color: var(--muted); font-size: 14px; }
+.page-header .backlink { margin-top: 8px; font-size: 13px; }
+.page-header a { color: var(--accent); text-decoration: none; }
+
+.container { max-width: 1100px; margin: 20px auto 80px; padding: 0 16px; }
+
+/* Cabinet */
+.pachi {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--cabinet-metal);
+  box-shadow: var(--shadow), 0 0 0 2px rgba(0,0,0,0.6) inset, 0 0 0 6px rgba(255,255,255,0.05) inset;
+}
+.pachi__marquee {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 10px 14px; height: 56px;
+  background: linear-gradient(180deg, #151a21, #0c0f14);
+  box-shadow: 0 2px 0 rgba(255,255,255,0.06) inset, 0 -2px 0 rgba(0,0,0,0.5) inset;
+}
+.marq__title { color:#ffe3a1; letter-spacing:1.4px; font-weight:700; text-shadow: 0 0 12px rgba(255,224,140,0.5); }
+.marq__left, .marq__right { width: 80px; height: 6px; background: repeating-linear-gradient(90deg, #ff5050 0 10px, #ffd36b 10px 20px, #7af5d0 20px 30px); filter: blur(.3px); }
+
+.pachi__viewport { position: relative; height: min(64vh, 440px); margin: 14px; border-radius: 16px; overflow: hidden; background:#05070b; }
+.pachi__viewport.crt::before { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(140% 100% at 50% -10%, rgba(120,243,192,0.14), rgba(120,243,192,0.0) 50%); mix-blend-mode: screen; }
+.pachi__viewport.crt::after { content:""; position:absolute; inset:0; pointer-events:none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.06) 0 1px, rgba(0,0,0,0) 1px 4px); opacity:.18; }
+
+.pachi__track { display:flex; height:100%; will-change: transform; }
+.pachi.is-spinning .pachi__track { filter: blur(1px) saturate(1.05); }
+
+.pachi__slide { flex:0 0 100%; height:100%; display:grid; place-items:center; text-align:center; color:#0c1514; }
+.pachi__slide--grid { background: linear-gradient(to top, rgba(120,243,192,0.12), rgba(120,243,192,0.0) 40%), radial-gradient(150% 100% at 50% 100%, rgba(120,243,192,0.25), rgba(0,0,0,0) 60%), repeating-linear-gradient(#09131a 0px, #09131a 2px, #071016 2px, #071016 4px), repeating-linear-gradient(90deg, #08131b 0px, #08131b 2px, #061018 2px, #061018 4px); }
+.pachi__slide--sunset { background: radial-gradient(50% 40% at 50% 70%, rgba(255,173,42,0.6), rgba(255,173,42,0) 70%), linear-gradient(180deg, #221127, #061018); }
+.pachi__slide--wire { background: radial-gradient(80% 50% at 50% 70%, rgba(120,243,192,0.25), rgba(120,243,192,0) 70%), linear-gradient(180deg, #0b1a21, #050b12); }
+.pachi__slide--stripe { background: repeating-linear-gradient(120deg, #10242b 0, #10242b 8px, #0d1c23 8px, #0d1c23 16px), radial-gradient(100% 60% at 50% 50%, rgba(120,243,192,0.18), rgba(0,0,0,0) 70%); }
+.pachi__slide--plaid { background: repeating-linear-gradient(0deg, rgba(120,243,192,0.1) 0 2px, rgba(0,0,0,0) 2px 8px), repeating-linear-gradient(90deg, rgba(120,243,192,0.1) 0 2px, rgba(0,0,0,0) 2px 8px), linear-gradient(180deg, #0a1a1f, #060d11); }
+
+.pix { margin:0 0 6px; font-size: clamp(22px, 3.2vw, 36px); letter-spacing:1px; color:#d7fff0; text-shadow: 2px 0 0 #00ffd1, -2px 0 0 #7affff, 0 0 12px var(--crt-glow); }
+.pix-sub { margin:0; font-size: clamp(12px, 2vw, 16px); color:#bafbe3; text-shadow: 1px 0 0 #00ffd1, -1px 0 0 #7affff, 0 0 8px var(--crt-glow); }
+
+/* Lever */
+.pachi__lever { position:absolute; top:0; right:0; bottom:64px; width:120px; display:grid; place-items:center; pointer-events:auto; z-index:10; }
+.lever__panel { width:90px; height:82%; border-radius:14px; padding:12px 10px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); box-shadow: 0 0 0 1px rgba(255,255,255,0.12) inset, 0 0 0 1px rgba(0,0,0,0.6); display:grid; grid-template-rows: 1fr 14px auto; gap:10px; }
+.lever__slot { position:relative; border-radius:10px; background: rgba(0,0,0,.5); box-shadow: 0 0 0 1px rgba(255,255,255,0.12) inset, 0 2px 8px rgba(0,0,0,.4) inset; padding-top: 10px; overflow:hidden; perspective: 900px; transform-style: preserve-3d; }
+/* Metal mount behind the lever */
+.lever__mount { position:absolute; left:50%; top:6px; transform: translateX(-50%); width:56px; height:22px; border-radius:10px; background: linear-gradient(180deg, #5b616c, #2a2f37 60%, #1a1e25); box-shadow: 0 2px 6px rgba(0,0,0,.45) inset, 0 0 0 1px rgba(255,255,255,.06) inset; }
+/* Casino-style lever: rotating arm around a top pivot */
+.lever__arm { position:absolute; left:50%; top:10px; width:36px; height:150px; transform-origin: 50% 6px; transform: translateX(-50%) translateY(calc(var(--ty, 0) * var(--down, 0px))) rotateX(var(--rx, 0deg)); cursor: grab; pointer-events:auto; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; --rodH: 130px; }
+.lever__arm::after { content:""; position:absolute; left:50%; top:100px; transform: translate(-50%, 0); width:68px; height:18px; background: radial-gradient(60% 100% at 50% 50%, rgba(0,0,0,.45), rgba(0,0,0,0) 70%); filter: blur(6px); opacity: calc(var(--ty, 0) * 0.55); transform-origin: 50% 50%; }
+.lever__arm:active { cursor: grabbing; }
+.lever__rod { position:absolute; left:50%; top:6px; transform: translateX(-50%) translateZ(1px); width:12px; height: var(--rodH); border-radius:6px; background:
+  linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,0) 20%),
+  linear-gradient(180deg, #cfd8d6, #8ea3a0 60%, #5f6d6c);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 8px 18px rgba(0,0,0,.45);
+}
+.lever__rod::before { content:""; position:absolute; top:-6px; left:50%; transform: translateX(-50%); width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #e6eef0, #9aa7a6 60%, #657372); box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 2px 8px rgba(0,0,0,.35); }
+.lever__knob { position:absolute; left:50%; top: calc(6px + var(--rodH) - 18px); transform: translate(-50%, 0) translateZ(2px); width:36px; height:36px; border-radius:50%; background:
+  radial-gradient(40% 40% at 35% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 60%),
+  radial-gradient(circle at 30% 30%, #ff8888, #ff3f3f 60%, #b31313);
+  box-shadow: 0 3px 0 rgba(0,0,0,.45), 0 0 16px rgba(255,0,0,.35);
+}
+
+/* Register animatable custom property for angle */
+@property --rx {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --ty {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Spring back to 0deg using only CSS */
+@keyframes lever-spring-x {
+  0% { }
+  35% { --rx: 10deg; --ty: 0.25; }
+  65% { --rx: -4deg; --ty: 0.1; }
+  100% { --rx: 0deg; --ty: 0; }
+}
+.lever__arm.is-spring {
+  animation: lever-spring-x 520ms cubic-bezier(.22,.61,.36,1);
+}
+.lever__stick:active { cursor:grabbing; }
+.lever__lamp { height:12px; border-radius:8px; background: rgba(120,243,192,.15); box-shadow: 0 0 0 1px rgba(120,243,192,0.25) inset, 0 0 10px rgba(120,243,192,0.35); }
+.lever__lamp.is-on { background: var(--accent2); box-shadow: 0 0 0 1px rgba(255,80,80,0.4) inset, 0 0 16px rgba(255,80,80,0.8); }
+.lever__label { text-align:center; opacity:.9; }
+
+/* Bottom panel */
+.pachi__panel { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 14px 14px; background: linear-gradient(180deg, #0c0f14, #090c10); border-top: 1px solid rgba(255,255,255,0.06); }
+.pachi__btn { appearance:none; border:0; border-radius:999px; padding:14px 26px; font-weight:700; letter-spacing:1px; color:#160a0a; background: radial-gradient(circle at 30% 30%, #ff8d8d, #ff4e4e 60%, #d61c1c); box-shadow: 0 4px 0 #7a1111, 0 0 18px rgba(255,0,0,.35); cursor:pointer; }
+.pachi__btn:active { transform: translateY(1px); box-shadow: 0 3px 0 #7a1111, 0 0 18px rgba(255,0,0,.45); }
+.pachi__meters { display:flex; gap:14px; }
+.meter { display:flex; gap:8px; align-items:center; background:#0a0d11; padding:6px 10px; border-radius:10px; box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset; }
+.meter__label { color:#88a; font-size:12px; letter-spacing:1px; }
+.meter__val { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color:#d7fff0; text-shadow: 0 0 10px rgba(120,243,192,.5); min-width: 3ch; text-align:right; }
+
+@media (max-width: 720px) {
+  .pachi__lever { bottom:56px; }
+  .pachi__viewport { height: min(58vh, 380px); }
+}

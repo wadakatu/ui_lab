@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Helix Orbital Carousel</title>
+    <link rel="stylesheet" href="helix.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Helix Orbital Carousel</h1>
+      <p>誰も見たことのない、立体的な螺旋カルーセル</p>
+      <p class="backlink"><a href="./">← シンプル版へ戻る</a></p>
+    </header>
+
+    <main class="container">
+      <div class="orbit" aria-roledescription="carousel">
+        <div class="orbit__stage" data-stage>
+          <!-- スライド（任意に増減可能） -->
+          <article class="orbit__card" aria-roledescription="slide" aria-label="1 / 7">
+            <h2>HELIX-01</h2>
+            <p>3D 螺旋配置 × 慣性スクロール</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="2 / 7">
+            <h2>HELIX-02</h2>
+            <p>深度に応じた透明度とサイズ</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="3 / 7">
+            <h2>HELIX-03</h2>
+            <p>視差・ぼかしで立体感を強調</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="4 / 7">
+            <h2>HELIX-04</h2>
+            <p>ドラッグ＆スワイプで回転</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="5 / 7">
+            <h2>HELIX-05</h2>
+            <p>キーボード（← →）対応</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="6 / 7">
+            <h2>HELIX-06</h2>
+            <p>オートスピン＆ホバー一時停止</p>
+          </article>
+          <article class="orbit__card" aria-roledescription="slide" aria-label="7 / 7">
+            <h2>HELIX-07</h2>
+            <p>スナップでフォーカス固定</p>
+          </article>
+        </div>
+
+        <button class="orbit__control orbit__control--prev" aria-label="前へ" data-prev>‹</button>
+        <button class="orbit__control orbit__control--next" aria-label="次へ" data-next>›</button>
+
+        <div class="orbit__dots" data-dots aria-label="スライドナビゲーション"></div>
+      </div>
+
+      <noscript>
+        <p>JavaScript を有効にすると 3D 螺旋カルーセルが動作します。</p>
+      </noscript>
+    </main>
+
+    <script type="module" src="helix.js"></script>
+  </body>
+  </html>
+

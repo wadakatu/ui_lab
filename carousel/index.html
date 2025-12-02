@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simple Carousel Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>簡易カルーセル UI</h1>
+      <p>矢印／ドット／自動再生／スワイプ対応</p>
+      <p style="margin-top:8px; font-size:13px; opacity:.85;">
+        新作: <a href="helix.html" style="color:#6ea8fe;">Helix Orbital Carousel（3D/スワイプ/慣性）</a>
+        ・ <a href="retro.html" style="color:#6ea8fe;">Pachislot Carousel（レバー/無限スピン）</a>
+      </p>
+    </header>
+
+    <main class="container">
+      <div class="carousel" aria-roledescription="carousel">
+        <div class="carousel__track" data-track>
+          <div class="carousel__slide" aria-roledescription="slide" aria-label="1 / 5">
+            <div class="slide__content">
+              <h2>Slide 1</h2>
+              <p>シンプルで軽量な実装</p>
+            </div>
+          </div>
+          <div class="carousel__slide" aria-roledescription="slide" aria-label="2 / 5">
+            <div class="slide__content">
+              <h2>Slide 2</h2>
+              <p>レスポンシブ対応</p>
+            </div>
+          </div>
+          <div class="carousel__slide" aria-roledescription="slide" aria-label="3 / 5">
+            <div class="slide__content">
+              <h2>Slide 3</h2>
+              <p>キーボード操作・ホバー停止</p>
+            </div>
+          </div>
+          <div class="carousel__slide" aria-roledescription="slide" aria-label="4 / 5">
+            <div class="slide__content">
+              <h2>Slide 4</h2>
+              <p>ドットでジャンプ</p>
+            </div>
+          </div>
+          <div class="carousel__slide" aria-roledescription="slide" aria-label="5 / 5">
+            <div class="slide__content">
+              <h2>Slide 5</h2>
+              <p>スワイプ操作</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="carousel__control carousel__control--prev" data-prev aria-label="前へ">&#10094;</button>
+        <button class="carousel__control carousel__control--next" data-next aria-label="次へ">&#10095;</button>
+
+        <div class="carousel__dots" data-dots aria-label="スライドナビゲーション"></div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+  </html>
