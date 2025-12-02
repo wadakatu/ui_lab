@@ -26,13 +26,23 @@
 
 ## ⬡ Components
 
-### 🎠 Carousel Collection
+<details open>
+<summary><b>🎠 Carousel</b></summary>
 
 | Component | Description | Features |
 |:----------|:------------|:---------|
-| **[Simple Carousel](https://wadakatu.github.io/ui_lab/carousel/)** | シンプルで軽量な基本実装 | Auto-play, Swipe, Keyboard, Dots |
+| **[Simple](https://wadakatu.github.io/ui_lab/carousel/)** | シンプルで軽量な基本実装 | Auto-play, Swipe, Keyboard, Dots |
 | **[Helix Orbital](https://wadakatu.github.io/ui_lab/carousel/helix.html)** | 3D螺旋状に回転する立体カルーセル | 3D Transform, Inertia, Snap, Perspective |
 | **[Pachislot](https://wadakatu.github.io/ui_lab/carousel/retro.html)** | パチスロ筐体風レトロUI | Lever Control, CRT Effect, Infinite Spin |
+
+</details>
+
+<details>
+<summary><b>🧩 More coming soon...</b></summary>
+
+新しいコンポーネントを随時追加予定
+
+</details>
 
 <br/>
 
