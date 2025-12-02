@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Lab | Component Experiments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --bg-card-hover: #1c1c28;
+      --text-primary: #e8e8ed;
+      --text-secondary: #8b8b9a;
+      --text-muted: #5a5a6a;
+      --accent-cyan: #00f5d4;
+      --accent-green: #39ff14;
+      --accent-purple: #bf5af2;
+      --accent-pink: #ff2d55;
+      --accent-yellow: #ffd60a;
+      --grid-color: rgba(0, 245, 212, 0.03);
+      --border-color: rgba(255, 255, 255, 0.06);
+      --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.3);
+      --glow-green: 0 0 20px rgba(57, 255, 20, 0.3);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Outfit', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Grid Background */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 245, 212, 0.08), transparent);
+    }
+
+    /* Scanline Effect */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Header */
+    .header {
+      position: relative;
+      padding: 80px 24px 60px;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .lab-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 245, 212, 0.08);
+      border: 1px solid rgba(0, 245, 212, 0.2);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .lab-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(57, 255, 20, 0); }
+    }
+
+    .title {
+      font-size: clamp(48px, 10vw, 96px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .title span {
+      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-green) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 24px;
+      margin-top: 40px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Main Content */
+    .main {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-color), transparent);
+    }
+
+    /* Component Grid */
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .component-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Component Card */
+    .card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.03) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 245, 212, 0.2);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover .card-preview {
+      transform: scale(1.02);
+    }
+
+    .card:hover .card-arrow {
+      transform: translate(4px, -4px);
+      opacity: 1;
+    }
+
+    /* Card Preview */
+    .card-preview {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-preview-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Preview Animations */
+    .preview-simple {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .preview-simple .slides {
+      display: flex;
+      gap: 12px;
+      animation: slidePreview 4s ease-in-out infinite;
+    }
+
+    .preview-simple .slide {
+      width: 100px;
+      height: 140px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .preview-simple .slide:nth-child(1) { background: linear-gradient(135deg, #1f5eff, #a86af9); }
+    .preview-simple .slide:nth-child(2) { background: linear-gradient(135deg, #00c2a8, #6dd5fa); }
+    .preview-simple .slide:nth-child(3) { background: linear-gradient(135deg, #ff6a88, #ff99ac); }
+    .preview-simple .slide:nth-child(4) { background: linear-gradient(135deg, #ffd26f, #f7971e); }
+    .preview-simple .slide:nth-child(5) { background: linear-gradient(135deg, #5ee7df, #b490ca); }
+
+    @keyframes slidePreview {
+      0%, 20% { transform: translateX(0); }
+      25%, 45% { transform: translateX(-112px); }
+      50%, 70% { transform: translateX(-224px); }
+      75%, 95% { transform: translateX(-112px); }
+      100% { transform: translateX(0); }
+    }
+
+    .preview-helix {
+      background: radial-gradient(ellipse at center, #1a1a3e 0%, #0f0f1a 100%);
+      perspective: 600px;
+    }
+
+    .preview-helix .orbit {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      transform-style: preserve-3d;
+      animation: helixSpin 8s linear infinite;
+    }
+
+    .preview-helix .orbit-card {
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.8), rgba(191, 90, 242, 0.8));
+      border-radius: 8px;
+      left: 50%;
+      top: 50%;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .preview-helix .orbit-card:nth-child(1) { transform: translate(-50%, -50%) rotateY(0deg) translateZ(80px); }
+    .preview-helix .orbit-card:nth-child(2) { transform: translate(-50%, -50%) rotateY(51deg) translateZ(80px) translateY(-20px); }
+    .preview-helix .orbit-card:nth-child(3) { transform: translate(-50%, -50%) rotateY(103deg) translateZ(80px) translateY(-40px); }
+    .preview-helix .orbit-card:nth-child(4) { transform: translate(-50%, -50%) rotateY(154deg) translateZ(80px) translateY(-20px); }
+    .preview-helix .orbit-card:nth-child(5) { transform: translate(-50%, -50%) rotateY(206deg) translateZ(80px); }
+    .preview-helix .orbit-card:nth-child(6) { transform: translate(-50%, -50%) rotateY(257deg) translateZ(80px) translateY(20px); }
+    .preview-helix .orbit-card:nth-child(7) { transform: translate(-50%, -50%) rotateY(309deg) translateZ(80px) translateY(40px); }
+
+    @keyframes helixSpin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+
+    .preview-retro {
+      background: linear-gradient(180deg, #1a0a2e 0%, #0d0d1a 100%);
+      overflow: hidden;
+    }
+
+    .preview-retro .cabinet {
+      position: relative;
+      width: 180px;
+      height: 160px;
+      background: linear-gradient(180deg, #2a1a3e 0%, #1a0a2e 100%);
+      border: 3px solid #3d2a5a;
+      border-radius: 12px 12px 8px 8px;
+      padding: 12px;
+    }
+
+    .preview-retro .screen {
+      height: 80px;
+      background: #0a0a0f;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-retro .screen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+    }
+
+    .preview-retro .reel {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+      animation: reelSpin 2s ease-in-out infinite;
+    }
+
+    .preview-retro .symbol {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-pink);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .preview-retro .symbol:nth-child(2) { background: var(--accent-yellow); animation-delay: 0.1s; }
+    .preview-retro .symbol:nth-child(3) { background: var(--accent-green); animation-delay: 0.2s; }
+
+    @keyframes reelSpin {
+      0%, 100% { transform: translateY(0); }
+      10% { transform: translateY(-4px); }
+      20% { transform: translateY(0); }
+    }
+
+    .preview-retro .lever {
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 60px;
+      background: linear-gradient(90deg, #666 0%, #888 50%, #666 100%);
+      border-radius: 4px;
+    }
+
+    .preview-retro .lever::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 24px;
+      background: radial-gradient(circle, #ff2d55 0%, #cc0033 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 45, 85, 0.5);
+    }
+
+    .preview-retro .neon-text {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent-pink);
+      text-shadow: 0 0 10px var(--accent-pink);
+      letter-spacing: 0.1em;
+    }
+
+    /* Card Content */
+    .card-content {
+      padding: 24px;
+      position: relative;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .tag-basic {
+      background: rgba(0, 245, 212, 0.1);
+      color: var(--accent-cyan);
+    }
+
+    .tag-advanced {
+      background: rgba(191, 90, 242, 0.1);
+      color: var(--accent-purple);
+    }
+
+    .tag-experimental {
+      background: rgba(255, 45, 85, 0.1);
+      color: var(--accent-pink);
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-arrow {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 100px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Footer */
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .footer-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-text a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 60px 16px 40px;
+      }
+
+      .stats-bar {
+        gap: 24px;
+      }
+
+      .stat-value {
+        font-size: 20px;
+      }
+
+      .card-preview {
+        height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="scanlines"></div>
+
+  <header class="header">
+    <div class="lab-badge">
+      <span>Experiment Active</span>
+    </div>
+    <h1 class="title">UI <span>Lab</span></h1>
+    <p class="subtitle">フロントエンドUIコンポーネントの実験場。インタラクティブなデモを体験してください。</p>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-value">03</span>
+        <span class="stat-label">Components</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">01</span>
+        <span class="stat-label">Category</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">v1.0</span>
+        <span class="stat-label">Version</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="section-header">
+      <span class="section-title">// Carousel Components</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Carousel -->
+      <a href="carousel/index.html" class="card">
+        <div class="card-preview preview-simple">
+          <div class="card-preview-inner">
+            <div class="slides">
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Carousel
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">シンプルで軽量なカルーセル。矢印・ドット・自動再生・スワイプに対応した基本実装。</p>
+          <div class="card-features">
+            <span class="feature">Auto-play</span>
+            <span class="feature">Swipe</span>
+            <span class="feature">Keyboard</span>
+            <span class="feature">Dots</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Helix Orbital Carousel -->
+      <a href="carousel/helix.html" class="card">
+        <div class="card-preview preview-helix">
+          <div class="card-preview-inner">
+            <div class="orbit">
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-advanced">Advanced</span>
+          <h2 class="card-title">
+            Helix Orbital
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">3D空間を螺旋状に回転する立体カルーセル。慣性スクロールとスナップ機能搭載。</p>
+          <div class="card-features">
+            <span class="feature">3D Transform</span>
+            <span class="feature">Inertia</span>
+            <span class="feature">Snap</span>
+            <span class="feature">Perspective</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Pachislot Carousel -->
+      <a href="carousel/retro.html" class="card">
+        <div class="card-preview preview-retro">
+          <div class="neon-text">JACKPOT</div>
+          <div class="card-preview-inner">
+            <div class="cabinet">
+              <div class="screen">
+                <div class="reel">
+                  <div class="symbol">7</div>
+                  <div class="symbol">7</div>
+                  <div class="symbol">7</div>
+                </div>
+              </div>
+            </div>
+            <div class="lever"></div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Experimental</span>
+          <h2 class="card-title">
+            Pachislot Carousel
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">パチスロ筐体を模したレトロなカルーセル。レバーで回転、CRTエフェクト搭載。</p>
+          <div class="card-features">
+            <span class="feature">Lever Control</span>
+            <span class="feature">CRT Effect</span>
+            <span class="feature">Retro UI</span>
+            <span class="feature">Infinite Spin</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-text">
+      Built with vanilla HTML/CSS/JS |
+      <a href="https://github.com/wadakatu/ui_lab" target="_blank" rel="noopener">View on GitHub</a>
+    </p>
+  </footer>
+</body>
+</html>
