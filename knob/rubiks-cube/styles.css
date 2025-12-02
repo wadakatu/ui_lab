@@ -25,9 +25,9 @@
   --border-glow: rgba(0, 240, 255, 0.3);
 
   /* Cube dimensions */
-  --cube-size: 220px;
+  --cube-size: 200px;
   --cubie-size: calc(var(--cube-size) / 3);
-  --cubie-gap: 2px;
+  --cubie-gap: 3px;
 }
 
 * {
@@ -408,9 +408,10 @@ body {
   width: calc(var(--cubie-size) - var(--cubie-gap) * 2);
   height: calc(var(--cubie-size) - var(--cubie-gap) * 2);
   margin: var(--cubie-gap);
-  border-radius: 4px;
+  border-radius: 6px;
   background: #1a1a1a;
   backface-visibility: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 /* Face colors */
