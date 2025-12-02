@@ -181,10 +181,8 @@ body {
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: 0.05em;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
 }
 
 /* ============================================

@@ -111,7 +111,6 @@ class RubiksCubeMixer {
     // Mouse wheel for fine control
     this.scene.addEventListener('wheel', this.handleWheel.bind(this), { passive: false });
 
-    this.scene.addEventListener('dblclick', this.handleDoubleClick.bind(this));
     this.scene.addEventListener('contextmenu', e => e.preventDefault());
   }
 
@@ -208,10 +207,6 @@ class RubiksCubeMixer {
     if (this.isRotatingFace) {
       this.endFaceInteraction();
     }
-  }
-
-  handleDoubleClick() {
-    this.randomize();
   }
 
   startFaceInteraction(face, clientX, clientY) {
@@ -493,44 +488,6 @@ class RubiksCubeMixer {
 
   hideRotationHint() {
     this.rotationHint.classList.remove('visible');
-  }
-
-  async randomize() {
-    const faces = Object.keys(this.faceParams);
-
-    // Quick rotation animations
-    for (let i = 0; i < 8; i++) {
-      const face = faces[Math.floor(Math.random() * faces.length)];
-      const angle = (Math.random() - 0.5) * 180;
-
-      this.rotateLayer(face, angle);
-      await this.sleep(80);
-
-      // Random value
-      const targetValue = Math.floor(Math.random() * 100);
-      this.faceParams[face].value = targetValue;
-      this.updateMeter(face);
-      this.updateFaceGlow(face);
-
-      if (this.activeFaceKey === face) {
-        this.updateActiveDisplay(face);
-      }
-    }
-
-    // Snap all back
-    faces.forEach(face => this.snapLayerBack(face));
-
-    // Glow flash
-    this.cubeGlow.style.opacity = '1';
-    this.cubeGlow.style.transform = 'scale(1.5)';
-    setTimeout(() => {
-      this.cubeGlow.style.opacity = '';
-      this.cubeGlow.style.transform = '';
-    }, 300);
-  }
-
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
