@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Horizon Knob | UI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Starfield background -->
+  <div class="starfield" id="starfield"></div>
+  <div class="nebula"></div>
+
+  <header class="header">
+    <a href="../../index.html" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back to Lab</span>
+    </a>
+    <div class="header-title">
+      <span class="tag">Experimental</span>
+      <h1>Event Horizon</h1>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="demo-section">
+      <div class="knob-container" id="knobContainer">
+        <!-- Gravitational lensing effect -->
+        <div class="gravitational-lens" id="gravitationalLens"></div>
+
+        <!-- Accretion disk particles -->
+        <div class="accretion-disk" id="accretionDisk"></div>
+
+        <!-- Event horizon (the black hole itself) -->
+        <div class="event-horizon" id="eventHorizon">
+          <div class="singularity"></div>
+          <div class="photon-sphere"></div>
+        </div>
+
+        <!-- Hawking radiation particles -->
+        <div class="hawking-radiation" id="hawkingRadiation"></div>
+
+        <!-- Interactive overlay -->
+        <div class="knob-interaction" id="knob" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"></div>
+      </div>
+
+      <!-- Value display -->
+      <div class="value-display">
+        <div class="value-wrapper">
+          <span class="value-label-top">MASS</span>
+          <span class="value-number" id="valueDisplay">0</span>
+          <span class="value-unit">M<sub>☉</sub></span>
+        </div>
+        <div class="schwarzschild-radius">
+          <span>Schwarzschild Radius:</span>
+          <span id="radiusDisplay">0</span><span> km</span>
+        </div>
+      </div>
+
+      <!-- Control info -->
+      <div class="control-info">
+        <div class="control-hint">
+          <kbd>Drag</kbd>
+          <span>increase mass</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Scroll</kbd>
+          <span>fine control</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Dbl-click</kbd>
+          <span>collapse</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scientific info panel -->
+    <aside class="info-panel">
+      <h2>Gravitational Data</h2>
+      <div class="data-grid">
+        <div class="data-item">
+          <span class="data-label">Event Horizon</span>
+          <span class="data-value" id="horizonSize">0%</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Accretion Rate</span>
+          <span class="data-value" id="accretionRate">0 M☉/yr</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Hawking Temp</span>
+          <span class="data-value" id="hawkingTemp">∞ K</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Time Dilation</span>
+          <span class="data-value" id="timeDilation">1.00x</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
