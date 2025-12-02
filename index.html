@@ -415,6 +415,156 @@
       20% { transform: translateY(0); }
     }
 
+    /* Knob Preview */
+    .preview-knob {
+      background: linear-gradient(135deg, #111114 0%, #0a0a0c 100%);
+    }
+
+    .preview-knob .knob-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .preview-knob .knob-body {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #2a2a32 0%, #18181c 100%);
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: knobRotate 4s ease-in-out infinite;
+    }
+
+    .preview-knob .knob-indicator {
+      width: 4px;
+      height: 30px;
+      background: linear-gradient(to bottom, #c9a962, #e5c77a);
+      border-radius: 2px;
+      position: absolute;
+      top: 15px;
+      box-shadow: 0 0 12px rgba(201, 169, 98, 0.5);
+    }
+
+    .preview-knob .knob-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid rgba(201, 169, 98, 0.2);
+    }
+
+    @keyframes knobRotate {
+      0%, 100% { transform: rotate(-45deg); }
+      50% { transform: rotate(225deg); }
+    }
+
+    /* Blackhole Preview */
+    .preview-blackhole {
+      background: radial-gradient(ellipse at center, #0a1628 0%, #050510 100%);
+      overflow: hidden;
+    }
+
+    .preview-blackhole .blackhole {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+
+    .preview-blackhole .event-horizon {
+      position: absolute;
+      inset: 30%;
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 0 40px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .preview-blackhole .accretion-disk {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg,
+        rgba(0, 247, 255, 0.8) 0deg,
+        rgba(126, 200, 255, 0.6) 90deg,
+        rgba(255, 100, 100, 0.4) 180deg,
+        rgba(255, 200, 100, 0.6) 270deg,
+        rgba(0, 247, 255, 0.8) 360deg
+      );
+      animation: diskSpin 3s linear infinite;
+      mask-image: radial-gradient(ellipse 50% 50% at center, transparent 50%, black 52%, black 70%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, transparent 50%, black 52%, black 70%, transparent 72%);
+    }
+
+    .preview-blackhole .glow {
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 247, 255, 0.1) 0%, transparent 70%);
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes diskSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* Rubik's Cube Preview */
+    .preview-rubiks {
+      background: linear-gradient(135deg, #0a0a0c 0%, #1a0a1a 100%);
+      perspective: 400px;
+    }
+
+    .preview-rubiks .cube-mini {
+      width: 90px;
+      height: 90px;
+      transform-style: preserve-3d;
+      animation: cubeRotate 6s ease-in-out infinite;
+    }
+
+    .preview-rubiks .cube-face {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 2px;
+      background: #1a1a1a;
+    }
+
+    .preview-rubiks .cube-face.front { transform: translateZ(45px); }
+    .preview-rubiks .cube-face.back { transform: rotateY(180deg) translateZ(45px); }
+    .preview-rubiks .cube-face.right { transform: rotateY(90deg) translateZ(45px); }
+    .preview-rubiks .cube-face.left { transform: rotateY(-90deg) translateZ(45px); }
+    .preview-rubiks .cube-face.top { transform: rotateX(90deg) translateZ(45px); }
+    .preview-rubiks .cube-face.bottom { transform: rotateX(-90deg) translateZ(45px); }
+
+    .preview-rubiks .cubie {
+      border-radius: 2px;
+    }
+
+    .preview-rubiks .cube-face.front .cubie { background: #ff3232; }
+    .preview-rubiks .cube-face.back .cubie { background: #ff8c00; }
+    .preview-rubiks .cube-face.right .cubie { background: #0066ff; }
+    .preview-rubiks .cube-face.left .cubie { background: #00cc00; }
+    .preview-rubiks .cube-face.top .cubie { background: #ffffff; }
+    .preview-rubiks .cube-face.bottom .cubie { background: #ffdd00; }
+
+    @keyframes cubeRotate {
+      0%, 100% { transform: rotateX(-20deg) rotateY(-30deg); }
+      25% { transform: rotateX(-20deg) rotateY(30deg); }
+      50% { transform: rotateX(20deg) rotateY(30deg); }
+      75% { transform: rotateX(20deg) rotateY(-30deg); }
+    }
+
     .preview-retro .lever {
       position: absolute;
       right: -30px;
@@ -581,11 +731,11 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">03</span>
+        <span class="stat-value">06</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
-        <span class="stat-value">01</span>
+        <span class="stat-value">02</span>
         <span class="stat-label">Category</span>
       </div>
       <div class="stat">
@@ -697,6 +847,129 @@
             <span class="feature">CRT Effect</span>
             <span class="feature">Retro UI</span>
             <span class="feature">Infinite Spin</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Knob Components Section -->
+    <div class="section-header" style="margin-top: 60px;">
+      <span class="section-title">// Knob Components</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Knob -->
+      <a href="knob/simple/" class="card">
+        <div class="card-preview preview-knob">
+          <div class="card-preview-inner">
+            <div class="knob-container">
+              <div class="knob-ring"></div>
+              <div class="knob-body">
+                <div class="knob-indicator"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Knob
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">ドラッグ・スクロール・キーボード対応のシンプルなロータリーノブ。ハイエンドオーディオ機器風のデザイン。</p>
+          <div class="card-features">
+            <span class="feature">Drag Control</span>
+            <span class="feature">Scroll</span>
+            <span class="feature">Keyboard</span>
+            <span class="feature">Audio Style</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Event Horizon Knob -->
+      <a href="knob/blackhole/" class="card">
+        <div class="card-preview preview-blackhole">
+          <div class="card-preview-inner">
+            <div class="blackhole">
+              <div class="glow"></div>
+              <div class="accretion-disk"></div>
+              <div class="event-horizon"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Experimental</span>
+          <h2 class="card-title">
+            Event Horizon
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">ブラックホールを模したノブ。アクリーションディスク、重力レンズ効果、ホーキング放射を視覚化。</p>
+          <div class="card-features">
+            <span class="feature">Accretion Disk</span>
+            <span class="feature">Gravity Lens</span>
+            <span class="feature">Hawking Radiation</span>
+            <span class="feature">WebGL</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Rubik's Cube Mixer -->
+      <a href="knob/rubiks-cube/" class="card">
+        <div class="card-preview preview-rubiks">
+          <div class="card-preview-inner">
+            <div class="cube-mini">
+              <div class="cube-face front">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+              <div class="cube-face back">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+              <div class="cube-face right">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+              <div class="cube-face left">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+              <div class="cube-face top">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+              <div class="cube-face bottom">
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+                <div class="cubie"></div><div class="cubie"></div><div class="cubie"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-advanced">Advanced</span>
+          <h2 class="card-title">
+            Cube Mixer
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">ルービックキューブ型のミキサーノブ。各面をドラッグして値を調整、3Dビュー回転対応。</p>
+          <div class="card-features">
+            <span class="feature">3D Cube</span>
+            <span class="feature">6-Channel</span>
+            <span class="feature">View Rotation</span>
+            <span class="feature">Retro Style</span>
           </div>
         </div>
       </a>
