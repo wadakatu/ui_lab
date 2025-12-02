@@ -3,61 +3,52 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Simple Carousel Demo</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Carousel Gallery</title>
+    <style>
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+      .header{text-align:center;margin-bottom:3rem}
+      .header h1{font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,#58a6ff,#a371f7);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:.5rem}
+      .header p{color:#8b949e;font-size:1.1rem}
+      .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:960px;width:100%}
+      .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.5rem;text-decoration:none;color:inherit;transition:transform .2s,border-color .2s,box-shadow .2s}
+      .card:hover{transform:translateY(-4px);border-color:#58a6ff;box-shadow:0 8px 24px rgba(88,166,255,.15)}
+      .card h2{font-size:1.25rem;margin-bottom:.5rem;color:#58a6ff}
+      .card p{color:#8b949e;font-size:.9rem;line-height:1.5}
+      .card .tag{display:inline-block;margin-top:1rem;font-size:.75rem;padding:.25rem .5rem;background:#21262d;border-radius:4px;color:#7ee787}
+      .back{margin-top:3rem;color:#8b949e;font-size:.9rem}
+      .back a{color:#58a6ff;text-decoration:none}
+      .back a:hover{text-decoration:underline}
+    </style>
   </head>
   <body>
-    <header class="page-header">
-      <h1>簡易カルーセル UI</h1>
-      <p>矢印／ドット／自動再生／スワイプ対応</p>
-      <p style="margin-top:8px; font-size:13px; opacity:.85;">
-        新作: <a href="helix.html" style="color:#6ea8fe;">Helix Orbital Carousel（3D/スワイプ/慣性）</a>
-        ・ <a href="retro.html" style="color:#6ea8fe;">Pachislot Carousel（レバー/無限スピン）</a>
-      </p>
+    <header class="header">
+      <h1>Carousel Gallery</h1>
+      <p>3種類のユニークなカルーセル実装</p>
     </header>
 
-    <main class="container">
-      <div class="carousel" aria-roledescription="carousel">
-        <div class="carousel__track" data-track>
-          <div class="carousel__slide" aria-roledescription="slide" aria-label="1 / 5">
-            <div class="slide__content">
-              <h2>Slide 1</h2>
-              <p>シンプルで軽量な実装</p>
-            </div>
-          </div>
-          <div class="carousel__slide" aria-roledescription="slide" aria-label="2 / 5">
-            <div class="slide__content">
-              <h2>Slide 2</h2>
-              <p>レスポンシブ対応</p>
-            </div>
-          </div>
-          <div class="carousel__slide" aria-roledescription="slide" aria-label="3 / 5">
-            <div class="slide__content">
-              <h2>Slide 3</h2>
-              <p>キーボード操作・ホバー停止</p>
-            </div>
-          </div>
-          <div class="carousel__slide" aria-roledescription="slide" aria-label="4 / 5">
-            <div class="slide__content">
-              <h2>Slide 4</h2>
-              <p>ドットでジャンプ</p>
-            </div>
-          </div>
-          <div class="carousel__slide" aria-roledescription="slide" aria-label="5 / 5">
-            <div class="slide__content">
-              <h2>Slide 5</h2>
-              <p>スワイプ操作</p>
-            </div>
-          </div>
-        </div>
+    <main class="gallery">
+      <a href="./simple/" class="card">
+        <h2>Simple Carousel</h2>
+        <p>矢印・ドット・自動再生・スワイプ対応のシンプルで軽量なカルーセル</p>
+        <span class="tag">基本実装</span>
+      </a>
 
-        <button class="carousel__control carousel__control--prev" data-prev aria-label="前へ">&#10094;</button>
-        <button class="carousel__control carousel__control--next" data-next aria-label="次へ">&#10095;</button>
+      <a href="./helix/" class="card">
+        <h2>Helix Orbital Carousel</h2>
+        <p>3D螺旋配置 × 慣性スクロール。深度に応じた透明度とぼかしで立体感を演出</p>
+        <span class="tag">3D / 慣性</span>
+      </a>
 
-        <div class="carousel__dots" data-dots aria-label="スライドナビゲーション"></div>
-      </div>
+      <a href="./retro/" class="card">
+        <h2>Pachislot Carousel</h2>
+        <p>レバーで回すパチスロ筐体風カルーセル。CRTエフェクトとネオン演出</p>
+        <span class="tag">レトロ / インタラクティブ</span>
+      </a>
     </main>
 
-    <script src="script.js"></script>
+    <footer class="back">
+      <a href="../">← UI Lab トップへ戻る</a>
+    </footer>
   </body>
-  </html>
+</html>

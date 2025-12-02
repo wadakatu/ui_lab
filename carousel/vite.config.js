@@ -1,14 +1,15 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/studio-carousel/',
+  base: './',
   build: {
     outDir: 'dist',
     rollupOptions: {
       input: {
         main: './index.html',
-        helix: './helix.html',
-        retro: './retro.html'
+        simple: './simple/index.html',
+        helix: './helix/index.html',
+        retro: './retro/index.html'
       }
     }
   }
