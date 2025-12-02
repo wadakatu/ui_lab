@@ -1,0 +1,826 @@
+/* ============================================
+   Event Horizon Knob - Black Hole UI Control
+   ============================================ */
+
+:root {
+  /* Cosmic colors */
+  --void-black: #000000;
+  --deep-space: #030308;
+  --nebula-purple: #1a0a2e;
+  --nebula-blue: #0a1628;
+
+  /* Accretion disk - hot plasma */
+  --plasma-white: #ffffff;
+  --plasma-blue: #7ec8ff;
+  --plasma-cyan: #00f7ff;
+  --plasma-orange: #ff6b35;
+  --plasma-red: #ff2d2d;
+  --plasma-yellow: #ffdd00;
+
+  /* Hawking radiation */
+  --hawking-glow: rgba(126, 200, 255, 0.6);
+
+  /* UI colors */
+  --text-primary: #e8f4ff;
+  --text-secondary: #7a9cbc;
+  --text-muted: #3a5670;
+
+  /* Fonts */
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Exo 2', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--deep-space);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+/* ============================================
+   Starfield Background
+   ============================================ */
+
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--duration) ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: var(--base-opacity); transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Nebula gradient overlay */
+.nebula {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(100, 40, 150, 0.15), transparent),
+    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(30, 80, 150, 0.1), transparent),
+    radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10, 10, 30, 0.8), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.header {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(126, 200, 255, 0.1);
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: var(--plasma-cyan);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-title h1 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--plasma-cyan) 0%, var(--plasma-blue) 50%, var(--text-primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: rgba(255, 45, 45, 0.15);
+  color: var(--plasma-red);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 45, 45, 0.3);
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+
+.main {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  min-height: calc(100vh - 80px);
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/* ============================================
+   Black Hole Knob Container
+   ============================================ */
+
+.knob-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gravitational lensing ring */
+.gravitational-lens {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(126, 200, 255, 0.03) 30deg,
+      transparent 60deg,
+      rgba(126, 200, 255, 0.05) 120deg,
+      transparent 150deg,
+      rgba(126, 200, 255, 0.03) 210deg,
+      transparent 240deg,
+      rgba(126, 200, 255, 0.04) 300deg,
+      transparent 330deg
+    );
+  animation: gravitationalLens 30s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gravitationalLens {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Accretion Disk */
+.accretion-disk {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.accretion-particle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  animation: accretionOrbit var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.accretion-particle::before {
+  content: '';
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateY(calc(var(--orbit-offset) * -1));
+  box-shadow:
+    0 0 calc(var(--size) * 2) var(--color),
+    0 0 calc(var(--size) * 4) var(--color);
+  opacity: var(--start-opacity);
+}
+
+@keyframes accretionOrbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Disk glow effect */
+.accretion-disk::before {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--plasma-orange) 0deg,
+      var(--plasma-yellow) 60deg,
+      var(--plasma-white) 90deg,
+      var(--plasma-cyan) 150deg,
+      var(--plasma-blue) 210deg,
+      var(--plasma-orange) 270deg,
+      var(--plasma-red) 330deg,
+      var(--plasma-orange) 360deg
+    );
+  opacity: 0.15;
+  filter: blur(30px);
+  animation: diskGlow 8s linear infinite;
+}
+
+@keyframes diskGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Event Horizon (The Black Hole) */
+.event-horizon {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--void-black);
+  box-shadow:
+    0 0 60px 20px rgba(0, 0, 0, 0.9),
+    0 0 100px 40px rgba(0, 0, 0, 0.7),
+    inset 0 0 50px 20px rgba(0, 0, 0, 1);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+/* Photon sphere - light bending at the edge */
+.photon-sphere {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(var(--void-black), var(--void-black)),
+    conic-gradient(
+      from 0deg,
+      var(--plasma-cyan),
+      var(--plasma-blue),
+      var(--plasma-white),
+      var(--plasma-orange),
+      var(--plasma-cyan)
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: photonSpin 3s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes photonSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Singularity core */
+.singularity {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--void-black);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px 10px rgba(0, 0, 0, 1);
+}
+
+/* Hawking Radiation */
+.hawking-radiation {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hawking-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: var(--plasma-cyan);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  box-shadow: 0 0 6px var(--plasma-cyan);
+  animation: hawkingEscape var(--duration) ease-out infinite;
+  animation-delay: var(--delay);
+  opacity: 0;
+}
+
+@keyframes hawkingEscape {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(60px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(250px);
+    opacity: 0;
+  }
+}
+
+/* Interactive overlay */
+.knob-interaction {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 20;
+  outline: none;
+}
+
+.knob-interaction:active {
+  cursor: grabbing;
+}
+
+.knob-interaction:focus-visible {
+  box-shadow: 0 0 0 3px var(--plasma-cyan);
+}
+
+/* ============================================
+   Value Display
+   ============================================ */
+
+.value-display {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.value-wrapper {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.value-label-top {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+.value-number {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 900;
+  background: linear-gradient(180deg, var(--text-primary) 0%, var(--plasma-cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(126, 200, 255, 0.3);
+}
+
+.value-unit {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.value-unit sub {
+  font-size: 12px;
+}
+
+.schwarzschild-radius {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   Control Info
+   ============================================ */
+
+.control-info {
+  display: flex;
+  gap: 32px;
+  padding: 16px 24px;
+  background: rgba(10, 22, 40, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(126, 200, 255, 0.1);
+  margin-top: 20px;
+}
+
+.control-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+kbd {
+  font-family: var(--font-display);
+  font-size: 10px;
+  padding: 4px 8px;
+  background: rgba(126, 200, 255, 0.1);
+  border: 1px solid rgba(126, 200, 255, 0.2);
+  border-radius: 4px;
+  color: var(--plasma-cyan);
+}
+
+/* ============================================
+   Info Panel
+   ============================================ */
+
+.info-panel {
+  position: fixed;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 22, 40, 0.7);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(126, 200, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 220px;
+  z-index: 50;
+}
+
+.info-panel h2 {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--plasma-cyan);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(126, 200, 255, 0.1);
+}
+
+.data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.data-value {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .info-panel {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .knob-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .gravitational-lens {
+    width: 280px;
+    height: 280px;
+  }
+
+  .accretion-disk {
+    width: 240px;
+    height: 240px;
+  }
+
+  .event-horizon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .knob-interaction {
+    width: 220px;
+    height: 220px;
+  }
+
+  .value-number {
+    font-size: 48px;
+  }
+
+  .control-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .header {
+    padding: 16px 20px;
+  }
+}
+
+/* ============================================
+   Special Effects
+   ============================================ */
+
+/* Gravitational wave pulse on value change */
+.knob-container.pulse .gravitational-lens {
+  animation: gravitationalPulse 0.5s ease-out;
+}
+
+@keyframes gravitationalPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Time dilation effect - everything slows down at high values */
+.time-dilated .accretion-particle::before {
+  animation-duration: calc(var(--duration) * var(--time-factor));
+}
+
+.time-dilated .photon-sphere {
+  animation-duration: calc(3s * var(--time-factor));
+}
+
+/* Spaghettification cursor near the event horizon */
+.knob-interaction:active {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%2300f7ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2300f7ff'/%3E%3C/svg%3E") 16 16, grabbing;
+}
+
+/* ============================================
+   CRITICAL MASS / BREAKTHROUGH MODE
+   ============================================ */
+
+/* Warning Overlay */
+.warning-overlay {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+}
+
+.warning-overlay.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.warning-content {
+  background: rgba(255, 45, 45, 0.15);
+  border: 2px solid var(--plasma-red);
+  border-radius: 12px;
+  padding: 16px 32px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  animation: warningPulse 1s ease-in-out infinite;
+}
+
+.warning-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  animation: warningBlink 0.5s ease-in-out infinite;
+}
+
+.warning-text {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  color: var(--plasma-red);
+  text-shadow: 0 0 20px var(--plasma-red);
+}
+
+.warning-subtext {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--plasma-orange);
+  margin-top: 4px;
+}
+
+@keyframes warningPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 45, 45, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(255, 45, 45, 0.6); }
+}
+
+@keyframes warningBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Critical Mode - Screen effects */
+.critical-mode {
+  animation: screenShake 0.1s ease-in-out infinite;
+}
+
+.critical-mode .starfield {
+  filter: hue-rotate(20deg);
+}
+
+.critical-mode .event-horizon {
+  box-shadow:
+    0 0 100px 40px rgba(255, 45, 45, 0.3),
+    0 0 200px 80px rgba(255, 107, 53, 0.2),
+    inset 0 0 50px 20px rgba(0, 0, 0, 1);
+}
+
+.critical-mode .photon-sphere {
+  border-width: 4px;
+  animation-duration: 1s !important;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(var(--shake-intensity, 2px), calc(var(--shake-intensity, 2px) * -1)); }
+  50% { transform: translate(calc(var(--shake-intensity, 2px) * -1), var(--shake-intensity, 2px)); }
+  75% { transform: translate(var(--shake-intensity, 2px), var(--shake-intensity, 2px)); }
+}
+
+/* Extreme Mode - Stars getting absorbed */
+.extreme-mode {
+  animation: screenShake 0.05s ease-in-out infinite;
+}
+
+.extreme-mode .nebula {
+  opacity: 0.3;
+  transition: opacity 2s;
+}
+
+.star.absorbed {
+  opacity: 0 !important;
+  transition: opacity 0.5s;
+}
+
+/* Singularity Overlay - Game Over */
+.singularity-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: background 2s, opacity 1s;
+}
+
+.singularity-overlay.active {
+  background: rgba(0, 0, 0, 0.95);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.singularity-content {
+  text-align: center;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s;
+  transition-delay: 1s;
+}
+
+.singularity-overlay.active .singularity-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.singularity-text {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 8vw, 72px);
+  font-weight: 900;
+  letter-spacing: 0.5em;
+  color: var(--text-primary);
+  text-shadow:
+    0 0 40px var(--plasma-cyan),
+    0 0 80px var(--plasma-blue);
+  margin-bottom: 16px;
+}
+
+.singularity-subtext {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+.reset-btn {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 16px 32px;
+  background: transparent;
+  border: 2px solid var(--plasma-cyan);
+  border-radius: 8px;
+  color: var(--plasma-cyan);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.reset-btn:hover {
+  background: var(--plasma-cyan);
+  color: var(--void-black);
+  box-shadow: 0 0 30px var(--plasma-cyan);
+}
+
+/* Big Bang Animation */
+.singularity-overlay.big-bang {
+  animation: bigBangFlash 1s ease-out forwards;
+}
+
+.big-bang-flash {
+  animation: screenFlash 1s ease-out;
+}
+
+@keyframes bigBangFlash {
+  0% { background: rgba(0, 0, 0, 0.95); }
+  50% { background: rgba(255, 255, 255, 1); }
+  100% { background: rgba(0, 0, 0, 0); opacity: 0; }
+}
+
+@keyframes screenFlash {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(10); }
+  100% { filter: brightness(1); }
+}
+
+/* Singularity Mode - Hide everything except overlay */
+.singularity-mode .header,
+.singularity-mode .main,
+.singularity-mode .info-panel,
+.singularity-mode .warning-overlay {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.singularity-mode .starfield {
+  opacity: 0;
+  transition: opacity 2s;
+}
