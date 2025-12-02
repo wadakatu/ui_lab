@@ -1,0 +1,629 @@
+/* ============================================
+   Rubik's Cube Knob - Retro 80s Aesthetic
+   ============================================ */
+
+:root {
+  /* Rubik's cube colors - vibrant neon versions */
+  --cube-red: #ff1744;
+  --cube-orange: #ff9100;
+  --cube-blue: #2979ff;
+  --cube-green: #00e676;
+  --cube-white: #fafafa;
+  --cube-yellow: #ffea00;
+
+  /* Retro palette */
+  --bg-deep: #0a0a12;
+  --bg-grid: #12121f;
+  --neon-pink: #ff2d95;
+  --neon-cyan: #00f0ff;
+  --neon-purple: #b24dff;
+  --lcd-green: #39ff14;
+
+  /* UI colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --border-glow: rgba(0, 240, 255, 0.3);
+
+  /* Cube dimensions */
+  --cube-size: 180px;
+  --cell-size: calc(var(--cube-size) / 3);
+  --cell-gap: 3px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-deep);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text-primary);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ============================================
+   Retro Background Effects
+   ============================================ */
+
+.grid-floor {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 0%, var(--bg-deep) 100%),
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 60px,
+      rgba(0, 240, 255, 0.03) 60px,
+      rgba(0, 240, 255, 0.03) 61px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 60px,
+      rgba(0, 240, 255, 0.03) 60px,
+      rgba(0, 240, 255, 0.03) 61px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.grid-floor::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(178, 77, 255, 0.05) 50%,
+      rgba(255, 45, 149, 0.1)
+    );
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom center;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.back-link:hover {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px var(--neon-cyan);
+}
+
+.back-link svg {
+  transition: transform 0.3s ease;
+}
+
+.back-link:hover svg {
+  transform: translateX(-4px);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  border-radius: 2px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.header-title h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+
+.main {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* ============================================
+   Cube Stage
+   ============================================ */
+
+.cube-stage {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 800px;
+}
+
+.cube-glow {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.3) 0%,
+    rgba(178, 77, 255, 0.2) 40%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  animation: glowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   3D Cube
+   ============================================ */
+
+.cube-container {
+  position: relative;
+  width: var(--cube-size);
+  height: var(--cube-size);
+  transform-style: preserve-3d;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(-30deg);
+  transition: transform 0.05s linear;
+}
+
+.cube.scrambling {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cube-face {
+  position: absolute;
+  width: var(--cube-size);
+  height: var(--cube-size);
+  backface-visibility: visible;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Face positions */
+.cube-face.front {
+  transform: translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.cube-face.back {
+  transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.cube-face.right {
+  transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.cube-face.left {
+  transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.cube-face.top {
+  transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+.cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+}
+
+/* Face grid (3x3) */
+.face-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: var(--cell-gap);
+  padding: var(--cell-gap);
+  width: 100%;
+  height: 100%;
+}
+
+.face-grid span {
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add shine effect to cells */
+.face-grid span::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  border-radius: 4px 4px 0 0;
+}
+
+/* Cell colors per face */
+.cube-face.front .face-grid span {
+  background: var(--cube-red);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 23, 68, 0.3);
+}
+
+.cube-face.back .face-grid span {
+  background: var(--cube-orange);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 145, 0, 0.3);
+}
+
+.cube-face.right .face-grid span {
+  background: var(--cube-blue);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(41, 121, 255, 0.3);
+}
+
+.cube-face.left .face-grid span {
+  background: var(--cube-green);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(0, 230, 118, 0.3);
+}
+
+.cube-face.top .face-grid span {
+  background: var(--cube-white);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    0 0 10px rgba(250, 250, 250, 0.2);
+}
+
+.cube-face.bottom .face-grid span {
+  background: var(--cube-yellow);
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 0 10px rgba(255, 234, 0, 0.3);
+}
+
+/* Interaction overlay */
+.cube-interaction {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  z-index: 100;
+  border-radius: 50%;
+}
+
+.cube-interaction:active {
+  cursor: grabbing;
+}
+
+.cube-interaction:focus {
+  outline: none;
+}
+
+.cube-interaction:focus-visible {
+  box-shadow: 0 0 0 3px var(--neon-cyan);
+}
+
+/* ============================================
+   Value Display (LCD Style)
+   ============================================ */
+
+.value-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lcd-screen {
+  background: #0a1a0a;
+  border: 3px solid #1a3a1a;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(57, 255, 20, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.lcd-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 1px,
+    rgba(0, 0, 0, 0.2) 1px,
+    rgba(0, 0, 0, 0.2) 2px
+  );
+  pointer-events: none;
+}
+
+.lcd-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: rgba(57, 255, 20, 0.5);
+  letter-spacing: 0.2em;
+}
+
+.lcd-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 2rem;
+  color: var(--lcd-green);
+  text-shadow:
+    0 0 10px var(--lcd-green),
+    0 0 20px var(--lcd-green),
+    0 0 40px var(--lcd-green);
+  letter-spacing: 0.1em;
+}
+
+.rotation-indicator {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.axis-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.axis-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.625rem;
+  color: var(--neon-pink);
+}
+
+.axis-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 4ch;
+  text-align: right;
+}
+
+/* ============================================
+   Control Info
+   ============================================ */
+
+.control-info {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.control-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.control-hint kbd {
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--neon-cyan);
+  box-shadow:
+    0 2px 0 #0a0a1a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   Stats Panel
+   ============================================ */
+
+.stats-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.stats-panel h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.625rem;
+  color: var(--neon-purple);
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stat-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes scrambleShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 2px); }
+  50% { transform: translate(2px, -2px); }
+  75% { transform: translate(-2px, -2px); }
+}
+
+.cube-stage.scrambling {
+  animation: scrambleShake 0.1s ease-in-out infinite;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 640px) {
+  :root {
+    --cube-size: 140px;
+  }
+
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .header-title h1 {
+    font-size: 0.75rem;
+  }
+
+  .control-info {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .lcd-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}

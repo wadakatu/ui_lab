@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rubik's Cube Knob | UI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Retro grid background -->
+  <div class="grid-floor"></div>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <header class="header">
+    <a href="../../index.html" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back to Lab</span>
+    </a>
+    <div class="header-title">
+      <span class="tag">Retro</span>
+      <h1>Rubik's Cube</h1>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="demo-section">
+      <div class="cube-stage">
+        <!-- Glow effect behind cube -->
+        <div class="cube-glow" id="cubeGlow"></div>
+
+        <!-- 3D Cube container -->
+        <div class="cube-container" id="cubeContainer">
+          <div class="cube" id="cube">
+            <!-- Front face (Red) -->
+            <div class="cube-face front">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <!-- Back face (Orange) -->
+            <div class="cube-face back">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <!-- Right face (Blue) -->
+            <div class="cube-face right">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <!-- Left face (Green) -->
+            <div class="cube-face left">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <!-- Top face (White) -->
+            <div class="cube-face top">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <!-- Bottom face (Yellow) -->
+            <div class="cube-face bottom">
+              <div class="face-grid">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interaction overlay -->
+        <div class="cube-interaction" id="cubeInteraction" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"></div>
+      </div>
+
+      <!-- Value display -->
+      <div class="value-display">
+        <div class="lcd-screen">
+          <span class="lcd-label">LEVEL</span>
+          <span class="lcd-value" id="valueDisplay">000</span>
+        </div>
+        <div class="rotation-indicator">
+          <div class="axis-display">
+            <span class="axis-label">X</span>
+            <span class="axis-value" id="rotX">0°</span>
+          </div>
+          <div class="axis-display">
+            <span class="axis-label">Y</span>
+            <span class="axis-value" id="rotY">0°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control info -->
+      <div class="control-info">
+        <div class="control-hint">
+          <kbd>Drag</kbd>
+          <span>rotate cube</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Scroll</kbd>
+          <span>fine tune</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Dbl-click</kbd>
+          <span>scramble</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats panel -->
+    <aside class="stats-panel">
+      <h2>Cube Stats</h2>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <span class="stat-label">Rotations</span>
+          <span class="stat-value" id="rotationCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Momentum</span>
+          <span class="stat-value" id="momentum">0.00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Face</span>
+          <span class="stat-value" id="currentFace">FRONT</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Mode</span>
+          <span class="stat-value" id="modeDisplay">IDLE</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
