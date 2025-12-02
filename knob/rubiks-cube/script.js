@@ -281,10 +281,10 @@ class RubiksCubeMixer {
     this.currentLayerRotation = this.accumulatedDelta;
     this.rotateLayer(face, this.accumulatedDelta % 360);
 
-    // Calculate value: 360 degrees = 100 value (wraps around)
+    // Calculate value: 360 degrees = 100 value (clamped)
     let newValue = this.dragStartValue + (this.accumulatedDelta / 3.6);
-    // Wrap around: 100 -> 0, below 0 -> 100
-    newValue = ((newValue % 100) + 100) % 100;
+    // Clamp between 0 and 100
+    newValue = Math.max(0, Math.min(100, newValue));
     this.faceParams[face].value = Math.round(newValue);
 
     this.updateMeter(face);

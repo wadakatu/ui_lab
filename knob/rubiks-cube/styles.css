@@ -25,7 +25,7 @@
   --border-glow: rgba(0, 240, 255, 0.3);
 
   /* Cube dimensions */
-  --cube-size: 200px;
+  --cube-size: 220px;
   --cubie-size: calc(var(--cube-size) / 3);
   --cubie-gap: 2px;
 }
@@ -194,19 +194,22 @@ body {
 .main {
   position: relative;
   z-index: 10;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2rem;
-  padding: 1rem 2rem 2rem;
-  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3rem;
+  padding: 2rem;
+  max-width: 1400px;
   margin: 0 auto;
+  min-height: calc(100vh - 100px);
 }
 
 .demo-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
+  padding-top: 1rem;
 }
 
 /* ============================================
@@ -215,12 +218,13 @@ body {
 
 .mixer-panel {
   display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 .mixer-channel {
@@ -323,8 +327,8 @@ body {
 
 .cube-stage {
   position: relative;
-  width: 320px;
-  height: 320px;
+  width: 350px;
+  height: 350px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -500,8 +504,13 @@ body {
 
 .control-info {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2rem;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
 }
 
 .control-hint {
@@ -539,7 +548,9 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-  min-width: 180px;
+  min-width: 200px;
+  margin-top: 3rem;
+  height: fit-content;
 }
 
 .active-face {
