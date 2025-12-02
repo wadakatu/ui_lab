@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Knob | UI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="texture-overlay"></div>
+  <div class="ambient-glow"></div>
+
+  <header class="header">
+    <a href="../../index.html" class="back-link">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back to Lab</span>
+    </a>
+    <div class="header-title">
+      <span class="tag">Basic</span>
+      <h1>Simple Knob</h1>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="demo-section">
+      <div class="knob-container">
+        <!-- Tick marks around the knob -->
+        <div class="tick-ring" id="tickRing"></div>
+
+        <!-- Main knob element -->
+        <div class="knob" id="knob" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+          <div class="knob-body">
+            <div class="knob-cap">
+              <div class="knob-indicator"></div>
+            </div>
+            <div class="knob-grip"></div>
+          </div>
+          <div class="knob-shadow"></div>
+        </div>
+
+        <!-- Value display -->
+        <div class="value-display">
+          <span class="value-number" id="valueDisplay">0</span>
+          <span class="value-label">LEVEL</span>
+        </div>
+      </div>
+
+      <!-- Control info -->
+      <div class="control-info">
+        <div class="control-hint">
+          <kbd>Drag</kbd>
+          <span>to rotate</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Scroll</kbd>
+          <span>fine control</span>
+        </div>
+        <div class="control-hint">
+          <kbd>Dbl-click</kbd>
+          <span>reset</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
