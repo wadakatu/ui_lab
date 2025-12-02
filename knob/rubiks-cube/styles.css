@@ -1,0 +1,706 @@
+/* ============================================
+   Rubik's Cube Mixer - Interactive Face Control
+   ============================================ */
+
+:root {
+  /* Rubik's cube colors - vibrant neon versions */
+  --cube-red: #ff1744;
+  --cube-orange: #ff9100;
+  --cube-blue: #2979ff;
+  --cube-green: #00e676;
+  --cube-white: #f5f5f5;
+  --cube-yellow: #ffea00;
+
+  /* Retro palette */
+  --bg-deep: #0a0a12;
+  --bg-grid: #12121f;
+  --neon-pink: #ff2d95;
+  --neon-cyan: #00f0ff;
+  --neon-purple: #b24dff;
+  --lcd-green: #39ff14;
+
+  /* UI colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --border-glow: rgba(0, 240, 255, 0.3);
+
+  /* Cube dimensions */
+  --cube-size: 200px;
+  --cubie-size: calc(var(--cube-size) / 3);
+  --cubie-gap: 3px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-deep);
+  font-family: 'Rajdhani', sans-serif;
+  color: var(--text-primary);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ============================================
+   Retro Background Effects
+   ============================================ */
+
+.grid-floor {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, transparent 0%, var(--bg-deep) 100%),
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 60px,
+      rgba(0, 240, 255, 0.03) 60px,
+      rgba(0, 240, 255, 0.03) 61px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 60px,
+      rgba(0, 240, 255, 0.03) 60px,
+      rgba(0, 240, 255, 0.03) 61px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.grid-floor::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(178, 77, 255, 0.05) 50%,
+      rgba(255, 45, 149, 0.1)
+    );
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom center;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.back-link:hover {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px var(--neon-cyan);
+}
+
+.back-link svg {
+  transition: transform 0.3s ease;
+}
+
+.back-link:hover svg {
+  transform: translateX(-4px);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  border-radius: 2px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.header-title h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+
+.main {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 3rem;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 100px);
+}
+
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 1rem;
+}
+
+/* ============================================
+   Mixer Panel
+   ============================================ */
+
+.mixer-panel {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mixer-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  min-width: 50px;
+  transition: all 0.3s ease;
+}
+
+.mixer-channel.active {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.channel-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.4rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.channel-meter {
+  width: 20px;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.meter-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink));
+  transition: height 0.15s ease-out;
+  border-radius: 0 0 3px 3px;
+}
+
+.meter-glow {
+  position: absolute;
+  bottom: 0;
+  left: -50%;
+  right: -50%;
+  height: 0%;
+  background: linear-gradient(to top, var(--neon-cyan), transparent);
+  filter: blur(8px);
+  opacity: 0.5;
+  transition: height 0.15s ease-out;
+}
+
+/* Pan meter special style */
+.pan-meter {
+  position: relative;
+}
+
+.pan-meter .meter-center {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%);
+}
+
+.pan-fill {
+  top: 50%;
+  bottom: auto;
+  height: 0%;
+  transform-origin: top center;
+  background: var(--cube-yellow);
+}
+
+.channel-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 2ch;
+  text-align: center;
+}
+
+.channel-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  box-shadow: 0 0 10px currentColor;
+}
+
+/* ============================================
+   Cube Stage
+   ============================================ */
+
+.cube-stage {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cube-glow {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 240, 255, 0.2) 0%,
+    rgba(178, 77, 255, 0.15) 40%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  animation: glowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+/* ============================================
+   3D Scene & Cube
+   ============================================ */
+
+.scene {
+  width: var(--cube-size);
+  height: var(--cube-size);
+  perspective: 600px;
+  perspective-origin: 50% 50%;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(-25deg) rotateY(-35deg);
+  transition: transform 0.1s ease-out;
+  cursor: grab;
+}
+
+.cube:active {
+  cursor: grabbing;
+}
+
+.cube.animating {
+  transition: none;
+}
+
+/* Individual cubie (small cube) */
+.cubie {
+  position: absolute;
+  width: var(--cubie-size);
+  height: var(--cubie-size);
+  transform-style: preserve-3d;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cubie.rotating {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cubie-face {
+  position: absolute;
+  width: calc(var(--cubie-size) - var(--cubie-gap) * 2);
+  height: calc(var(--cubie-size) - var(--cubie-gap) * 2);
+  margin: var(--cubie-gap);
+  border-radius: 6px;
+  background: #1a1a1a;
+  backface-visibility: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Face colors */
+.cubie-face.front { background: var(--cube-red); }
+.cubie-face.back { background: var(--cube-orange); }
+.cubie-face.right { background: var(--cube-blue); }
+.cubie-face.left { background: var(--cube-green); }
+.cubie-face.top { background: var(--cube-white); }
+.cubie-face.bottom { background: var(--cube-yellow); }
+
+/* Face transforms */
+.cubie-face.front { transform: translateZ(calc(var(--cubie-size) / 2)); }
+.cubie-face.back { transform: rotateY(180deg) translateZ(calc(var(--cubie-size) / 2)); }
+.cubie-face.right { transform: rotateY(90deg) translateZ(calc(var(--cubie-size) / 2)); }
+.cubie-face.left { transform: rotateY(-90deg) translateZ(calc(var(--cubie-size) / 2)); }
+.cubie-face.top { transform: rotateX(90deg) translateZ(calc(var(--cubie-size) / 2)); }
+.cubie-face.bottom { transform: rotateX(-90deg) translateZ(calc(var(--cubie-size) / 2)); }
+
+/* Colored faces have shine effect */
+.cubie-face:not(.inner)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  border-radius: 4px 4px 0 0;
+}
+
+/* Hover effect on faces */
+.cubie-face:hover {
+  filter: brightness(1.1);
+  cursor: pointer;
+}
+
+/* Active face (being dragged) */
+.cubie-face.active {
+  filter: brightness(1.3);
+  box-shadow: 0 0 25px currentColor;
+  transition: filter 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Inner faces (black) */
+.cubie-face.inner {
+  background: #0a0a0a;
+}
+
+/* ============================================
+   Rotation Hint
+   ============================================ */
+
+.rotation-hint {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.rotation-hint.visible {
+  opacity: 1;
+}
+
+.hint-face {
+  color: var(--neon-cyan);
+}
+
+.hint-direction {
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Control Info
+   ============================================ */
+
+.control-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2rem;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.control-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.control-hint kbd {
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  color: var(--neon-cyan);
+  box-shadow:
+    0 2px 0 #0a0a1a,
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   Active Display (Side Panel)
+   ============================================ */
+
+.active-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  min-width: 200px;
+  margin-top: 3rem;
+  height: fit-content;
+}
+
+.active-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.face-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.face-icon.front { background: var(--cube-red); box-shadow: 0 0 20px var(--cube-red); }
+.face-icon.back { background: var(--cube-orange); box-shadow: 0 0 20px var(--cube-orange); }
+.face-icon.right { background: var(--cube-blue); box-shadow: 0 0 20px var(--cube-blue); }
+.face-icon.left { background: var(--cube-green); box-shadow: 0 0 20px var(--cube-green); }
+.face-icon.top { background: var(--cube-white); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+.face-icon.bottom { background: var(--cube-yellow); box-shadow: 0 0 20px var(--cube-yellow); }
+
+.face-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+.active-value-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.active-value-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--neon-cyan);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 0.2s ease-out, stroke 0.3s ease;
+  filter: drop-shadow(0 0 6px var(--neon-cyan));
+}
+
+.active-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.active-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--neon-pink);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 900px) {
+  .main {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .active-display {
+    flex-direction: row;
+    width: 100%;
+    max-width: 500px;
+    justify-content: space-around;
+  }
+
+  .active-value-ring {
+    width: 80px;
+    height: 80px;
+  }
+
+  .active-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --cube-size: 160px;
+  }
+
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .header-title h1 {
+    font-size: 0.75rem;
+  }
+
+  .mixer-panel {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .channel-meter {
+    height: 60px;
+  }
+
+  .control-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .active-display {
+    flex-direction: column;
+    padding: 1rem;
+  }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes faceFlash {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+.cubie-face.flash {
+  animation: faceFlash 0.3s ease;
+}
