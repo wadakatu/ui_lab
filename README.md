@@ -6,7 +6,7 @@
   <a href="https://wadakatu.github.io/ui_lab/">
     <img src="https://img.shields.io/badge/🔬_LIVE_DEMO-00f5d4?style=for-the-badge&logoColor=black" alt="Live Demo" />
   </a>
-  <img src="https://img.shields.io/badge/Vanilla-HTML%2FCSS%2FJS-39ff14?style=for-the-badge" alt="Tech Stack" />
+  <img src="https://img.shields.io/badge/Components-6-39ff14?style=for-the-badge" alt="Components" />
   <img src="https://img.shields.io/badge/License-MIT-bf5af2?style=for-the-badge" alt="License" />
 </p>
 
@@ -31,9 +31,20 @@
 
 | Component | Description | Features |
 |:----------|:------------|:---------|
-| **[Simple](https://wadakatu.github.io/ui_lab/carousel/)** | シンプルで軽量な基本実装 | Auto-play, Swipe, Keyboard, Dots |
-| **[Helix Orbital](https://wadakatu.github.io/ui_lab/carousel/helix.html)** | 3D螺旋状に回転する立体カルーセル | 3D Transform, Inertia, Snap, Perspective |
-| **[Pachislot](https://wadakatu.github.io/ui_lab/carousel/retro.html)** | パチスロ筐体風レトロUI | Lever Control, CRT Effect, Infinite Spin |
+| **[Simple](https://wadakatu.github.io/ui_lab/carousel/simple/)** | シンプルで軽量な基本実装 | Auto-play, Swipe, Keyboard, Dots |
+| **[Helix Orbital](https://wadakatu.github.io/ui_lab/carousel/helix/)** | 3D螺旋状に回転する立体カルーセル | 3D Transform, Inertia, Snap, Perspective |
+| **[Pachislot](https://wadakatu.github.io/ui_lab/carousel/retro/)** | パチスロ筐体風レトロUI | Lever Control, CRT Effect, Infinite Spin |
+
+</details>
+
+<details open>
+<summary><b>🎛️ Knob</b></summary>
+
+| Component | Description | Features |
+|:----------|:------------|:---------|
+| **[Simple](https://wadakatu.github.io/ui_lab/knob/simple/)** | ハイエンドオーディオ風ロータリーノブ | Drag, Scroll, Keyboard, Touch |
+| **[Event Horizon](https://wadakatu.github.io/ui_lab/knob/blackhole/)** | ブラックホールを模したノブ | Accretion Disk, Gravitational Lensing, Hawking Radiation |
+| **[Cube Mixer](https://wadakatu.github.io/ui_lab/knob/rubiks-cube/)** | ルービックキューブ型ミキサー | 3D View, Face Rotation, RGB Control |
 
 </details>
 
@@ -88,14 +99,16 @@ cd carousel && npm i && npm run dev
 ```
 ui_lab/
 ├── index.html          # Gallery landing page
-└── carousel/
-    ├── index.html      # Simple Carousel
-    ├── helix.html      # Helix Orbital Carousel
-    ├── retro.html      # Pachislot Carousel
-    ├── styles.css      # Simple styles
-    ├── helix.css       # Helix styles
-    ├── retro.css       # Pachislot styles
-    └── *.js            # Component scripts
+├── carousel/
+│   ├── index.html      # Carousel gallery
+│   ├── simple/         # Simple Carousel
+│   ├── helix/          # Helix Orbital Carousel
+│   └── retro/          # Pachislot Carousel
+└── knob/
+    ├── index.html      # Knob gallery
+    ├── simple/         # Simple Rotary Knob
+    ├── blackhole/      # Event Horizon Knob
+    └── rubiks-cube/    # Cube Mixer Knob
 ```
 
 <br/>
