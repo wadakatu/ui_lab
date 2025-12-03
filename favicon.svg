@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <!-- Main gradient: cyan to green -->
+    <linearGradient id="labGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#39ff14"/>
+    </linearGradient>
+    <!-- Accent glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dark background circle -->
+  <circle cx="16" cy="16" r="15" fill="#0a0a0f"/>
+  <circle cx="16" cy="16" r="14.5" fill="none" stroke="url(#labGrad)" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- Stylized beaker/flask shape representing "Lab" -->
+  <g filter="url(#glow)">
+    <!-- Flask body -->
+    <path d="M12 8 L12 14 L8 24 Q7 26 9 27 L23 27 Q25 26 24 24 L20 14 L20 8"
+          fill="none"
+          stroke="url(#labGrad)"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Flask neck -->
+    <path d="M12 8 L12 6 Q12 5 13 5 L19 5 Q20 5 20 6 L20 8"
+          fill="none"
+          stroke="url(#labGrad)"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Bubbling liquid inside -->
+    <circle cx="12" cy="22" r="1.5" fill="#00f5d4" opacity="0.9"/>
+    <circle cx="16" cy="20" r="2" fill="#39ff14" opacity="0.8"/>
+    <circle cx="19" cy="23" r="1.2" fill="#bf5af2" opacity="0.9"/>
+
+    <!-- UI circuit lines inside flask -->
+    <path d="M10 18 L14 18 L14 16 L18 16"
+          fill="none"
+          stroke="#00f5d4"
+          stroke-width="0.8"
+          opacity="0.6"/>
+    <circle cx="10" cy="18" r="0.8" fill="#00f5d4" opacity="0.8"/>
+    <circle cx="18" cy="16" r="0.8" fill="#39ff14" opacity="0.8"/>
+  </g>
+
+  <!-- Active experiment indicator dot -->
+  <circle cx="25" cy="7" r="2.5" fill="#39ff14"/>
+  <circle cx="25" cy="7" r="1.5" fill="#fff"/>
+</svg>
