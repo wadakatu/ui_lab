@@ -542,6 +542,26 @@ kbd {
 }
 
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+
+  .header-title {
+    order: -1;
+  }
+
+  .header-title h1 {
+    font-size: 20px;
+    letter-spacing: 0.15em;
+  }
+
+  .main {
+    padding: 24px 16px;
+  }
+
   .knob-container {
     width: 300px;
     height: 300px;
@@ -571,13 +591,255 @@ kbd {
     font-size: 48px;
   }
 
+  .value-unit {
+    font-size: 16px;
+  }
+
+  .schwarzschild-radius {
+    font-size: 12px;
+  }
+
   .control-info {
     flex-direction: column;
     gap: 12px;
+    width: 100%;
+    max-width: 280px;
   }
 
+  .control-hint {
+    justify-content: center;
+  }
+
+  .info-panel {
+    width: calc(100% - 32px);
+    max-width: 400px;
+    padding: 20px;
+  }
+
+  .data-grid {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
   .header {
-    padding: 16px 20px;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .header-title h1 {
+    font-size: 18px;
+    letter-spacing: 0.1em;
+  }
+
+  .tag {
+    font-size: 8px;
+    padding: 4px 10px;
+  }
+
+  .back-link {
+    font-size: 13px;
+  }
+
+  .main {
+    padding: 20px 12px;
+    min-height: auto;
+  }
+
+  .demo-section {
+    gap: 28px;
+  }
+
+  .knob-container {
+    width: 260px;
+    height: 260px;
+  }
+
+  .gravitational-lens {
+    width: 240px;
+    height: 240px;
+  }
+
+  .accretion-disk {
+    width: 200px;
+    height: 200px;
+  }
+
+  .event-horizon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .knob-interaction {
+    width: 190px;
+    height: 190px;
+  }
+
+  .value-display {
+    margin-top: 16px;
+  }
+
+  .value-number {
+    font-size: 40px;
+  }
+
+  .value-label-top {
+    font-size: 9px;
+  }
+
+  .value-unit {
+    font-size: 14px;
+  }
+
+  .schwarzschild-radius {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  .control-info {
+    padding: 14px 20px;
+    margin-top: 16px;
+    gap: 10px;
+  }
+
+  .control-hint {
+    font-size: 12px;
+  }
+
+  kbd {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+
+  .info-panel {
+    padding: 16px;
+    margin-top: 28px;
+  }
+
+  .info-panel h2 {
+    font-size: 10px;
+    margin-bottom: 16px;
+  }
+
+  .data-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .data-label {
+    font-size: 11px;
+  }
+
+  .data-value {
+    font-size: 13px;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .header {
+    padding: 12px 14px;
+  }
+
+  .header-title h1 {
+    font-size: 16px;
+  }
+
+  .main {
+    padding: 16px 10px;
+  }
+
+  .knob-container {
+    width: 220px;
+    height: 220px;
+  }
+
+  .gravitational-lens {
+    width: 200px;
+    height: 200px;
+  }
+
+  .accretion-disk {
+    width: 170px;
+    height: 170px;
+  }
+
+  .event-horizon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .knob-interaction {
+    width: 160px;
+    height: 160px;
+  }
+
+  .value-number {
+    font-size: 32px;
+  }
+
+  .value-unit {
+    font-size: 12px;
+  }
+
+  .control-info {
+    padding: 12px 16px;
+    border-radius: 10px;
+  }
+
+  .control-hint {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  kbd {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+
+  .info-panel {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .data-grid {
+    gap: 10px;
+  }
+
+  /* Reduce nebula effect for performance */
+  .nebula {
+    opacity: 0.5;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .knob-interaction {
+    min-width: 160px;
+    min-height: 160px;
+  }
+
+  .knob-interaction:active {
+    box-shadow: 0 0 0 4px rgba(0, 247, 255, 0.4);
+  }
+
+  /* Hide scroll hint on touch devices */
+  .control-hint:nth-child(2) {
+    display: none;
+  }
+
+  /* Disable custom cursor on touch */
+  body {
+    cursor: auto;
+  }
+
+  .knob-interaction {
+    cursor: pointer;
+  }
+
+  .knob-interaction:active {
+    cursor: pointer;
   }
 }
 
