@@ -22,9 +22,57 @@ body {
   color: var(--text);
 }
 
-.page-header { text-align: center; padding: 28px 16px 12px; }
-.page-header h1 { margin: 0 0 6px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 700; }
-.page-header p { margin: 0; color: var(--muted); font-size: 14px; }
+.page-header {
+  text-align: center;
+  padding: 28px 16px 12px;
+}
+
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 700;
+}
+
+.page-header__subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.page-header__nav {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 6px;
+}
+
+.page-header__nav-label {
+  color: var(--muted);
+}
+
+.page-header__nav-sep {
+  color: var(--muted);
+}
+
+.page-header__link {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.page-header__link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.page-header__back {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
 
 .container { max-width: 960px; margin: 20px auto 80px; padding: 0 16px; }
 
@@ -110,8 +158,153 @@ body {
   .carousel:hover .carousel__control { background: var(--control-bg-hover); }
 }
 
+/* ─────────────────────────────────────────────────────────
+   Mobile-first responsive enhancements
+   ───────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 20px 16px 10px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .page-header__subtitle {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Stack the links vertically on mobile */
+  .page-header__nav {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .page-header__nav-sep {
+    display: none;
+  }
+
+  .page-header__link {
+    padding: 4px 8px;
+  }
+
+  .container {
+    margin: 16px auto 40px;
+    padding: 0 12px;
+  }
+}
+
 @media (max-width: 640px) {
-  .container { margin-bottom: 40px; }
-  .carousel__control { padding: 8px 12px; }
+  :root {
+    --slide-h: min(55vh, 380px);
+  }
+
+  .container {
+    margin-bottom: 32px;
+  }
+
+  /* Larger touch-friendly controls */
+  .carousel__control {
+    padding: 14px 16px;
+    font-size: 18px;
+    border-radius: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel__control--prev {
+    left: 6px;
+  }
+
+  .carousel__control--next {
+    right: 6px;
+  }
+
+  /* Larger tap targets for dots */
+  .carousel__dots {
+    bottom: 12px;
+    gap: 12px;
+  }
+
+  .carousel__dot {
+    width: 10px;
+    height: 10px;
+    /* Invisible larger tap area */
+    position: relative;
+  }
+
+  .carousel__dot::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+
+  .slide__content {
+    padding: 16px 20px;
+    border-radius: 12px;
+    max-width: 85%;
+  }
+
+  .slide__content h2 {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .slide__content p {
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  :root {
+    --slide-h: min(50vh, 320px);
+  }
+
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  .page-header p {
+    font-size: 12px;
+  }
+
+  .carousel__control {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .slide__content {
+    padding: 14px 16px;
+    max-width: 90%;
+  }
+
+  .slide__content h2 {
+    font-size: 18px;
+  }
+
+  .slide__content p {
+    font-size: 13px;
+  }
+}
+
+/* Improve touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .carousel__control:active {
+    transform: translateY(-50%) scale(0.92);
+    background: var(--control-bg-hover);
+  }
+
+  .carousel__dot:active {
+    transform: scale(1.3);
+  }
 }
 
