@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <!-- Main gradient: cyan to green -->
+    <linearGradient id="labGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#39ff14"/>
+    </linearGradient>
+    <!-- Text gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8e8ed"/>
+      <stop offset="100%" stop-color="#8b8b9a"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowStrong">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0f"/>
+
+  <!-- Grid pattern -->
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(0, 245, 212, 0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Radial glow at top -->
+  <ellipse cx="600" cy="0" rx="600" ry="300" fill="rgba(0, 245, 212, 0.06)"/>
+
+  <!-- Flask icon (centered, larger) -->
+  <g transform="translate(600, 260)" filter="url(#glowStrong)">
+    <!-- Flask body -->
+    <path d="M-40 -70 L-40 -20 L-80 80 Q-90 100 -70 110 L70 110 Q90 100 80 80 L40 -20 L40 -70"
+          fill="none"
+          stroke="url(#labGrad)"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Flask neck -->
+    <path d="M-40 -70 L-40 -90 Q-40 -100 -30 -100 L30 -100 Q40 -100 40 -90 L40 -70"
+          fill="none"
+          stroke="url(#labGrad)"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+    <!-- Bubbling liquid inside -->
+    <circle cx="-30" cy="60" r="12" fill="#00f5d4" opacity="0.9"/>
+    <circle cx="10" cy="40" r="16" fill="#39ff14" opacity="0.8"/>
+    <circle cx="35" cy="70" r="10" fill="#bf5af2" opacity="0.9"/>
+    <circle cx="-10" cy="80" r="8" fill="#ff2d55" opacity="0.7"/>
+
+    <!-- UI circuit lines inside flask -->
+    <path d="M-50 20 L-10 20 L-10 0 L30 0"
+          fill="none"
+          stroke="#00f5d4"
+          stroke-width="2"
+          opacity="0.5"/>
+    <circle cx="-50" cy="20" r="4" fill="#00f5d4" opacity="0.8"/>
+    <circle cx="30" cy="0" r="4" fill="#39ff14" opacity="0.8"/>
+  </g>
+
+  <!-- Active indicator -->
+  <g transform="translate(680, 170)" filter="url(#glow)">
+    <circle r="12" fill="#39ff14"/>
+    <circle r="6" fill="#fff"/>
+  </g>
+
+  <!-- Title: UI Lab -->
+  <text x="600" y="480" text-anchor="middle" font-family="'Outfit', 'Helvetica Neue', sans-serif" font-size="72" font-weight="700" fill="url(#textGrad)">
+    UI <tspan fill="url(#labGrad)">Lab</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="530" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="18" fill="#5a5a6a" letter-spacing="0.15em">
+    COMPONENT EXPERIMENTS
+  </text>
+
+  <!-- Border accent -->
+  <rect x="2" y="2" width="1196" height="626" fill="none" stroke="url(#labGrad)" stroke-width="1" opacity="0.2" rx="4"/>
+</svg>
