@@ -98,3 +98,139 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .orbit__card { transition: none !important; }
 }
+
+/* ─────────────────────────────────────────────────────────
+   Mobile-first responsive enhancements
+   ───────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 20px 16px 8px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+  }
+
+  .container {
+    margin: 12px auto 40px;
+    padding: 0 8px;
+  }
+
+  .orbit {
+    height: min(60vh, 480px);
+  }
+}
+
+@media (max-width: 640px) {
+  .orbit {
+    height: min(55vh, 420px);
+  }
+
+  /* Larger touch-friendly controls */
+  .orbit__control {
+    padding: 14px 16px;
+    font-size: 20px;
+    border-radius: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orbit__control--prev {
+    left: 6px;
+  }
+
+  .orbit__control--next {
+    right: 6px;
+  }
+
+  /* Larger tap targets for dots */
+  .orbit__dots {
+    bottom: 12px;
+    gap: 12px;
+  }
+
+  .orbit__dot {
+    width: 10px;
+    height: 10px;
+    position: relative;
+  }
+
+  /* Invisible larger tap area */
+  .orbit__dot::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+  }
+
+  /* Adjust card size for mobile */
+  .orbit__card {
+    width: clamp(180px, 65vw, 280px);
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .orbit__card h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .orbit__card p {
+    font-size: 12px;
+  }
+}
+
+/* Extra small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .page-header p {
+    font-size: 12px;
+  }
+
+  .orbit {
+    height: min(50vh, 360px);
+  }
+
+  .orbit__control {
+    padding: 12px 14px;
+    font-size: 18px;
+  }
+
+  .orbit__card {
+    width: clamp(160px, 60vw, 240px);
+    padding: 12px 14px;
+  }
+
+  .orbit__card h2 {
+    font-size: 16px;
+  }
+
+  .orbit__card p {
+    font-size: 11px;
+  }
+}
+
+/* Improve touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .orbit__control:active {
+    transform: translateY(-50%) scale(0.92);
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .orbit__dot:active {
+    transform: scale(1.3);
+  }
+}
