@@ -635,8 +635,9 @@ body {
 
 @media (max-width: 900px) {
   .main {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
   }
 
   .active-display {
@@ -644,6 +645,7 @@ body {
     width: 100%;
     max-width: 500px;
     justify-content: space-around;
+    margin-top: 0;
   }
 
   .active-value-ring {
@@ -689,6 +691,331 @@ body {
   .active-display {
     flex-direction: column;
     padding: 1rem;
+  }
+}
+
+/* Small mobile (480px) */
+@media (max-width: 480px) {
+  :root {
+    --cube-size: 140px;
+    --cubie-gap: 2px;
+  }
+
+  .main {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .mixer-panel {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .mixer-channel {
+    min-width: 40px;
+    padding: 0.25rem;
+  }
+
+  .channel-label {
+    font-size: 0.35rem;
+  }
+
+  .channel-meter {
+    width: 16px;
+    height: 50px;
+  }
+
+  .channel-value {
+    font-size: 0.75rem;
+  }
+
+  .channel-color {
+    width: 10px;
+    height: 10px;
+  }
+
+  .cube-stage {
+    width: 280px;
+    height: 280px;
+  }
+
+  .cube-glow {
+    width: 180px;
+    height: 180px;
+  }
+
+  .cubie-face {
+    border-radius: 4px;
+  }
+
+  .control-info {
+    padding: 0.75rem 1rem;
+    gap: 0.4rem;
+  }
+
+  .control-hint {
+    font-size: 0.65rem;
+  }
+
+  .control-hint kbd {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.4rem;
+  }
+
+  .active-display {
+    min-width: unset;
+    width: 100%;
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+
+  .active-value-ring {
+    width: 70px;
+    height: 70px;
+  }
+
+  .active-value {
+    font-size: 1.25rem;
+  }
+
+  .face-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+
+  .face-name {
+    font-size: 0.5rem;
+  }
+
+  .active-label {
+    font-size: 0.4rem;
+  }
+
+  /* Reduce grid floor complexity on small screens */
+  .grid-floor {
+    background:
+      linear-gradient(to bottom, transparent 0%, var(--bg-deep) 100%),
+      repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent 40px,
+        rgba(0, 240, 255, 0.02) 40px,
+        rgba(0, 240, 255, 0.02) 41px
+      );
+  }
+
+  /* Lighter scanlines effect */
+  .scanlines {
+    opacity: 0.25;
+  }
+}
+
+/* Extra small screens (iPhone SE, 375px) */
+@media (max-width: 375px) {
+  :root {
+    --cube-size: 120px;
+    --cubie-gap: 2px;
+  }
+
+  .header {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .back-link {
+    font-size: 0.75rem;
+  }
+
+  .tag {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.4rem;
+  }
+
+  .header-title h1 {
+    font-size: 0.65rem;
+  }
+
+  .main {
+    padding: 0.75rem;
+    gap: 1rem;
+    min-height: auto;
+  }
+
+  .demo-section {
+    gap: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  .mixer-panel {
+    padding: 0.5rem 0.75rem;
+    gap: 0.25rem;
+    border-radius: 8px;
+  }
+
+  .mixer-channel {
+    min-width: 36px;
+    padding: 0.2rem;
+    gap: 0.25rem;
+  }
+
+  .channel-label {
+    font-size: 0.3rem;
+  }
+
+  .channel-meter {
+    width: 14px;
+    height: 40px;
+    border-radius: 3px;
+  }
+
+  .channel-value {
+    font-size: 0.65rem;
+  }
+
+  .channel-color {
+    width: 8px;
+    height: 8px;
+  }
+
+  .cube-stage {
+    width: 220px;
+    height: 220px;
+  }
+
+  .cube-glow {
+    width: 140px;
+    height: 140px;
+    filter: blur(30px);
+  }
+
+  .cubie-face {
+    border-radius: 3px;
+  }
+
+  .rotation-hint {
+    font-size: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .control-info {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+  }
+
+  .control-hint {
+    font-size: 0.6rem;
+    gap: 0.35rem;
+  }
+
+  .control-hint kbd {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.35rem;
+    border-radius: 3px;
+  }
+
+  .active-display {
+    padding: 0.5rem;
+    gap: 0.75rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+  }
+
+  .active-face {
+    gap: 0.35rem;
+  }
+
+  .face-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+  }
+
+  .face-name {
+    font-size: 0.45rem;
+  }
+
+  .active-value-ring {
+    width: 60px;
+    height: 60px;
+  }
+
+  .ring-bg,
+  .ring-fill {
+    stroke-width: 6;
+  }
+
+  .active-value {
+    font-size: 1rem;
+  }
+
+  .active-label {
+    font-size: 0.35rem;
+  }
+
+  /* Disable scanlines on very small screens for performance */
+  .scanlines {
+    display: none;
+  }
+
+  /* Simplified vignette */
+  .vignette {
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+  }
+}
+
+/* Touch device improvements */
+@media (hover: none) and (pointer: coarse) {
+  .cubie-face:active {
+    filter: brightness(1.2);
+    transform: scale(0.98);
+  }
+
+  .back-link {
+    padding: 0.5rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mixer-channel {
+    min-width: 44px;
+  }
+
+  .control-hint kbd {
+    min-width: 32px;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .cube,
+  .cubie,
+  .cubie-face,
+  .meter-fill,
+  .meter-glow,
+  .ring-fill,
+  .face-icon {
+    transition: none !important;
+  }
+
+  .cube-glow {
+    animation: none;
+  }
+
+  .cubie-face.flash {
+    animation: none;
   }
 }
 
