@@ -208,6 +208,58 @@
       background: linear-gradient(90deg, var(--border-color), transparent);
     }
 
+    .section-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.1), rgba(191, 90, 242, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 100px;
+    }
+
+    .section-link:hover {
+      color: var(--accent-cyan);
+      border-color: rgba(0, 245, 212, 0.3);
+      transform: translateX(4px);
+    }
+
+    .section-link:hover::before {
+      opacity: 1;
+    }
+
+    .section-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.3s;
+    }
+
+    .section-link:hover svg {
+      transform: translateX(3px);
+    }
+
+    .section-link-text {
+      position: relative;
+      z-index: 1;
+    }
+
     /* Component Grid */
     .component-grid {
       display: grid;
@@ -749,6 +801,12 @@
     <div class="section-header">
       <span class="section-title">// Carousel Components</span>
       <div class="section-line"></div>
+      <a href="carousel/index.html" class="section-link">
+        <span class="section-link-text">View All</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
 
     <div class="component-grid">
@@ -856,6 +914,12 @@
     <div class="section-header" style="margin-top: 60px;">
       <span class="section-title">// Knob Components</span>
       <div class="section-line"></div>
+      <a href="knob/index.html" class="section-link">
+        <span class="section-link-text">View All</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
 
     <div class="component-grid">

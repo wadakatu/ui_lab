@@ -1,54 +1,1008 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Carousel Gallery</title>
-    <style>
-      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-      .header{text-align:center;margin-bottom:3rem}
-      .header h1{font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,#58a6ff,#a371f7);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:.5rem}
-      .header p{color:#8b949e;font-size:1.1rem}
-      .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:960px;width:100%}
-      .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.5rem;text-decoration:none;color:inherit;transition:transform .2s,border-color .2s,box-shadow .2s}
-      .card:hover{transform:translateY(-4px);border-color:#58a6ff;box-shadow:0 8px 24px rgba(88,166,255,.15)}
-      .card h2{font-size:1.25rem;margin-bottom:.5rem;color:#58a6ff}
-      .card p{color:#8b949e;font-size:.9rem;line-height:1.5}
-      .card .tag{display:inline-block;margin-top:1rem;font-size:.75rem;padding:.25rem .5rem;background:#21262d;border-radius:4px;color:#7ee787}
-      .back{margin-top:3rem;color:#8b949e;font-size:.9rem}
-      .back a{color:#58a6ff;text-decoration:none}
-      .back a:hover{text-decoration:underline}
-    </style>
-  </head>
-  <body>
-    <header class="header">
-      <h1>Carousel Gallery</h1>
-      <p>3種類のユニークなカルーセル実装</p>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carousel Gallery | UI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #16161f;
+      --bg-card-hover: #1c1c28;
+      --text-primary: #e8e8ed;
+      --text-secondary: #8b8b9a;
+      --text-muted: #5a5a6a;
+      --accent-cyan: #00f5d4;
+      --accent-green: #39ff14;
+      --accent-purple: #bf5af2;
+      --accent-pink: #ff2d55;
+      --accent-yellow: #ffd60a;
+      /* Carousel-specific gradient accent */
+      --accent-slide-start: #00f5d4;
+      --accent-slide-mid: #6366f1;
+      --accent-slide-end: #bf5af2;
+      --grid-color: rgba(0, 245, 212, 0.03);
+      --grid-color-purple: rgba(191, 90, 242, 0.02);
+      --border-color: rgba(255, 255, 255, 0.06);
+      --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.3);
+      --glow-gradient: 0 0 30px rgba(99, 102, 241, 0.3);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Outfit', sans-serif;
+    }
 
-    <main class="gallery">
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Grid Background - with purple tint for carousel */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+        linear-gradient(var(--grid-color-purple) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color-purple) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 120px 120px, 120px 120px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 30% at 20% -5%, rgba(0, 245, 212, 0.08), transparent),
+        radial-gradient(ellipse 50% 30% at 80% -5%, rgba(191, 90, 242, 0.08), transparent);
+    }
+
+    /* Scanline Effect */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      position: relative;
+      z-index: 1;
+      padding: 24px 24px 0;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .breadcrumb a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .breadcrumb a:hover svg {
+      transform: translateX(-4px);
+    }
+
+    .breadcrumb svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s;
+    }
+
+    /* Header */
+    .header {
+      position: relative;
+      padding: 60px 24px 40px;
+      text-align: center;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    /* Sliding Frames Decoration */
+    .sliding-frames {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 60px;
+      overflow: hidden;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    .sliding-frames-track {
+      display: flex;
+      gap: 20px;
+      animation: slide-infinite 20s linear infinite;
+      width: max-content;
+    }
+
+    .sliding-frame {
+      width: 80px;
+      height: 50px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .sliding-frame:nth-child(1) { background: linear-gradient(135deg, #1f5eff, #a86af9); }
+    .sliding-frame:nth-child(2) { background: linear-gradient(135deg, #00c2a8, #6dd5fa); }
+    .sliding-frame:nth-child(3) { background: linear-gradient(135deg, #ff6a88, #ff99ac); }
+    .sliding-frame:nth-child(4) { background: linear-gradient(135deg, #ffd26f, #f7971e); }
+    .sliding-frame:nth-child(5) { background: linear-gradient(135deg, #5ee7df, #b490ca); }
+    .sliding-frame:nth-child(6) { background: linear-gradient(135deg, #6366f1, #bf5af2); }
+    .sliding-frame:nth-child(7) { background: linear-gradient(135deg, #00f5d4, #39ff14); }
+    .sliding-frame:nth-child(8) { background: linear-gradient(135deg, #ff2d55, #ff6b6b); }
+
+    @keyframes slide-infinite {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Arrow Decorations */
+    .arrow-decor {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      opacity: 0.1;
+      animation: arrow-pulse 2s ease-in-out infinite;
+    }
+
+    .arrow-decor-left {
+      left: 5%;
+    }
+
+    .arrow-decor-right {
+      right: 5%;
+      animation-delay: 1s;
+    }
+
+    .arrow-decor svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--accent-cyan);
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    @keyframes arrow-pulse {
+      0%, 100% { opacity: 0.1; transform: translateY(-50%) scale(1); }
+      50% { opacity: 0.25; transform: translateY(-50%) scale(1.1); }
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.08), rgba(191, 90, 242, 0.08));
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .category-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 50%;
+      animation: pulse-gradient 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-gradient {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+    }
+
+    .title {
+      font-size: clamp(36px, 8vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      z-index: 1;
+    }
+
+    .title span {
+      background: linear-gradient(135deg, var(--accent-slide-start) 0%, var(--accent-slide-mid) 50%, var(--accent-slide-end) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      max-width: 450px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Slide Stats - Unique to Carousel Gallery */
+    .slide-stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 60px;
+      padding: 32px 24px;
+      margin-top: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slide-stat-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .slide-stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Dot Navigation Indicator */
+    .slide-stat-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .slide-stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      transition: all 0.3s;
+    }
+
+    .slide-stat-dot.active {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Animated dots */
+    .slide-stat:nth-child(1) .slide-stat-dot:nth-child(1) { animation: dot-active 3s ease-in-out infinite; }
+    .slide-stat:nth-child(1) .slide-stat-dot:nth-child(2) { animation: dot-active 3s ease-in-out infinite 1s; }
+    .slide-stat:nth-child(1) .slide-stat-dot:nth-child(3) { animation: dot-active 3s ease-in-out infinite 2s; }
+
+    @keyframes dot-active {
+      0%, 33%, 100% {
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: none;
+        transform: scale(1);
+      }
+      16.5% {
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+        transform: scale(1.2);
+      }
+    }
+
+    /* Progress bar style stat */
+    .slide-progress {
+      width: 80px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .slide-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 2px;
+      animation: progress-loop 4s ease-in-out infinite;
+    }
+
+    @keyframes progress-loop {
+      0%, 100% { width: 0%; }
+      50% { width: 100%; }
+    }
+
+    /* Swipe indicator */
+    .swipe-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .swipe-hand {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+      animation: swipe-motion 2s ease-in-out infinite;
+    }
+
+    @keyframes swipe-motion {
+      0%, 100% { transform: translateX(0); opacity: 0.5; }
+      50% { transform: translateX(10px); opacity: 1; }
+    }
+
+    /* Main */
+    .main {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(99, 102, 241, 0.4), var(--border-color), transparent);
+    }
+
+    /* Component Grid */
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .component-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.02) 0%, rgba(191, 90, 242, 0.02) 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: var(--glow-gradient);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover .card-preview {
+      transform: scale(1.02);
+    }
+
+    .card:hover .card-arrow {
+      transform: translate(4px, -4px);
+      opacity: 1;
+    }
+
+    /* Card Preview */
+    .card-preview {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-preview-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Preview: Simple */
+    .preview-simple {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .preview-simple .slides {
+      display: flex;
+      gap: 12px;
+      animation: slidePreview 4s ease-in-out infinite;
+    }
+
+    .preview-simple .slide {
+      width: 80px;
+      height: 110px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .preview-simple .slide:nth-child(1) { background: linear-gradient(135deg, #1f5eff, #a86af9); }
+    .preview-simple .slide:nth-child(2) { background: linear-gradient(135deg, #00c2a8, #6dd5fa); }
+    .preview-simple .slide:nth-child(3) { background: linear-gradient(135deg, #ff6a88, #ff99ac); }
+    .preview-simple .slide:nth-child(4) { background: linear-gradient(135deg, #ffd26f, #f7971e); }
+    .preview-simple .slide:nth-child(5) { background: linear-gradient(135deg, #5ee7df, #b490ca); }
+
+    @keyframes slidePreview {
+      0%, 20% { transform: translateX(0); }
+      25%, 45% { transform: translateX(-92px); }
+      50%, 70% { transform: translateX(-184px); }
+      75%, 95% { transform: translateX(-92px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Preview: Helix */
+    .preview-helix {
+      background: radial-gradient(ellipse at center, #1a1a3e 0%, #0f0f1a 100%);
+      perspective: 600px;
+    }
+
+    .preview-helix .orbit {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      transform-style: preserve-3d;
+      animation: helixSpin 8s linear infinite;
+    }
+
+    .preview-helix .orbit-card {
+      position: absolute;
+      width: 50px;
+      height: 70px;
+      background: linear-gradient(135deg, rgba(0, 245, 212, 0.8), rgba(191, 90, 242, 0.8));
+      border-radius: 8px;
+      left: 50%;
+      top: 50%;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .preview-helix .orbit-card:nth-child(1) { transform: translate(-50%, -50%) rotateY(0deg) translateZ(70px); }
+    .preview-helix .orbit-card:nth-child(2) { transform: translate(-50%, -50%) rotateY(51deg) translateZ(70px) translateY(-15px); }
+    .preview-helix .orbit-card:nth-child(3) { transform: translate(-50%, -50%) rotateY(103deg) translateZ(70px) translateY(-30px); }
+    .preview-helix .orbit-card:nth-child(4) { transform: translate(-50%, -50%) rotateY(154deg) translateZ(70px) translateY(-15px); }
+    .preview-helix .orbit-card:nth-child(5) { transform: translate(-50%, -50%) rotateY(206deg) translateZ(70px); }
+    .preview-helix .orbit-card:nth-child(6) { transform: translate(-50%, -50%) rotateY(257deg) translateZ(70px) translateY(15px); }
+    .preview-helix .orbit-card:nth-child(7) { transform: translate(-50%, -50%) rotateY(309deg) translateZ(70px) translateY(30px); }
+
+    @keyframes helixSpin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+
+    /* Preview: Retro */
+    .preview-retro {
+      background: linear-gradient(180deg, #1a0a2e 0%, #0d0d1a 100%);
+      overflow: hidden;
+    }
+
+    .preview-retro .cabinet {
+      position: relative;
+      width: 160px;
+      height: 140px;
+      background: linear-gradient(180deg, #2a1a3e 0%, #1a0a2e 100%);
+      border: 3px solid #3d2a5a;
+      border-radius: 12px 12px 8px 8px;
+      padding: 12px;
+    }
+
+    .preview-retro .screen {
+      height: 70px;
+      background: #0a0a0f;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-retro .screen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+    }
+
+    .preview-retro .reel {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+      animation: reelSpin 2s ease-in-out infinite;
+    }
+
+    .preview-retro .symbol {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-pink);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .preview-retro .symbol:nth-child(2) { background: var(--accent-yellow); }
+    .preview-retro .symbol:nth-child(3) { background: var(--accent-green); }
+
+    @keyframes reelSpin {
+      0%, 100% { transform: translateY(0); }
+      10% { transform: translateY(-4px); }
+      20% { transform: translateY(0); }
+    }
+
+    .preview-retro .lever {
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 50px;
+      background: linear-gradient(90deg, #666 0%, #888 50%, #666 100%);
+      border-radius: 4px;
+    }
+
+    .preview-retro .lever::after {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff2d55 0%, #cc0033 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 45, 85, 0.5);
+    }
+
+    .preview-retro .neon-text {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--accent-pink);
+      text-shadow: 0 0 10px var(--accent-pink);
+      letter-spacing: 0.1em;
+    }
+
+    /* Card Content */
+    .card-content {
+      padding: 24px;
+      position: relative;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .tag-basic {
+      background: rgba(0, 245, 212, 0.1);
+      color: var(--accent-cyan);
+    }
+
+    .tag-advanced {
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+    }
+
+    .tag-experimental {
+      background: rgba(255, 45, 85, 0.1);
+      color: var(--accent-pink);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-arrow {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 100px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Footer */
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .footer-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .footer-text a {
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    .footer-text a:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+      text-decoration-color: var(--accent-cyan);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 40px 16px 24px;
+      }
+
+      .slide-stats {
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .slide-stat-value {
+        font-size: 24px;
+      }
+
+      .card-preview {
+        height: 160px;
+      }
+
+      .component-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow-decor {
+        display: none;
+      }
+
+      .sliding-frames {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="scanlines"></div>
+
+  <nav class="breadcrumb">
+    <a href="../">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+      </svg>
+      <span>UI Lab トップへ戻る</span>
+    </a>
+  </nav>
+
+  <header class="header">
+    <!-- Sliding frames decoration -->
+    <div class="sliding-frames">
+      <div class="sliding-frames-track">
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <!-- Duplicate for seamless loop -->
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+        <div class="sliding-frame"></div>
+      </div>
+    </div>
+
+    <!-- Arrow decorations -->
+    <div class="arrow-decor arrow-decor-left">
+      <svg viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </div>
+    <div class="arrow-decor arrow-decor-right">
+      <svg viewBox="0 0 24 24">
+        <path d="M9 6l6 6-6 6"/>
+      </svg>
+    </div>
+
+    <div class="category-badge">
+      <span>Carousel Collection</span>
+    </div>
+    <h1 class="title">Carousel <span>Gallery</span></h1>
+    <p class="subtitle">3種類のユニークなカルーセル実装を体験してください</p>
+
+    <!-- Slide-style stats unique to Carousel Gallery -->
+    <div class="slide-stats">
+      <div class="slide-stat">
+        <span class="slide-stat-value">03</span>
+        <span class="slide-stat-label">Variants</span>
+        <div class="slide-stat-dots">
+          <div class="slide-stat-dot"></div>
+          <div class="slide-stat-dot"></div>
+          <div class="slide-stat-dot"></div>
+        </div>
+      </div>
+      <div class="slide-stat">
+        <span class="slide-stat-value">JS</span>
+        <span class="slide-stat-label">Vanilla</span>
+        <div class="slide-progress">
+          <div class="slide-progress-bar"></div>
+        </div>
+      </div>
+      <div class="slide-stat">
+        <span class="slide-stat-value">∞</span>
+        <span class="slide-stat-label">Loop</span>
+        <div class="swipe-indicator">
+          <svg class="swipe-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 11V6a2 2 0 00-2-2 2 2 0 00-2 2v0M14 10V4a2 2 0 00-2-2 2 2 0 00-2 2v7"/>
+            <path d="M10 10.5V5a2 2 0 00-2-2 2 2 0 00-2 2v9"/>
+            <path d="M6 15v-3a2 2 0 00-2-2 2 2 0 00-2 2v7c0 3 2 5 5 5h7c3 0 5-2 6-5l1-4c.5-2-1-4-3-4h-2"/>
+          </svg>
+          <span style="font-size: 10px; color: var(--text-muted);">SWIPE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="section-header">
+      <span class="section-title">// Available Carousels</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Carousel -->
       <a href="./simple/" class="card">
-        <h2>Simple Carousel</h2>
-        <p>矢印・ドット・自動再生・スワイプ対応のシンプルで軽量なカルーセル</p>
-        <span class="tag">基本実装</span>
+        <div class="card-preview preview-simple">
+          <div class="card-preview-inner">
+            <div class="slides">
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+              <div class="slide"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Carousel
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">矢印・ドット・自動再生・スワイプ対応のシンプルで軽量なカルーセル。あらゆるプロジェクトの基盤に。</p>
+          <div class="card-features">
+            <span class="feature">Auto-play</span>
+            <span class="feature">Swipe</span>
+            <span class="feature">Keyboard</span>
+            <span class="feature">Dots</span>
+          </div>
+        </div>
       </a>
 
+      <!-- Helix Orbital Carousel -->
       <a href="./helix/" class="card">
-        <h2>Helix Orbital Carousel</h2>
-        <p>3D螺旋配置 × 慣性スクロール。深度に応じた透明度とぼかしで立体感を演出</p>
-        <span class="tag">3D / 慣性</span>
+        <div class="card-preview preview-helix">
+          <div class="card-preview-inner">
+            <div class="orbit">
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+              <div class="orbit-card"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-advanced">Advanced</span>
+          <h2 class="card-title">
+            Helix Orbital
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">3D空間を螺旋状に回転する立体カルーセル。慣性スクロールと深度に応じたぼかしで立体感を演出。</p>
+          <div class="card-features">
+            <span class="feature">3D Transform</span>
+            <span class="feature">Inertia</span>
+            <span class="feature">Snap</span>
+            <span class="feature">Perspective</span>
+          </div>
+        </div>
       </a>
 
+      <!-- Pachislot Carousel -->
       <a href="./retro/" class="card">
-        <h2>Pachislot Carousel</h2>
-        <p>レバーで回すパチスロ筐体風カルーセル。CRTエフェクトとネオン演出</p>
-        <span class="tag">レトロ / インタラクティブ</span>
+        <div class="card-preview preview-retro">
+          <div class="neon-text">JACKPOT</div>
+          <div class="card-preview-inner">
+            <div class="cabinet">
+              <div class="screen">
+                <div class="reel">
+                  <div class="symbol">7</div>
+                  <div class="symbol">7</div>
+                  <div class="symbol">7</div>
+                </div>
+              </div>
+            </div>
+            <div class="lever"></div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Experimental</span>
+          <h2 class="card-title">
+            Pachislot Carousel
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">レバーで回すパチスロ筐体風カルーセル。CRTエフェクトとネオン演出で懐かしくも新しい体験を。</p>
+          <div class="card-features">
+            <span class="feature">Lever Control</span>
+            <span class="feature">CRT Effect</span>
+            <span class="feature">Retro UI</span>
+            <span class="feature">Infinite Spin</span>
+          </div>
+        </div>
       </a>
-    </main>
+    </div>
+  </main>
 
-    <footer class="back">
-      <a href="../">← UI Lab トップへ戻る</a>
-    </footer>
-  </body>
+  <footer class="footer">
+    <p class="footer-text">
+      <a href="../">← UI Lab に戻る</a>
+    </p>
+  </footer>
+</body>
 </html>
