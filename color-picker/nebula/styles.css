@@ -100,7 +100,6 @@ html, body {
   align-items: center;
   justify-content: center;
   background: radial-gradient(ellipse at center, rgba(8, 6, 20, 0.9) 0%, rgba(2, 2, 8, 0.98) 100%);
-  opacity: 1;
   transition: opacity 1.2s cubic-bezier(0.4, 0, 0, 1);
   cursor: none;
 }
@@ -514,33 +513,6 @@ html, body {
 .notification.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
-}
-
-/* ---- Supernova capture effect ---- */
-.supernova {
-  position: fixed;
-  pointer-events: none;
-  z-index: 60;
-  border-radius: 50%;
-  animation: supernovaExplode 1s ease-out forwards;
-}
-
-@keyframes supernovaExplode {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 0.9;
-    box-shadow: 0 0 40px currentColor, 0 0 80px currentColor;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    width: 300px;
-    height: 300px;
-    opacity: 0;
-    box-shadow: 0 0 0 currentColor;
-  }
 }
 
 /* ---- Responsive ---- */

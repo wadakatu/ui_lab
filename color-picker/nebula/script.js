@@ -70,13 +70,32 @@ function resize() {
   nebulaCanvas.style.height = h + 'px';
   ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 
-  bloomCanvas.width = Math.floor(w * state.dpr * 0.25);
-  bloomCanvas.height = Math.floor(h * state.dpr * 0.25);
+  bloomCanvas.width = Math.max(1, Math.floor(w * state.dpr * 0.25));
+  bloomCanvas.height = Math.max(1, Math.floor(h * state.dpr * 0.25));
   bloomCanvas.style.width = w + 'px';
   bloomCanvas.style.height = h + 'px';
 }
 resize();
 window.addEventListener('resize', resize);
+
+// --- Color Space Mapping ---
+// Maps screen position to HSL color space:
+// - Hue: angle relative to screen center (0-360 degrees)
+// - Saturation: distance from center (closer = less saturated, factor 1.2x allows reaching 100% before max distance)
+function colorFromPosition(x, y) {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const cx = w / 2;
+  const cy = h / 2;
+  const dx = x - cx;
+  const dy = y - cy;
+  const angle = Math.atan2(dy, dx);
+  const hue = ((angle * 180 / Math.PI) + 360) % 360;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const maxDist = Math.max(w, h) * 0.5;
+  const sat = Math.min(100, (dist / maxDist) * 120);
+  return { hue, sat };
+}
 
 // --- Particle Class ---
 class Particle {
@@ -122,7 +141,7 @@ class Particle {
     this.vx += (targetX - this.x) * GRAVITATIONAL_PULL;
     this.vy += (targetY - this.y) * GRAVITATIONAL_PULL;
 
-    // Turbulence (simplex-like noise approximation)
+    // Turbulence (periodic sine/cosine displacement)
     const noiseX = Math.sin(time * 0.001 + this.noiseOffsetX) * Math.cos(time * 0.0007 + this.noiseOffsetY * 0.5);
     const noiseY = Math.cos(time * 0.0009 + this.noiseOffsetY) * Math.sin(time * 0.0006 + this.noiseOffsetX * 0.5);
     this.vx += noiseX * TURBULENCE * 0.01;
@@ -141,47 +160,33 @@ class Particle {
       this.vy += ny * force * 0.15;
     }
 
-    // Damping
     this.vx *= 0.94;
     this.vy *= 0.94;
 
-    // Store trail
     this.trail.push({ x: this.x, y: this.y });
     if (this.trail.length > TRAIL_LENGTH) this.trail.shift();
 
-    // Move
     this.x += this.vx;
     this.y += this.vy;
 
-    // Wrap
+    // Wrap around edges
     const margin = 50;
     if (this.x < -margin) this.x = w + margin;
     if (this.x > w + margin) this.x = -margin;
     if (this.y < -margin) this.y = h + margin;
     if (this.y > h + margin) this.y = -margin;
 
-    // Pulsing alpha
     this.currentAlpha = this.alpha * (0.6 + 0.4 * Math.sin(time * 0.001 * this.pulseSpeed + this.pulsePhase));
   }
 
   getColor() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    const cx = w / 2;
-    const cy = h / 2;
-    const angle = Math.atan2(this.y - cy, this.x - cx);
-    const hue = ((angle * 180 / Math.PI) + 360) % 360;
-    const dist = Math.sqrt((this.x - cx) ** 2 + (this.y - cy) ** 2);
-    const maxDist = Math.max(w, h) * 0.5;
-    const sat = Math.min(100, (dist / maxDist) * 120);
-    return { hue, sat };
+    return colorFromPosition(this.x, this.y);
   }
 
-  draw(ctx, time) {
+  draw(ctx) {
     const { hue, sat } = this.getColor();
     const l = state.luminance;
 
-    // Draw trail
     if (this.trail.length > 1) {
       for (let i = 0; i < this.trail.length - 1; i++) {
         const t = this.trail[i];
@@ -195,7 +200,6 @@ class Particle {
       }
     }
 
-    // Draw particle
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = `hsla(${hue}, ${sat}%, ${l}%, ${this.currentAlpha})`;
@@ -217,12 +221,12 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
   particles.push(new Particle());
 }
 
-// --- Background Stars ---
+// --- Background Stars (normalized coordinates for resize-safety) ---
 const bgStars = [];
 for (let i = 0; i < 200; i++) {
   bgStars.push({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
+    nx: Math.random(),
+    ny: Math.random(),
     size: Math.random() * 1.2 + 0.3,
     alpha: Math.random() * 0.4 + 0.1,
     twinkleSpeed: Math.random() * 2 + 0.5,
@@ -241,9 +245,9 @@ function createSupernova(x, y, color) {
     birth: state.time,
     duration: 60,
     rings: [
-      { radius: 0, maxRadius: 150, speed: 4, alpha: 0.8, width: 2 },
-      { radius: 0, maxRadius: 100, speed: 3, alpha: 0.6, width: 1 },
-      { radius: 0, maxRadius: 200, speed: 5, alpha: 0.4, width: 1.5 },
+      { radius: 0, speed: 4, alpha: 0.8, width: 2 },
+      { radius: 0, speed: 3, alpha: 0.6, width: 1 },
+      { radius: 0, speed: 5, alpha: 0.4, width: 1.5 },
     ],
     particles: Array.from({ length: 24 }, () => ({
       angle: Math.random() * Math.PI * 2,
@@ -305,21 +309,8 @@ function drawCaptureEffects(ctx) {
 }
 
 // --- Color Utilities ---
-function hslToHex(h, s, l) {
-  s /= 100;
-  l /= 100;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * Math.max(0, Math.min(1, color)))
-      .toString(16)
-      .padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-function hslToRgb(h, s, l) {
+// h: 0-360 (degrees), s: 0-100 (%), l: 0-100 (%)
+function hslToRgbValues(h, s, l) {
   s /= 100;
   l /= 100;
   const a = s * Math.min(l, 1 - l);
@@ -327,21 +318,21 @@ function hslToRgb(h, s, l) {
     const k = (n + h / 30) % 12;
     return Math.round(255 * Math.max(0, Math.min(1, l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1))));
   };
-  return { r: f(0), g: f(8), b: f(4) };
+  return [f(0), f(8), f(4)];
+}
+
+function hslToHex(h, s, l) {
+  const [r, g, b] = hslToRgbValues(h, s, l);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+function hslToRgb(h, s, l) {
+  const [r, g, b] = hslToRgbValues(h, s, l);
+  return { r, g, b };
 }
 
 function getColorAtCursor() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const cx = w / 2;
-  const cy = h / 2;
-  const dx = state.mouseX - cx;
-  const dy = state.mouseY - cy;
-  const angle = Math.atan2(dy, dx);
-  const hue = ((angle * 180 / Math.PI) + 360) % 360;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  const maxDist = Math.max(w, h) * 0.5;
-  const sat = Math.min(100, (dist / maxDist) * 120);
+  const { hue, sat } = colorFromPosition(state.mouseX, state.mouseY);
   return { hue, sat, lum: state.luminance };
 }
 
@@ -378,6 +369,7 @@ function updateCaptureDisplay(h, s, l) {
 }
 
 // --- Constellation ---
+// Max 18 colors (3 rows x 6 columns in the constellation grid)
 function addToConstellation(hex, h, s, l) {
   if (state.constellation.length >= 18) {
     state.constellation.shift();
@@ -390,7 +382,7 @@ function renderConstellation() {
   constellationGrid.innerHTML = '';
   constellationEmpty.style.display = state.constellation.length ? 'none' : 'block';
 
-  state.constellation.forEach((c, i) => {
+  state.constellation.forEach((c) => {
     const star = document.createElement('div');
     star.className = 'constellation-star';
     star.style.backgroundColor = c.hex;
@@ -404,7 +396,10 @@ function renderConstellation() {
       e.preventDefault();
       star.classList.add('removing');
       setTimeout(() => {
-        state.constellation.splice(i, 1);
+        const currentIndex = state.constellation.indexOf(c);
+        if (currentIndex !== -1) {
+          state.constellation.splice(currentIndex, 1);
+        }
         renderConstellation();
       }, 300);
     });
@@ -412,17 +407,23 @@ function renderConstellation() {
   });
 }
 
-// --- Luminance Slider ---
+// --- Luminance ---
 let draggingLuminance = false;
+
+function syncLuminanceUI() {
+  const rounded = Math.round(state.luminance);
+  luminanceFill.style.width = `${rounded}%`;
+  luminanceThumb.style.left = `${rounded}%`;
+  luminanceValue.textContent = `${rounded}%`;
+  hudL.textContent = `${rounded}%`;
+}
 
 function updateLuminanceFromEvent(e) {
   const rect = luminanceTrack.getBoundingClientRect();
+  if (rect.width === 0) return;
   const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   state.luminance = Math.round(x * 100);
-  luminanceFill.style.width = `${state.luminance}%`;
-  luminanceThumb.style.left = `${state.luminance}%`;
-  luminanceValue.textContent = `${state.luminance}%`;
-  hudL.textContent = `${state.luminance}%`;
+  syncLuminanceUI();
 }
 
 luminanceTrack.addEventListener('mousedown', (e) => {
@@ -430,36 +431,46 @@ luminanceTrack.addEventListener('mousedown', (e) => {
   updateLuminanceFromEvent(e);
 });
 
+luminanceTrack.addEventListener('touchstart', (e) => {
+  draggingLuminance = true;
+  updateLuminanceFromEvent(e.touches[0]);
+}, { passive: true });
+
+window.addEventListener('mouseup', () => { draggingLuminance = false; });
+window.addEventListener('touchend', () => { draggingLuminance = false; });
+
+// --- Scroll for luminance ---
+window.addEventListener('wheel', (e) => {
+  if (!state.entered) return;
+  state.luminance = Math.round(Math.max(0, Math.min(100, state.luminance - e.deltaY * 0.05)));
+  syncLuminanceUI();
+}, { passive: true });
+
+// --- Pointer tracking (mouse + touch) ---
+function updatePointer(x, y) {
+  state.targetMouseX = x;
+  state.targetMouseY = y;
+  cursorGlow.style.left = x + 'px';
+  cursorGlow.style.top = y + 'px';
+}
+
 window.addEventListener('mousemove', (e) => {
+  updatePointer(e.clientX, e.clientY);
   if (draggingLuminance) {
     updateLuminanceFromEvent(e);
   }
 });
 
-window.addEventListener('mouseup', () => {
-  draggingLuminance = false;
-});
-
-// --- Scroll for luminance ---
-window.addEventListener('wheel', (e) => {
-  if (!state.entered) return;
-  state.luminance = Math.max(0, Math.min(100, state.luminance - e.deltaY * 0.05));
-  luminanceFill.style.width = `${state.luminance}%`;
-  luminanceThumb.style.left = `${state.luminance}%`;
-  luminanceValue.textContent = `${Math.round(state.luminance)}%`;
-  hudL.textContent = `${Math.round(state.luminance)}%`;
+window.addEventListener('touchmove', (e) => {
+  const touch = e.touches[0];
+  updatePointer(touch.clientX, touch.clientY);
+  if (draggingLuminance) {
+    updateLuminanceFromEvent(touch);
+  }
 }, { passive: true });
 
-// --- Mouse ---
-window.addEventListener('mousemove', (e) => {
-  state.targetMouseX = e.clientX;
-  state.targetMouseY = e.clientY;
-  cursorGlow.style.left = e.clientX + 'px';
-  cursorGlow.style.top = e.clientY + 'px';
-});
-
-// --- Click to capture ---
-nebulaCanvas.addEventListener('click', (e) => {
+// --- Click/tap to capture ---
+function captureColor(clientX, clientY) {
   if (!state.entered) return;
 
   const { hue, sat, lum } = getColorAtCursor();
@@ -468,26 +479,63 @@ nebulaCanvas.addEventListener('click', (e) => {
   updateCaptureDisplay(hue, sat, lum);
   addToConstellation(hex, hue, sat, lum);
 
-  // Supernova effect
   cursorGlow.classList.add('capturing');
   setTimeout(() => cursorGlow.classList.remove('capturing'), 400);
 
-  createSupernova(e.clientX, e.clientY, `hsla(${hue}, ${sat}%, ${lum}%, 1)`);
+  createSupernova(clientX, clientY, `hsla(${hue}, ${sat}%, ${lum}%, 1)`);
+}
+
+nebulaCanvas.addEventListener('click', (e) => {
+  captureColor(e.clientX, e.clientY);
 });
 
-// --- Copy ---
-copyBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (state.capturedColor) {
-    navigator.clipboard.writeText(state.capturedColor.toUpperCase()).then(() => {
-      notification.classList.add('show');
-      setTimeout(() => notification.classList.remove('show'), 1500);
-    });
+nebulaCanvas.addEventListener('touchend', (e) => {
+  if (e.changedTouches.length > 0) {
+    const touch = e.changedTouches[0];
+    updatePointer(touch.clientX, touch.clientY);
+    // Brief delay to let pointer state update
+    requestAnimationFrame(() => captureColor(touch.clientX, touch.clientY));
   }
 });
 
+// --- Copy ---
+function showNotification(text, duration) {
+  notification.textContent = text;
+  notification.classList.add('show');
+  setTimeout(() => {
+    notification.classList.remove('show');
+    notification.textContent = 'Copied!';
+  }, duration || 1500);
+}
+
+copyBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!state.capturedColor) {
+    showNotification('Capture a color first', 1500);
+    return;
+  }
+
+  if (!navigator.clipboard) {
+    showNotification('Copy failed', 1500);
+    return;
+  }
+
+  navigator.clipboard.writeText(state.capturedColor.toUpperCase()).then(() => {
+    showNotification('Copied!', 1500);
+  }).catch(() => {
+    showNotification('Copy failed', 1500);
+  });
+});
+
 // --- Enter the Nebula ---
-titleEnter.addEventListener('click', () => {
+titleEnter.addEventListener('click', enterNebula);
+titleEnter.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  enterNebula();
+});
+
+function enterNebula() {
+  if (state.entered) return;
   state.entered = true;
   titleOverlay.classList.add('hidden');
 
@@ -498,11 +546,10 @@ titleEnter.addEventListener('click', () => {
     hudLuminance.classList.add('visible');
     backLink.classList.add('visible');
   }, 600);
-});
+}
 
-// --- Draw background nebula clouds ---
+// --- Draw background nebula clouds (expensive radial gradients, every 4th frame) ---
 function drawNebulaBackground(ctx, w, h, time) {
-  // Soft radial clouds
   const cx = w / 2;
   const cy = h / 2;
 
@@ -526,16 +573,18 @@ function drawNebulaBackground(ctx, w, h, time) {
 
 // --- Draw background stars ---
 function drawBackgroundStars(ctx, time) {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
   for (const star of bgStars) {
     const alpha = star.alpha * (0.5 + 0.5 * Math.sin(time * 0.001 * star.twinkleSpeed + star.twinklePhase));
     ctx.beginPath();
-    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+    ctx.arc(star.nx * w, star.ny * h, star.size, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(200, 210, 255, ${alpha})`;
     ctx.fill();
   }
 }
 
-// --- Draw connecting lines between nearby particles ---
+// --- Draw connecting lines between nearby particles (every 2nd frame) ---
 function drawConnections(ctx) {
   const connectionDist = 60;
   const maxConnections = 300;
@@ -569,7 +618,6 @@ function drawGravityWell(ctx, w, h, time) {
   const cy = h / 2;
   const pulseSize = 3 + Math.sin(time * 0.002) * 1.5;
 
-  // Outer glow
   const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
   gradient.addColorStop(0, `rgba(200, 200, 255, 0.06)`);
   gradient.addColorStop(0.5, `rgba(150, 150, 255, 0.02)`);
@@ -577,13 +625,11 @@ function drawGravityWell(ctx, w, h, time) {
   ctx.fillStyle = gradient;
   ctx.fillRect(cx - 60, cy - 60, 120, 120);
 
-  // Core
   ctx.beginPath();
   ctx.arc(cx, cy, pulseSize, 0, Math.PI * 2);
   ctx.fillStyle = `rgba(220, 220, 255, 0.3)`;
   ctx.fill();
 
-  // Cross
   ctx.strokeStyle = `rgba(220, 220, 255, 0.1)`;
   ctx.lineWidth = 0.5;
   ctx.beginPath();
@@ -596,48 +642,61 @@ function drawGravityWell(ctx, w, h, time) {
 
 // --- Main Render Loop ---
 function render() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  state.time++;
+  try {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    state.time++;
 
-  // Smooth mouse
-  state.mouseX += (state.targetMouseX - state.mouseX) * 0.08;
-  state.mouseY += (state.targetMouseY - state.mouseY) * 0.08;
+    // Skip full rendering while title overlay is visible
+    if (!state.entered) {
+      // Fade previous frame (semi-transparent fill creates motion trails)
+      ctx.fillStyle = `rgba(2, 2, 8, 0.4)`;
+      ctx.fillRect(0, 0, w, h);
+      drawBackgroundStars(ctx, state.time);
+      requestAnimationFrame(render);
+      return;
+    }
 
-  // Clear
-  ctx.fillStyle = `rgba(2, 2, 8, 0.4)`;
-  ctx.fillRect(0, 0, w, h);
+    state.mouseX += (state.targetMouseX - state.mouseX) * 0.08;
+    state.mouseY += (state.targetMouseY - state.mouseY) * 0.08;
 
-  // Background
-  if (state.time % 4 === 0) {
-    drawNebulaBackground(ctx, w, h, state.time);
-  }
-  drawBackgroundStars(ctx, state.time);
-  drawGravityWell(ctx, w, h, state.time);
+    // Fade previous frame (semi-transparent fill creates motion trails)
+    ctx.fillStyle = `rgba(2, 2, 8, 0.4)`;
+    ctx.fillRect(0, 0, w, h);
 
-  // Connections
-  if (state.time % 2 === 0) {
-    drawConnections(ctx);
-  }
+    if (state.time % 4 === 0) {
+      drawNebulaBackground(ctx, w, h, state.time);
+    }
+    drawBackgroundStars(ctx, state.time);
+    drawGravityWell(ctx, w, h, state.time);
 
-  // Update and draw particles
-  for (const p of particles) {
-    p.update(state.time);
-    p.draw(ctx, state.time);
-  }
+    if (state.time % 2 === 0) {
+      drawConnections(ctx);
+    }
 
-  // Capture effects
-  drawCaptureEffects(ctx);
+    for (const p of particles) {
+      p.update(state.time);
+      p.draw(ctx);
+    }
 
-  // Bloom pass (downscaled)
-  const bw = bloomCanvas.width;
-  const bh = bloomCanvas.height;
-  bctx.clearRect(0, 0, bw, bh);
-  bctx.drawImage(nebulaCanvas, 0, 0, bw, bh);
+    drawCaptureEffects(ctx);
 
-  // Update HUD
-  if (state.entered && state.time % 3 === 0) {
-    updateHUD();
+    // Bloom pass: downsample main canvas to 25% resolution bloom canvas.
+    // The bloom canvas is overlaid via CSS mix-blend-mode: screen at 50% opacity
+    // (see styles.css #bloom), creating a soft glow on bright particles.
+    const bw = bloomCanvas.width;
+    const bh = bloomCanvas.height;
+    if (bw > 0 && bh > 0) {
+      bctx.clearRect(0, 0, bw, bh);
+      bctx.drawImage(nebulaCanvas, 0, 0, bw, bh);
+    }
+
+    // Update HUD (every 3rd frame)
+    if (state.time % 3 === 0) {
+      updateHUD();
+    }
+  } catch (err) {
+    console.error('[Nebula] Render error:', err);
   }
 
   requestAnimationFrame(render);
