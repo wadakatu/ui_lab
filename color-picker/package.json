@@ -1,0 +1,13 @@
+{
+  "name": "color-picker-components",
+  "version": "1.0.0",
+  "description": "Interactive color picker UI components",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
