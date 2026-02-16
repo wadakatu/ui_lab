@@ -8,7 +8,8 @@ export default defineConfig({
       input: {
         main: './index.html',
         simple: './simple/index.html',
-        nebula: './nebula/index.html'
+        nebula: './nebula/index.html',
+        paradoxOracle: './paradox-oracle/index.html'
       }
     }
   }

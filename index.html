@@ -715,6 +715,183 @@
       75% { top: 60%; left: 30%; }
     }
 
+    /* Nebula Preview */
+    .preview-nebula {
+      background: radial-gradient(ellipse at 50% 50%, #0d0820 0%, #060410 60%, #020108 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nebula-gas {
+      position: absolute;
+      width: 260px;
+      height: 180px;
+      top: 50%;
+      left: 45%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse 70% 55% at 40% 50%, rgba(160,80,255,0.45) 0%, rgba(100,40,200,0.2) 40%, transparent 70%),
+                  radial-gradient(ellipse 60% 50% at 65% 45%, rgba(60,160,255,0.35) 0%, rgba(40,100,200,0.15) 40%, transparent 65%),
+                  radial-gradient(ellipse 50% 60% at 50% 60%, rgba(255,100,150,0.25) 0%, transparent 60%);
+      filter: blur(12px);
+      animation: nebulaGasDrift 10s ease-in-out infinite;
+    }
+
+    .nebula-gas-2 {
+      position: absolute;
+      width: 200px;
+      height: 140px;
+      top: 45%;
+      left: 55%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse 65% 50% at 55% 50%, rgba(80,200,220,0.3) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 65% at 40% 55%, rgba(200,120,255,0.2) 0%, transparent 55%);
+      filter: blur(16px);
+      animation: nebulaGasDrift 8s ease-in-out infinite reverse;
+    }
+
+    .nebula-core {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(200,180,255,0.6) 40%, transparent 70%);
+      border-radius: 50%;
+      box-shadow: 0 0 30px 8px rgba(180,160,255,0.4), 0 0 60px 16px rgba(140,100,255,0.2);
+      animation: nebulaCoreGlow 3s ease-in-out infinite;
+    }
+
+    .nebula-ring-outer {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(180,160,255,0.12);
+      animation: nebulaPreviewSpin 20s linear infinite;
+    }
+
+    .nebula-ring-inner {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(100,200,255,0.1);
+      animation: nebulaPreviewSpin 12s linear infinite reverse;
+    }
+
+    .nebula-star {
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .nebula-star-1 {
+      width: 6px; height: 6px;
+      top: 28%; left: 30%;
+      background: rgba(255,140,200,0.9);
+      box-shadow: 0 0 8px rgba(255,140,200,0.6);
+      animation: nebulaParticle1 5s ease-in-out infinite;
+    }
+
+    .nebula-star-2 {
+      width: 5px; height: 5px;
+      top: 65%; left: 68%;
+      background: rgba(100,220,255,0.9);
+      box-shadow: 0 0 8px rgba(100,220,255,0.5);
+      animation: nebulaParticle2 4s ease-in-out infinite;
+    }
+
+    .nebula-star-3 {
+      width: 4px; height: 4px;
+      top: 35%; left: 72%;
+      background: rgba(180,255,200,0.85);
+      box-shadow: 0 0 6px rgba(180,255,200,0.5);
+      animation: nebulaParticle3 6s ease-in-out infinite;
+    }
+
+    .nebula-star-4 {
+      width: 3px; height: 3px;
+      top: 72%; left: 25%;
+      background: rgba(255,200,100,0.8);
+      box-shadow: 0 0 6px rgba(255,200,100,0.4);
+      animation: nebulaParticle1 7s ease-in-out infinite reverse;
+    }
+
+    .nebula-star-5 {
+      width: 4px; height: 4px;
+      top: 20%; left: 55%;
+      background: rgba(200,160,255,0.85);
+      box-shadow: 0 0 8px rgba(200,160,255,0.5);
+      animation: nebulaParticle2 5.5s ease-in-out infinite;
+    }
+
+    .nebula-star-6 {
+      width: 2px; height: 2px;
+      top: 55%; left: 40%;
+      background: rgba(255,255,255,0.7);
+      box-shadow: 0 0 4px rgba(255,255,255,0.4);
+      animation: nebulaParticle3 4.5s ease-in-out infinite reverse;
+    }
+
+    .nebula-star-7 {
+      width: 3px; height: 3px;
+      top: 42%; left: 18%;
+      background: rgba(100,180,255,0.8);
+      box-shadow: 0 0 6px rgba(100,180,255,0.4);
+      animation: nebulaParticle1 6.5s ease-in-out infinite;
+    }
+
+    @keyframes nebulaGasDrift {
+      0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      33% { transform: translate(-48%, -52%) scale(1.05) rotate(2deg); }
+      66% { transform: translate(-52%, -48%) scale(0.97) rotate(-2deg); }
+    }
+
+    @keyframes nebulaCoreGlow {
+      0%, 100% { box-shadow: 0 0 30px 8px rgba(180,160,255,0.4), 0 0 60px 16px rgba(140,100,255,0.2); }
+      50% { box-shadow: 0 0 40px 12px rgba(180,160,255,0.6), 0 0 80px 24px rgba(140,100,255,0.3); }
+    }
+
+    @keyframes nebulaPreviewSpin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes nebulaParticle1 {
+      0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+      50% { transform: translate(-10px, 14px); opacity: 1; }
+    }
+
+    @keyframes nebulaParticle2 {
+      0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+      50% { transform: translate(12px, -10px); opacity: 1; }
+    }
+
+    @keyframes nebulaParticle3 {
+      0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+      50% { transform: translate(8px, 12px); opacity: 1; }
+    }
+
+    /* Paradox Oracle Preview Animations */
+    @keyframes paradoxOrbit {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes paradoxWobble {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.12); }
+    }
+
+    @keyframes paradoxBlink {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 0.85; }
+    }
+
     .preview-retro .lever {
       position: absolute;
       right: -30px;
@@ -881,7 +1058,7 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">07</span>
+        <span class="stat-value">09</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
@@ -1180,6 +1357,71 @@
             <span class="feature">Hue Slider</span>
             <span class="feature">HEX/RGB/HSL</span>
             <span class="feature">Copy</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Chromatic Nebula -->
+      <a href="color-picker/nebula/" class="card">
+        <div class="card-preview preview-nebula">
+          <div class="nebula-gas"></div>
+          <div class="nebula-gas-2"></div>
+          <div class="nebula-core"></div>
+          <div class="nebula-ring-outer"></div>
+          <div class="nebula-ring-inner"></div>
+          <div class="nebula-star nebula-star-1"></div>
+          <div class="nebula-star nebula-star-2"></div>
+          <div class="nebula-star nebula-star-3"></div>
+          <div class="nebula-star nebula-star-4"></div>
+          <div class="nebula-star nebula-star-5"></div>
+          <div class="nebula-star nebula-star-6"></div>
+          <div class="nebula-star nebula-star-7"></div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Experimental</span>
+          <h2 class="card-title">
+            Chromatic Nebula
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">宇宙空間を旅するように色を探索。パーティクルの星雲を航行し、マウスで色相・彩度を、スクロールで明度を制御。</p>
+          <div class="card-features">
+            <span class="feature">Particle Nebula</span>
+            <span class="feature">Cosmic Navigation</span>
+            <span class="feature">Supernova Capture</span>
+            <span class="feature">Constellation</span>
+            <span class="feature">Claude Code</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Paradox Oracle -->
+      <a href="color-picker/paradox-oracle/" class="card">
+        <div class="card-preview" style="background: linear-gradient(125deg, #f4f8ef 0%, #f7ecdf 46%, #e7f0f8 100%); position: relative; overflow: hidden;">
+          <div style="position: absolute; inset: 0; background: radial-gradient(circle at 20% 25%, rgba(255,139,84,0.42) 0%, transparent 45%), radial-gradient(circle at 82% 24%, rgba(72,220,188,0.34) 0%, transparent 48%), radial-gradient(circle at 52% 78%, rgba(92,140,255,0.28) 0%, transparent 52%);"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 92px; height: 92px; border-radius: 50%; border: 1px solid rgba(13,38,48,0.16); transform: translate(-50%, -50%);"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 72px; height: 72px; border-radius: 50%; border: 1px dashed rgba(13,38,48,0.22); transform: translate(-50%, -50%); animation: paradoxOrbit 7s linear infinite;"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 38px; height: 38px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,0.68); border: 1px solid rgba(13,38,48,0.28); animation: paradoxWobble 2.8s ease-in-out infinite;"></div>
+          <div style="position: absolute; top: 36%; left: 42%; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,138,64,0.86); animation: paradoxBlink 2s ease-in-out infinite;"></div>
+          <div style="position: absolute; top: 55%; left: 34%; width: 10px; height: 10px; border-radius: 50%; background: rgba(85,180,255,0.8); animation: paradoxBlink 2.3s ease-in-out infinite reverse;"></div>
+          <div style="position: absolute; top: 55%; left: 58%; width: 10px; height: 10px; border-radius: 50%; background: rgba(70,217,168,0.82); animation: paradoxBlink 1.8s ease-in-out infinite;"></div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Avant-Garde</span>
+          <h2 class="card-title">
+            Paradox Oracle
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">過去・現在・未来のポインタ座標を同時サンプリングし、観測の瞬間だけ色を確定させる異形カラーピッカー。</p>
+          <div class="card-features">
+            <span class="feature">Temporal Blend</span>
+            <span class="feature">Quantum Collapse</span>
+            <span class="feature">Universe Shift</span>
+            <span class="feature">Echo Memory</span>
+            <span class="feature">Codex</span>
           </div>
         </div>
       </a>
