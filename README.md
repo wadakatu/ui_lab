@@ -6,7 +6,7 @@
   <a href="https://wadakatu.github.io/ui_lab/">
     <img src="https://img.shields.io/badge/🔬_LIVE_DEMO-00f5d4?style=for-the-badge&logoColor=black" alt="Live Demo" />
   </a>
-  <img src="https://img.shields.io/badge/Components-6-39ff14?style=for-the-badge" alt="Components" />
+  <img src="https://img.shields.io/badge/Components-9-39ff14?style=for-the-badge" alt="Components" />
   <img src="https://img.shields.io/badge/License-MIT-bf5af2?style=for-the-badge" alt="License" />
 </p>
 
@@ -45,6 +45,17 @@
 | **[Simple](https://wadakatu.github.io/ui_lab/knob/simple/)** | ハイエンドオーディオ風ロータリーノブ | Drag, Scroll, Keyboard, Touch |
 | **[Event Horizon](https://wadakatu.github.io/ui_lab/knob/blackhole/)** | ブラックホールを模したノブ | Accretion Disk, Gravitational Lensing, Hawking Radiation |
 | **[Cube Mixer](https://wadakatu.github.io/ui_lab/knob/rubiks-cube/)** | ルービックキューブ型ミキサー | 3D View, Face Rotation, RGB Control |
+
+</details>
+
+<details open>
+<summary><b>🎨 Color Picker</b></summary>
+
+| Component | Description | Features |
+|:----------|:------------|:---------|
+| **[Simple](https://wadakatu.github.io/ui_lab/color-picker/simple/)** | SV キャンバス＋ヒュースライダーの基本実装 | HEX/RGB/HSL, Copy, Canvas |
+| **[Chromatic Nebula](https://wadakatu.github.io/ui_lab/color-picker/nebula/)** | 星雲パーティクルで色を探索 | Particle Nebula, Cosmic Nav, Constellation |
+| **[Paradox Oracle](https://wadakatu.github.io/ui_lab/color-picker/paradox-oracle/)** | 過去・現在・未来から色を予言 | Temporal Blend, Quantum Collapse, Timeline |
 
 </details>
 
@@ -104,11 +115,16 @@ ui_lab/
 │   ├── simple/         # Simple Carousel
 │   ├── helix/          # Helix Orbital Carousel
 │   └── retro/          # Pachislot Carousel
-└── knob/
-    ├── index.html      # Knob gallery
-    ├── simple/         # Simple Rotary Knob
-    ├── blackhole/      # Event Horizon Knob
-    └── rubiks-cube/    # Cube Mixer Knob
+├── knob/
+│   ├── index.html      # Knob gallery
+│   ├── simple/         # Simple Rotary Knob
+│   ├── blackhole/      # Event Horizon Knob
+│   └── rubiks-cube/    # Cube Mixer Knob
+└── color-picker/
+    ├── index.html      # Color Picker gallery
+    ├── simple/         # Simple Color Picker
+    ├── nebula/         # Chromatic Nebula
+    └── paradox-oracle/ # Paradox Oracle
 ```
 
 <br/>
