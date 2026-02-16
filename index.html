@@ -632,6 +632,89 @@
       75% { transform: rotateX(20deg) rotateY(-30deg); }
     }
 
+    /* Color Picker Preview */
+    .preview-colorpicker {
+      background: linear-gradient(135deg, #111114 0%, #0a0a0c 100%);
+    }
+
+    .preview-colorpicker .picker-mini {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .preview-colorpicker .mini-canvas {
+      width: 120px;
+      height: 80px;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-colorpicker .mini-canvas-bg {
+      width: 100%;
+      height: 100%;
+      animation: swatchCycle 6s linear infinite;
+    }
+
+    .preview-colorpicker .mini-canvas-white {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, white, transparent);
+    }
+
+    .preview-colorpicker .mini-canvas-black {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, black);
+    }
+
+    .preview-colorpicker .mini-cursor {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid white;
+      border-radius: 50%;
+      top: 30%;
+      left: 60%;
+      box-shadow: 0 0 4px rgba(0,0,0,0.5);
+      animation: pickerCursorMove 6s ease-in-out infinite;
+    }
+
+    .preview-colorpicker .mini-hue {
+      width: 120px;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(to right, hsl(0,100%,50%), hsl(60,100%,50%), hsl(120,100%,50%), hsl(180,100%,50%), hsl(240,100%,50%), hsl(300,100%,50%), hsl(360,100%,50%));
+    }
+
+    .preview-colorpicker .mini-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.15);
+      animation: swatchCycle 6s linear infinite;
+      animation-delay: -0.5s;
+    }
+
+    @keyframes swatchCycle {
+      0%   { background-color: hsl(0, 85%, 55%); }
+      16%  { background-color: hsl(60, 85%, 55%); }
+      33%  { background-color: hsl(120, 85%, 55%); }
+      50%  { background-color: hsl(180, 85%, 55%); }
+      66%  { background-color: hsl(240, 85%, 55%); }
+      83%  { background-color: hsl(300, 85%, 55%); }
+      100% { background-color: hsl(360, 85%, 55%); }
+    }
+
+    @keyframes pickerCursorMove {
+      0%, 100% { top: 30%; left: 60%; }
+      25% { top: 50%; left: 40%; }
+      50% { top: 20%; left: 70%; }
+      75% { top: 60%; left: 30%; }
+    }
+
     .preview-retro .lever {
       position: absolute;
       right: -30px;
@@ -798,11 +881,11 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">06</span>
+        <span class="stat-value">07</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
-        <span class="stat-value">02</span>
+        <span class="stat-value">03</span>
         <span class="stat-label">Category</span>
       </div>
       <div class="stat">
@@ -1049,6 +1132,54 @@
             <span class="feature">6-Channel</span>
             <span class="feature">View Rotation</span>
             <span class="feature">Retro Style</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Color Picker Components Section -->
+    <div class="section-header" style="margin-top: 60px;">
+      <span class="section-title">// Color Picker Components</span>
+      <div class="section-line"></div>
+      <a href="color-picker/index.html" class="section-link">
+        <span class="section-link-text">View All</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Color Picker -->
+      <a href="color-picker/simple/" class="card">
+        <div class="card-preview preview-colorpicker">
+          <div class="card-preview-inner">
+            <div class="picker-mini">
+              <div class="mini-canvas">
+                <div class="mini-canvas-bg"></div>
+                <div class="mini-canvas-white"></div>
+                <div class="mini-canvas-black"></div>
+                <div class="mini-cursor"></div>
+              </div>
+              <div class="mini-hue"></div>
+              <div class="mini-swatch"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Color Picker
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">SV Canvas + Hue スライダーで直感的に色を選択。HEX/RGB/HSL の双方向バインディング、コピー機能付き。</p>
+          <div class="card-features">
+            <span class="feature">SV Canvas</span>
+            <span class="feature">Hue Slider</span>
+            <span class="feature">HEX/RGB/HSL</span>
+            <span class="feature">Copy</span>
           </div>
         </div>
       </a>
