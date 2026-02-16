@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chromatic Nebula | Color Picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Main nebula canvas -->
+  <canvas id="nebula"></canvas>
+
+  <!-- Bloom overlay canvas -->
+  <canvas id="bloom"></canvas>
+
+  <!-- Vignette -->
+  <div class="vignette"></div>
+
+  <!-- Cursor glow -->
+  <div id="cursor-glow" class="cursor-glow"></div>
+
+  <!-- Title overlay on load -->
+  <div id="title-overlay" class="title-overlay">
+    <div class="title-content">
+      <span class="title-pre">navigate the</span>
+      <h1 class="title-main">Chromatic Nebula</h1>
+      <p class="title-sub">move to explore color space &middot; click to capture &middot; scroll to shift luminance</p>
+      <div class="title-enter" id="title-enter">
+        <span class="enter-ring"></span>
+        <span class="enter-text">Enter the Nebula</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD: top-left coordinates -->
+  <div class="hud hud-coords" id="hud-coords">
+    <div class="hud-label">Position</div>
+    <div class="hud-row">
+      <span class="hud-key">H</span>
+      <span class="hud-val" id="hud-h">0°</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-key">S</span>
+      <span class="hud-val" id="hud-s">0%</span>
+    </div>
+    <div class="hud-row">
+      <span class="hud-key">L</span>
+      <span class="hud-val" id="hud-l">50%</span>
+    </div>
+  </div>
+
+  <!-- HUD: captured color -->
+  <div class="hud hud-capture" id="hud-capture">
+    <div class="hud-label">Captured Color</div>
+    <div class="capture-swatch-wrap">
+      <div class="capture-swatch" id="capture-swatch"></div>
+      <div class="capture-ripple" id="capture-ripple"></div>
+    </div>
+    <div class="capture-values">
+      <div class="capture-hex" id="capture-hex">#000000</div>
+      <div class="capture-detail" id="capture-rgb">rgb(0, 0, 0)</div>
+      <div class="capture-detail" id="capture-hsl">hsl(0, 0%, 0%)</div>
+    </div>
+    <button class="copy-btn" id="copy-btn" title="Copy HEX">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+      </svg>
+      <span>Copy</span>
+    </button>
+  </div>
+
+  <!-- HUD: constellation (saved colors) -->
+  <div class="hud hud-constellation" id="hud-constellation">
+    <div class="hud-label">Constellation</div>
+    <div class="constellation-grid" id="constellation-grid"></div>
+    <div class="constellation-empty" id="constellation-empty">Click to capture stars</div>
+  </div>
+
+  <!-- HUD: luminance slider -->
+  <div class="hud hud-luminance" id="hud-luminance">
+    <div class="luminance-track">
+      <div class="luminance-fill" id="luminance-fill"></div>
+      <div class="luminance-thumb" id="luminance-thumb"></div>
+    </div>
+    <div class="luminance-labels">
+      <span>Dark</span>
+      <span class="luminance-value" id="luminance-value">50%</span>
+      <span>Light</span>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <a href="../" class="back-link" id="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
+    </svg>
+    Back
+  </a>
+
+  <!-- Notification -->
+  <div class="notification" id="notification">Copied!</div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

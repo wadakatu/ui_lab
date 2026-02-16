@@ -7,7 +7,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
-        simple: './simple/index.html'
+        simple: './simple/index.html',
+        nebula: './nebula/index.html'
       }
     }
   }
