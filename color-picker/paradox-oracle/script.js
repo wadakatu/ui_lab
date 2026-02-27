@@ -7,6 +7,7 @@ const state = {
   v: 95,
   a: 1,
   orbitOn: true,
+  orbitHold: false,
   orbitPhase: 0,
   orbitNodes: [],
   orbitCenter: null,
@@ -44,6 +45,7 @@ const els = {
 
 const svCtx = els.svCanvas.getContext('2d');
 let toastTimer = null;
+let orbitFrame = null;
 
 function clamp(v, min, max) {
   return Math.min(max, Math.max(min, v));
@@ -587,13 +589,17 @@ function bindEvents() {
     applyHex(hex, { preserveAlpha: true });
   });
 
+  els.orbitField.addEventListener('pointerdown', () => {
+    state.orbitHold = true;
+  });
+
+  window.addEventListener('pointerup', () => {
+    state.orbitHold = false;
+  });
+
   els.orbitToggle.addEventListener('click', () => {
     state.orbitOn = !state.orbitOn;
     els.orbitToggle.textContent = state.orbitOn ? 'Orbit On' : 'Orbit Off';
-    if (state.orbitOn) {
-      state.orbitPhase += Math.PI / 9;
-      renderOrbit();
-    }
     showToast(state.orbitOn ? 'Orbit on' : 'Orbit off');
   });
 
@@ -635,13 +641,18 @@ function bindEvents() {
     } else if (key === 'a') {
       state.orbitOn = !state.orbitOn;
       els.orbitToggle.textContent = state.orbitOn ? 'Orbit On' : 'Orbit Off';
-      if (state.orbitOn) {
-        state.orbitPhase += Math.PI / 9;
-        renderOrbit();
-      }
       showToast(state.orbitOn ? 'Orbit on' : 'Orbit off');
     }
   });
+}
+
+function orbitTick() {
+  if (state.orbitOn && !state.orbitHold) {
+    state.orbitPhase += 0.008;
+    renderOrbit();
+  }
+
+  orbitFrame = requestAnimationFrame(orbitTick);
 }
 
 function init() {
@@ -651,6 +662,7 @@ function init() {
   drawSV();
   updateUI();
   bindEvents();
+  orbitTick();
 }
 
 init();
