@@ -593,6 +593,11 @@
       50% { opacity: 0.85; }
     }
 
+    @keyframes paradoxOrbitFloat {
+      0%, 100% { transform: translate(-50%, -50%); }
+      50% { transform: translate(-50%, -52%); }
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .header {
@@ -739,29 +744,30 @@
       </a>
       <!-- Paradox Oracle -->
       <a href="./paradox-oracle/" class="card">
-        <div class="card-preview" style="background: linear-gradient(125deg, #f4f8ef 0%, #f7ecdf 46%, #e7f0f8 100%); position: relative; overflow: hidden;">
-          <div style="position: absolute; inset: 0; background: radial-gradient(circle at 20% 25%, rgba(255,139,84,0.42) 0%, transparent 45%), radial-gradient(circle at 82% 24%, rgba(72,220,188,0.34) 0%, transparent 48%), radial-gradient(circle at 52% 78%, rgba(92,140,255,0.28) 0%, transparent 52%);"></div>
-          <div style="position: absolute; top: 50%; left: 50%; width: 92px; height: 92px; border-radius: 50%; border: 1px solid rgba(13,38,48,0.16); transform: translate(-50%, -50%);"></div>
-          <div style="position: absolute; top: 50%; left: 50%; width: 72px; height: 72px; border-radius: 50%; border: 1px dashed rgba(13,38,48,0.22); transform: translate(-50%, -50%); animation: paradoxOrbit 7s linear infinite;"></div>
-          <div style="position: absolute; top: 50%; left: 50%; width: 38px; height: 38px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,0.68); border: 1px solid rgba(13,38,48,0.28); animation: paradoxWobble 2.8s ease-in-out infinite;"></div>
-          <div style="position: absolute; top: 36%; left: 42%; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,138,64,0.86); animation: paradoxBlink 2s ease-in-out infinite;"></div>
-          <div style="position: absolute; top: 55%; left: 34%; width: 10px; height: 10px; border-radius: 50%; background: rgba(85,180,255,0.8); animation: paradoxBlink 2.3s ease-in-out infinite reverse;"></div>
-          <div style="position: absolute; top: 55%; left: 58%; width: 10px; height: 10px; border-radius: 50%; background: rgba(70,217,168,0.82); animation: paradoxBlink 1.8s ease-in-out infinite;"></div>
+        <div class="card-preview" style="background: linear-gradient(130deg, #f4f8ff 0%, #fcf4eb 46%, #eef9f4 100%); position: relative; overflow: hidden;">
+          <div style="position: absolute; inset: 0; background: radial-gradient(circle at 18% 24%, rgba(255,152,103,0.3) 0%, transparent 46%), radial-gradient(circle at 82% 20%, rgba(105,171,255,0.24) 0%, transparent 44%), radial-gradient(circle at 50% 82%, rgba(90,224,171,0.2) 0%, transparent 42%);"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 128px; height: 128px; border-radius: 50%; border: 1px solid rgba(24,60,92,0.18); transform: translate(-50%, -50%);"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 96px; height: 96px; border-radius: 50%; border: 1px dashed rgba(24,60,92,0.24); transform: translate(-50%, -50%); animation: paradoxOrbit 10s linear infinite;"></div>
+          <div style="position: absolute; top: 50%; left: 50%; width: 62px; height: 62px; border-radius: 50%; transform: translate(-50%, -50%); background: rgba(255,255,255,0.78); border: 1px solid rgba(24,60,92,0.26); animation: paradoxOrbitFloat 3.4s ease-in-out infinite;"></div>
+          <div style="position: absolute; top: 25%; left: 50%; width: 16px; height: 16px; border-radius: 50%; transform: translateX(-50%); background: rgba(242,123,53,0.9); animation: paradoxWobble 2.6s ease-in-out infinite;"></div>
+          <div style="position: absolute; top: 50%; left: 78%; width: 14px; height: 14px; border-radius: 50%; transform: translateY(-50%); background: rgba(53,173,242,0.88); animation: paradoxBlink 2.2s ease-in-out infinite;"></div>
+          <div style="position: absolute; top: 76%; left: 50%; width: 14px; height: 14px; border-radius: 50%; transform: translateX(-50%); background: rgba(73,223,128,0.84); animation: paradoxBlink 1.9s ease-in-out infinite reverse;"></div>
+          <div style="position: absolute; top: 50%; left: 22%; width: 14px; height: 14px; border-radius: 50%; transform: translateY(-50%); background: rgba(128,73,223,0.84); animation: paradoxBlink 2.4s ease-in-out infinite;"></div>
         </div>
         <div class="card-content">
-          <span class="card-tag tag-experimental">Avant-Garde</span>
+          <span class="card-tag tag-experimental">Featured</span>
           <h2 class="card-title">
             Paradox Oracle
             <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M7 17L17 7M17 7H7M17 7V17"/>
             </svg>
           </h2>
-          <p class="card-desc">過去・現在・未来のポインタ座標を同時サンプリングし、観測の瞬間だけ色を確定させる異形カラーピッカー。</p>
+          <p class="card-desc">Harmony Orbit を中心に据えた探索型カラーピッカー。SV面と連動しながら、配色候補を円軌道で行き来できます。</p>
           <div class="card-features">
-            <span class="feature">Temporal Blend</span>
-            <span class="feature">Quantum Collapse</span>
-            <span class="feature">Universe Shift</span>
-            <span class="feature">Echo Memory</span>
+            <span class="feature">Harmony Orbit</span>
+            <span class="feature">SV + Hue + Alpha</span>
+            <span class="feature">RGB/HSL/HEX Sync</span>
+            <span class="feature">Saved Palette</span>
           </div>
         </div>
       </a>
