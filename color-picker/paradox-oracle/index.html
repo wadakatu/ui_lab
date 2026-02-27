@@ -3,96 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paradox Oracle | Color Picker</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23fff14b'/%3E%3Cstop offset='45%25' stop-color='%23ff2eb9'/%3E%3Cstop offset='100%25' stop-color='%23005eff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%230a0f1d'/%3E%3C/svg%3E" type="image/svg+xml">
+  <title>Paradox Oracle | Spectral Loom Picker</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='58%25'%3E%3Cstop offset='0%25' stop-color='%23fff4d0'/%3E%3Cstop offset='40%25' stop-color='%23ff9b71'/%3E%3Cstop offset='100%25' stop-color='%235fa5ff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%23ffffff' fill-opacity='0.85'/%3E%3C/svg%3E" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="aurora" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
+  <div class="bg-layer" aria-hidden="true"></div>
 
-  <canvas id="field-canvas" aria-hidden="true"></canvas>
-  <canvas id="threads-canvas" aria-hidden="true"></canvas>
+  <main class="app">
+    <a href="../" class="back-link">Gallery</a>
 
-  <div class="chrome-shell">
-    <a href="../" class="back-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M5 12L12 19M5 12L12 5"/>
-      </svg>
-      <span>Gallery</span>
-    </a>
-
-    <header class="title-panel">
-      <p class="eyebrow">Chrono-Spectral Interface</p>
+    <header class="hero">
+      <p class="eyebrow">Spectral Loom</p>
       <h1>Paradox Oracle</h1>
-      <p class="lead">
-        過去・現在・未来のポインタ位置を同時に混色し、観測した瞬間だけ色が確定する。
-        クリックで波動関数を崩壊。
-      </p>
+      <p>主役はカラーピッカー本体。遊び心は Harmony Orbit に集約しました。</p>
     </header>
 
-    <section class="control-panel" aria-label="Paradox controls">
-      <div class="control-head">
-        <span>Mutation Axes</span>
-        <button id="universe-btn" class="universe-btn" type="button">Universe I</button>
-      </div>
+    <section class="layout" aria-label="Color picker layout">
+      <section class="panel core-panel" aria-label="Color picker core">
+        <div class="panel-head">
+          <h2>Color Picker Core</h2>
+          <span>Direct Picker</span>
+        </div>
 
-      <label class="axis">
-        <span>Paradox Weight</span>
-        <input id="paradox" type="range" min="0" max="100" value="46">
-      </label>
-      <label class="axis">
-        <span>Future Drift</span>
-        <input id="drift" type="range" min="0" max="100" value="58">
-      </label>
-      <label class="axis">
-        <span>Entropy</span>
-        <input id="entropy" type="range" min="0" max="100" value="40">
-      </label>
-      <label class="axis">
-        <span>Luma Bias</span>
-        <input id="luma" type="range" min="0" max="100" value="52">
-      </label>
+        <div class="picker-core">
+          <div id="sv-box" class="sv-box" tabindex="0" role="application" aria-label="Saturation and Value Picker">
+            <canvas id="sv-canvas" width="500" height="320"></canvas>
+            <div id="sv-cursor" class="sv-cursor"></div>
+          </div>
 
-      <p class="controls-help">Wheel: Luma / Click: Collapse / Space: Capture / C: Copy</p>
+          <div class="sliders">
+            <label class="slider" for="hue-range">
+              <span>Hue</span>
+              <input id="hue-range" type="range" min="0" max="360" value="22" aria-label="Hue">
+              <output id="hue-value">22°</output>
+            </label>
+
+            <label class="slider" for="alpha-range">
+              <span>Alpha</span>
+              <input id="alpha-range" type="range" min="0" max="100" value="100" aria-label="Alpha">
+              <output id="alpha-value">100%</output>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel inspect-panel" aria-live="polite">
+        <div class="panel-head">
+          <h2>Inspect</h2>
+          <span>Value Output</span>
+        </div>
+
+        <div class="preview-wrap">
+          <div class="checker"></div>
+          <div id="preview" class="preview"></div>
+        </div>
+
+        <div class="rows">
+          <div class="row">
+            <label for="hex-input">HEX</label>
+            <input id="hex-input" maxlength="9" spellcheck="false" autocomplete="off">
+            <button data-copy="hex" type="button">Copy</button>
+          </div>
+          <div class="row">
+            <label>RGB</label>
+            <p id="rgb-text">rgb(0 0 0)</p>
+            <button data-copy="rgb" type="button">Copy</button>
+          </div>
+          <div class="row">
+            <label>HSL</label>
+            <p id="hsl-text">hsl(0 0% 0%)</p>
+            <button data-copy="hsl" type="button">Copy</button>
+          </div>
+          <div class="row">
+            <label>Token</label>
+            <p id="token-text">--color-oracle: #000000;</p>
+            <button data-copy="token" type="button">Copy</button>
+          </div>
+        </div>
+
+        <div class="inputs">
+          <div>
+            <p class="group-label">RGB</p>
+            <div class="triplet">
+              <label><span>R</span><input id="r-input" type="number" min="0" max="255" aria-label="Red"></label>
+              <label><span>G</span><input id="g-input" type="number" min="0" max="255" aria-label="Green"></label>
+              <label><span>B</span><input id="b-input" type="number" min="0" max="255" aria-label="Blue"></label>
+            </div>
+          </div>
+          <div>
+            <p class="group-label">HSL</p>
+            <div class="triplet">
+              <label><span>H</span><input id="h-input" type="number" min="0" max="360" aria-label="Hue numeric"></label>
+              <label><span>S</span><input id="s-input" type="number" min="0" max="100" aria-label="Saturation numeric"></label>
+              <label><span>L</span><input id="l-input" type="number" min="0" max="100" aria-label="Lightness numeric"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel orbit-panel">
+        <div class="panel-head">
+          <h2>Harmony Orbit</h2>
+          <button id="orbit-toggle" type="button">Orbit On</button>
+        </div>
+
+        <div id="orbit-field" class="orbit-field"></div>
+
+        <div class="actions">
+          <button id="save-btn" type="button">Save Color</button>
+          <button id="shuffle-btn" type="button">Shuffle Hue</button>
+          <button id="clear-btn" type="button">Clear Saved</button>
+        </div>
+
+        <p class="hint">Click orbit swatches to jump. Scroll over SV to fine-adjust value.</p>
+
+        <div>
+          <p class="group-label">Saved</p>
+          <div id="saved-grid" class="saved-grid"></div>
+        </div>
+      </section>
     </section>
+  </main>
 
-    <section class="readout-panel" aria-live="polite">
-      <div class="live-swatch" id="live-swatch"></div>
-      <div class="values">
-        <p id="hex-value" class="hex">#000000</p>
-        <p id="rgb-value">rgb(0, 0, 0)</p>
-        <p id="hsl-value">hsl(0, 0%, 0%)</p>
-      </div>
-      <div class="readout-actions">
-        <button id="copy-btn" type="button">Copy HEX</button>
-        <button id="capture-btn" type="button">Capture</button>
-      </div>
-    </section>
+  <p id="toast" class="toast" role="status"></p>
 
-    <section class="memory-panel">
-      <div class="memory-head">
-        <span>Collapsed Echoes</span>
-        <span id="memory-count">0 / 18</span>
-      </div>
-      <div id="memory-rail" class="memory-rail"></div>
-    </section>
-  </div>
-
-  <div id="chrono-lens" class="chrono-lens" aria-hidden="true">
-    <div class="ring ring-a"></div>
-    <div class="ring ring-b"></div>
-    <div id="point-past" class="sample-point">P</div>
-    <div id="point-now" class="sample-point">N</div>
-    <div id="point-future" class="sample-point">F</div>
-    <div id="point-final" class="final-point"></div>
-  </div>
-
-  <div id="toast" class="toast" role="status">Copied</div>
-
-  <script type="module" src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
