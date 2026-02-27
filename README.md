@@ -55,7 +55,7 @@
 |:----------|:------------|:---------|
 | **[Simple](https://wadakatu.github.io/ui_lab/color-picker/simple/)** | SV キャンバス＋ヒュースライダーの基本実装 | HEX/RGB/HSL, Copy, Canvas |
 | **[Chromatic Nebula](https://wadakatu.github.io/ui_lab/color-picker/nebula/)** | 星雲パーティクルで色を探索 | Particle Nebula, Cosmic Nav, Constellation |
-| **[Paradox Oracle](https://wadakatu.github.io/ui_lab/color-picker/paradox-oracle/)** | 過去・現在・未来から色を予言 | Temporal Blend, Quantum Collapse, Timeline |
+| **[Paradox Oracle](https://wadakatu.github.io/ui_lab/color-picker/paradox-oracle/)** | Harmony Orbit中心の探索型カラーピッカー | Harmony Orbit, SV+Hue+Alpha, RGB/HSL/HEX Sync, Saved Palette |
 
 </details>
 
