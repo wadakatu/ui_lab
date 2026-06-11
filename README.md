@@ -6,7 +6,7 @@
   <a href="https://wadakatu.github.io/ui_lab/">
     <img src="https://img.shields.io/badge/🔬_LIVE_DEMO-00f5d4?style=for-the-badge&logoColor=black" alt="Live Demo" />
   </a>
-  <img src="https://img.shields.io/badge/Components-10-39ff14?style=for-the-badge" alt="Components" />
+  <img src="https://img.shields.io/badge/Components-11-39ff14?style=for-the-badge" alt="Components" />
   <img src="https://img.shields.io/badge/License-MIT-bf5af2?style=for-the-badge" alt="License" />
 </p>
 
@@ -65,6 +65,7 @@
 | Component | Description | Features |
 |:----------|:------------|:---------|
 | **[Simple](https://wadakatu.github.io/ui_lab/text-font/simple/)** | フォント調整とライブプレビューの基本実装 | Font Family, Type Scale, Tracking, Copy CSS |
+| **[Glyph Reactor](https://wadakatu.github.io/ui_lab/text-font/glyph-reactor/)** | 文字を反応場へ展開する前代未聞のテキストUI | Glyph Field, Axis Console, Reactive Canvas, CSS Signal |
 
 </details>
 
@@ -136,7 +137,8 @@ ui_lab/
 │   └── paradox-oracle/ # Paradox Oracle
 └── text-font/
     ├── index.html      # Text / Font gallery
-    └── simple/         # Simple Type Playground
+    ├── simple/         # Simple Type Playground
+    └── glyph-reactor/  # Glyph Reactor
 ```
 
 <br/>
