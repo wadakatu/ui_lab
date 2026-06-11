@@ -780,6 +780,82 @@
       50% { transform: scaleX(1); transform-origin: left; }
     }
 
+    .preview-glyph-reactor {
+      background:
+        linear-gradient(90deg, rgba(0, 184, 200, 0.14) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255, 174, 0, 0.14) 1px, transparent 1px),
+        linear-gradient(135deg, #17140f 0%, #2a181f 48%, #102f31 100%);
+      background-size: 24px 24px, 24px 24px, auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reactor-thread {
+      position: absolute;
+      width: 190px;
+      height: 118px;
+      top: 50%;
+      left: 50%;
+      border: 1px dashed rgba(255, 248, 231, 0.22);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: reactorThread 9s linear infinite;
+    }
+
+    .reactor-thread::before {
+      content: '';
+      position: absolute;
+      inset: 26px;
+      border: 1px solid rgba(0, 245, 212, 0.2);
+      border-radius: 50%;
+    }
+
+    .reactor-preview-glyph {
+      position: absolute;
+      color: #fff8e7;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      text-shadow: 0 0 16px rgba(255, 174, 0, 0.52);
+      animation: glyphReact 4.8s ease-in-out infinite;
+    }
+
+    .reactor-preview-glyph:nth-child(2) {
+      top: 24%;
+      left: 24%;
+      color: #00f5d4;
+    }
+
+    .reactor-preview-glyph:nth-child(3) {
+      top: 58%;
+      left: 40%;
+      color: #ffb25f;
+      animation-delay: -1.1s;
+    }
+
+    .reactor-preview-glyph:nth-child(4) {
+      top: 32%;
+      left: 64%;
+      color: #ff5d8f;
+      animation-delay: -2.2s;
+    }
+
+    .reactor-preview-glyph:nth-child(5) {
+      top: 68%;
+      left: 76%;
+      color: #a7f33d;
+      animation-delay: -3.1s;
+    }
+
+    @keyframes glyphReact {
+      0%, 100% { transform: translate(-50%, -50%) rotate(-8deg) scaleX(0.82); }
+      50% { transform: translate(-50%, -50%) rotate(13deg) scaleX(1.35); }
+    }
+
+    @keyframes reactorThread {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
     /* Nebula Preview */
     .preview-nebula {
       background: radial-gradient(ellipse at 50% 50%, #0d0820 0%, #060410 60%, #020108 100%);
@@ -1128,7 +1204,7 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">10</span>
+        <span class="stat-value">11</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
@@ -1541,6 +1617,35 @@
             <span class="feature">Type Scale</span>
             <span class="feature">Tracking</span>
             <span class="feature">Copy CSS</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Glyph Reactor -->
+      <a href="text-font/glyph-reactor/" class="card">
+        <div class="card-preview preview-glyph-reactor">
+          <div class="card-preview-inner">
+            <div class="reactor-thread"></div>
+            <span class="reactor-preview-glyph">G</span>
+            <span class="reactor-preview-glyph">字</span>
+            <span class="reactor-preview-glyph">R</span>
+            <span class="reactor-preview-glyph">9</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Impossible</span>
+          <h2 class="card-title">
+            Glyph Reactor
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">入力した文字を反応場に放ち、質量、幅、重力、乱流でグリフの姿を変えるテキストUI。</p>
+          <div class="card-features">
+            <span class="feature">Glyph Field</span>
+            <span class="feature">Axis Console</span>
+            <span class="feature">Reactive Canvas</span>
+            <span class="feature">CSS Signal</span>
           </div>
         </div>
       </a>

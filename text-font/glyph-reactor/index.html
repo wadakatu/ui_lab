@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glyph Reactor | UI Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-mesh" aria-hidden="true"></div>
+
+  <header class="header">
+    <a class="back-link" href="../">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Back to Gallery</span>
+    </a>
+
+    <div class="header-title">
+      <span class="tag">Impossible</span>
+      <h1>Glyph Reactor</h1>
+      <span class="system-readout" aria-live="polite" id="systemStatus">LIVE FIELD</span>
+    </div>
+  </header>
+
+  <main class="reactor-app">
+    <section class="console-panel" aria-label="Axis console">
+      <div class="panel-title">
+        <h2>Axis Console</h2>
+        <span id="glyphCount">00 glyphs</span>
+      </div>
+
+      <label class="text-cell" for="phraseInput">
+        <span>Source Text</span>
+        <textarea id="phraseInput" spellcheck="false">文字は平面ではない。
+Glyphs bend time, weight, and breath.
+UI Lab 2049</textarea>
+      </label>
+
+      <div class="font-voices" role="group" aria-label="Font voice">
+        <button class="voice-button is-active" type="button" data-font="grotesk">Grotesk</button>
+        <button class="voice-button" type="button" data-font="editorial">Editorial</button>
+        <button class="voice-button" type="button" data-font="mono">Mono</button>
+        <button class="voice-button" type="button" data-font="system">System</button>
+      </div>
+
+      <div class="axis-stack">
+        <label class="axis-control" for="sizeAxis">
+          <span>Scale</span>
+          <output id="sizeAxisValue" for="sizeAxis">46</output>
+          <input id="sizeAxis" type="range" min="20" max="96" value="46">
+        </label>
+
+        <label class="axis-control" for="weightAxis">
+          <span>Mass</span>
+          <output id="weightAxisValue" for="weightAxis">720</output>
+          <input id="weightAxis" type="range" min="180" max="980" step="20" value="720">
+        </label>
+
+        <label class="axis-control" for="widthAxis">
+          <span>Width</span>
+          <output id="widthAxisValue" for="widthAxis">108%</output>
+          <input id="widthAxis" type="range" min="56" max="162" value="108">
+        </label>
+
+        <label class="axis-control" for="trackingAxis">
+          <span>Tracking</span>
+          <output id="trackingAxisValue" for="trackingAxis">6px</output>
+          <input id="trackingAxis" type="range" min="0" max="28" value="6">
+        </label>
+
+        <label class="axis-control" for="gravityAxis">
+          <span>Gravity</span>
+          <output id="gravityAxisValue" for="gravityAxis">68</output>
+          <input id="gravityAxis" type="range" min="0" max="100" value="68">
+        </label>
+
+        <label class="axis-control" for="turbulenceAxis">
+          <span>Turbulence</span>
+          <output id="turbulenceAxisValue" for="turbulenceAxis">44</output>
+          <input id="turbulenceAxis" type="range" min="0" max="100" value="44">
+        </label>
+
+        <label class="axis-control" for="rhythmAxis">
+          <span>Rhythm</span>
+          <output id="rhythmAxisValue" for="rhythmAxis">58</output>
+          <input id="rhythmAxis" type="range" min="0" max="100" value="58">
+        </label>
+      </div>
+
+      <div class="mode-switch" role="group" aria-label="Reactor mode">
+        <button class="mode-button is-active" type="button" data-mode="orbit">Orbit</button>
+        <button class="mode-button" type="button" data-mode="fault">Fault</button>
+        <button class="mode-button" type="button" data-mode="wave">Wave</button>
+        <button class="mode-button" type="button" data-mode="totem">Totem</button>
+      </div>
+
+      <div class="action-row">
+        <button id="igniteButton" class="action-button primary" type="button">Ignite</button>
+        <button id="freezeButton" class="action-button" type="button" aria-pressed="false">Freeze</button>
+      </div>
+    </section>
+
+    <section class="stage-panel" aria-label="Glyph reactor stage">
+      <div id="reactorStage" class="reactor-stage">
+        <canvas id="fieldCanvas" aria-hidden="true"></canvas>
+        <div id="glyphField" class="glyph-field" aria-label="Reactive glyph field"></div>
+        <div id="cursorCore" class="cursor-core" aria-hidden="true"></div>
+      </div>
+
+      <div class="stage-meter" aria-live="polite">
+        <span id="modeReadout">Orbit mode</span>
+        <span id="energyReadout">Energy 00.00</span>
+        <span id="pointerReadout">Flux 00%</span>
+      </div>
+    </section>
+
+    <aside class="inspector-panel" aria-label="Glyph inspector">
+      <div class="panel-title">
+        <h2>Glyph Passport</h2>
+        <span id="selectedIndex">#001</span>
+      </div>
+
+      <div class="specimen-window">
+        <span id="selectedGlyph" class="selected-glyph">文</span>
+      </div>
+
+      <dl class="passport-grid">
+        <div>
+          <dt>Code</dt>
+          <dd id="codePoint">U+6587</dd>
+        </div>
+        <div>
+          <dt>Mass</dt>
+          <dd id="selectedMass">720</dd>
+        </div>
+        <div>
+          <dt>Width</dt>
+          <dd id="selectedWidth">108%</dd>
+        </div>
+        <div>
+          <dt>Angle</dt>
+          <dd id="selectedAngle">0°</dd>
+        </div>
+      </dl>
+
+      <div class="reactor-map" aria-hidden="true">
+        <div id="miniMap" class="mini-map"></div>
+      </div>
+
+      <div class="css-panel">
+        <div class="css-head">
+          <span>CSS Signal</span>
+          <span id="copyStatus"></span>
+        </div>
+        <pre><code id="cssOutput"></code></pre>
+      </div>
+
+      <button id="copyCssButton" class="action-button wide" type="button">Copy CSS</button>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
