@@ -6,7 +6,7 @@
   <a href="https://wadakatu.github.io/ui_lab/">
     <img src="https://img.shields.io/badge/🔬_LIVE_DEMO-00f5d4?style=for-the-badge&logoColor=black" alt="Live Demo" />
   </a>
-  <img src="https://img.shields.io/badge/Components-9-39ff14?style=for-the-badge" alt="Components" />
+  <img src="https://img.shields.io/badge/Components-10-39ff14?style=for-the-badge" alt="Components" />
   <img src="https://img.shields.io/badge/License-MIT-bf5af2?style=for-the-badge" alt="License" />
 </p>
 
@@ -56,6 +56,15 @@
 | **[Simple](https://wadakatu.github.io/ui_lab/color-picker/simple/)** | SV キャンバス＋ヒュースライダーの基本実装 | HEX/RGB/HSL, Copy, Canvas |
 | **[Chromatic Nebula](https://wadakatu.github.io/ui_lab/color-picker/nebula/)** | 星雲パーティクルで色を探索 | Particle Nebula, Cosmic Nav, Constellation |
 | **[Paradox Oracle](https://wadakatu.github.io/ui_lab/color-picker/paradox-oracle/)** | Harmony Orbit中心の探索型カラーピッカー | Harmony Orbit, SV+Hue+Alpha, RGB/HSL/HEX Sync, Saved Palette |
+
+</details>
+
+<details open>
+<summary><b>🔤 Text / Font</b></summary>
+
+| Component | Description | Features |
+|:----------|:------------|:---------|
+| **[Simple](https://wadakatu.github.io/ui_lab/text-font/simple/)** | フォント調整とライブプレビューの基本実装 | Font Family, Type Scale, Tracking, Copy CSS |
 
 </details>
 
@@ -120,11 +129,14 @@ ui_lab/
 │   ├── simple/         # Simple Rotary Knob
 │   ├── blackhole/      # Event Horizon Knob
 │   └── rubiks-cube/    # Cube Mixer Knob
-└── color-picker/
-    ├── index.html      # Color Picker gallery
-    ├── simple/         # Simple Color Picker
-    ├── nebula/         # Chromatic Nebula
-    └── paradox-oracle/ # Paradox Oracle
+├── color-picker/
+│   ├── index.html      # Color Picker gallery
+│   ├── simple/         # Simple Color Picker
+│   ├── nebula/         # Chromatic Nebula
+│   └── paradox-oracle/ # Paradox Oracle
+└── text-font/
+    ├── index.html      # Text / Font gallery
+    └── simple/         # Simple Type Playground
 ```
 
 <br/>

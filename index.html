@@ -36,6 +36,7 @@
       --accent-purple: #bf5af2;
       --accent-pink: #ff2d55;
       --accent-yellow: #ffd60a;
+      --accent-warm: #ffb25f;
       --grid-color: rgba(0, 245, 212, 0.03);
       --border-color: rgba(255, 255, 255, 0.06);
       --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.3);
@@ -715,6 +716,70 @@
       75% { top: 60%; left: 30%; }
     }
 
+    /* Text / Font Preview */
+    .preview-textfont {
+      background: linear-gradient(135deg, #11151f 0%, #090a0d 100%);
+    }
+
+    .preview-textfont .type-stack {
+      width: 220px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .preview-textfont .type-line {
+      height: 18px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, rgba(255, 178, 95, 0.94), rgba(52, 214, 195, 0.72));
+      animation: typeMeasure 4s ease-in-out infinite;
+    }
+
+    .preview-textfont .type-line:nth-child(2) {
+      width: 78%;
+      height: 12px;
+      animation-delay: -0.8s;
+    }
+
+    .preview-textfont .type-line:nth-child(3) {
+      width: 58%;
+      height: 12px;
+      animation-delay: -1.6s;
+    }
+
+    .preview-textfont .glyph-row {
+      display: flex;
+      gap: 8px;
+      padding-top: 4px;
+    }
+
+    .preview-textfont .glyph {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .preview-textfont .glyph:nth-child(2) {
+      font-family: Georgia, serif;
+      color: var(--accent-warm);
+    }
+
+    .preview-textfont .glyph:nth-child(3) {
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+    }
+
+    @keyframes typeMeasure {
+      0%, 100% { transform: scaleX(0.82); transform-origin: left; }
+      50% { transform: scaleX(1); transform-origin: left; }
+    }
+
     /* Nebula Preview */
     .preview-nebula {
       background: radial-gradient(ellipse at 50% 50%, #0d0820 0%, #060410 60%, #020108 100%);
@@ -1063,11 +1128,11 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">09</span>
+        <span class="stat-value">10</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
-        <span class="stat-value">03</span>
+        <span class="stat-value">04</span>
         <span class="stat-label">Category</span>
       </div>
       <div class="stat">
@@ -1428,6 +1493,54 @@
             <span class="feature">RGB/HSL/HEX Sync</span>
             <span class="feature">Saved Palette</span>
             <span class="feature">Codex</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Text / Font Components Section -->
+    <div class="section-header" style="margin-top: 60px;">
+      <span class="section-title">// Text / Font Components</span>
+      <div class="section-line"></div>
+      <a href="text-font/index.html" class="section-link">
+        <span class="section-link-text">View All</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Type Playground -->
+      <a href="text-font/simple/" class="card">
+        <div class="card-preview preview-textfont">
+          <div class="card-preview-inner">
+            <div class="type-stack">
+              <div class="type-line"></div>
+              <div class="type-line"></div>
+              <div class="type-line"></div>
+              <div class="glyph-row">
+                <span class="glyph">A</span>
+                <span class="glyph">あ</span>
+                <span class="glyph">7</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Type Playground
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">フォントファミリー、サイズ、ウェイト、行間、字間、行幅をライブプレビューで調整できます。</p>
+          <div class="card-features">
+            <span class="feature">Font Family</span>
+            <span class="feature">Type Scale</span>
+            <span class="feature">Tracking</span>
+            <span class="feature">Copy CSS</span>
           </div>
         </div>
       </a>
