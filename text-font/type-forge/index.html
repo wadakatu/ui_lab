@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Type Forge — 活字鍛冶場 | UI Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,100..900,0..100,0..1&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --coal: #0b0908;
+      --soot: #131010;
+      --iron: #1f1a16;
+      --iron-hi: #2d2621;
+      --iron-edge: #3d342c;
+      --steel: #9aa3ad;
+      --ember: #ff6a1a;
+      --flame: #ffb02e;
+      --white-hot: #fff3c9;
+      --brass: #c9a24b;
+      --brass-dim: #7d6630;
+      --brass-bright: #ecd28a;
+      --paper: #ece1cb;
+      --ink: #1b1511;
+      --danger: #d8472b;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--steel);
+      background:
+        radial-gradient(120% 90% at 50% 110%, rgba(255, 106, 26, 0.07), transparent 55%),
+        radial-gradient(90% 70% at 50% -10%, rgba(60, 48, 38, 0.35), transparent 60%),
+        var(--coal);
+      font-family: var(--font-display);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+
+    #fx {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    /* ============ masthead ============ */
+    .masthead {
+      position: relative;
+      z-index: 2;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 14px 18px 0;
+      padding: 12px 20px;
+      border: 1px solid var(--brass-dim);
+      border-radius: 4px;
+      background: linear-gradient(180deg, #221c16, #161210);
+      box-shadow: inset 0 1px 0 rgba(236, 210, 138, 0.12), 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .masthead::before,
+    .masthead::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--brass-bright), var(--brass-dim) 70%);
+      transform: translateY(-50%);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .masthead::before { left: 8px; }
+    .masthead::after { right: 8px; }
+
+    .mast-left {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .mast-title {
+      color: var(--brass);
+      font-size: 26px;
+      font-weight: 700;
+      font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
+      letter-spacing: 0.12em;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8), 0 0 18px rgba(201, 162, 75, 0.25);
+    }
+
+    .mast-sub {
+      color: #6f6253;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .mast-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .back-link {
+      color: #6f6253;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .back-link:hover { color: var(--brass); }
+
+    .sound-toggle {
+      padding: 5px 12px;
+      border: 1px solid var(--brass-dim);
+      border-radius: 3px;
+      color: var(--brass);
+      background: linear-gradient(180deg, #2a231b, #1a1511);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .sound-toggle.off { color: #5a5048; border-color: #3a322a; }
+
+    /* ============ layout ============ */
+    .bench {
+      position: relative;
+      z-index: 1;
+      flex: 1 0 auto;
+      display: grid;
+      grid-template-columns: 232px 1fr 232px;
+      gap: 14px;
+      padding: 14px 18px;
+    }
+
+    .panel {
+      border: 1px solid #2c241d;
+      border-radius: 4px;
+      background: linear-gradient(180deg, rgba(34, 28, 22, 0.85), rgba(18, 14, 12, 0.9));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .panel-label {
+      display: block;
+      padding: 8px 12px 6px;
+      border-bottom: 1px solid #2c241d;
+      color: #877451;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+    }
+
+    .panel-label em {
+      font-style: normal;
+      color: #5c5145;
+    }
+
+    /* ---- left column: gauge + readouts ---- */
+    .col-left, .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .gauge-body { padding: 10px 12px 6px; }
+
+    .gauge-svg { width: 100%; display: block; }
+
+    .temp-digital {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 6px;
+      padding: 2px 0 10px;
+      font-family: var(--font-mono);
+    }
+
+    .temp-value {
+      color: var(--flame);
+      font-size: 22px;
+      font-weight: 600;
+      text-shadow: 0 0 12px rgba(255, 176, 46, 0.3);
+    }
+
+    .temp-unit { color: #6f6253; font-size: 11px; }
+
+    .lamps {
+      display: flex;
+      justify-content: space-around;
+      padding: 0 10px 12px;
+    }
+
+    .lamp {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      color: #5c5145;
+    }
+
+    .lamp-bulb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid #3a322a;
+      background: #1a1511;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .lamp.on .lamp-bulb.amber {
+      background: var(--flame);
+      box-shadow: 0 0 10px rgba(255, 176, 46, 0.9), 0 0 22px rgba(255, 106, 26, 0.5);
+    }
+
+    .lamp.on .lamp-bulb.blue {
+      background: #cfe7ff;
+      box-shadow: 0 0 10px rgba(190, 225, 255, 0.9), 0 0 22px rgba(140, 190, 255, 0.5);
+    }
+
+    .lamp.on { color: #b3a07a; }
+
+    .readouts { padding: 8px 12px 12px; display: grid; gap: 9px; }
+
+    .readout {
+      display: grid;
+      grid-template-columns: 38px 1fr 44px;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+    }
+
+    .readout-key { color: #877451; font-size: 9px; letter-spacing: 0.14em; }
+
+    .readout-bar {
+      position: relative;
+      height: 5px;
+      border-radius: 2px;
+      background: #0d0b09;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    .readout-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 40%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--brass-dim), var(--brass));
+      transition: width 0.08s linear;
+    }
+
+    .readout-val { color: var(--brass-bright); font-size: 11px; text-align: right; }
+
+    /* ---- center stage ---- */
+    .stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      overflow: hidden;
+      border: 1px solid #2c241d;
+      border-radius: 4px;
+      background:
+        radial-gradient(70% 55% at 50% 96%, rgba(255, 96, 18, 0.12), transparent 70%),
+        linear-gradient(180deg, #0d0b0a, #161110 70%, #0e0b09);
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.7);
+      min-height: 0;
+    }
+
+    .furnace-glow {
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      width: 130%;
+      height: 75%;
+      transform: translateX(-50%);
+      background: radial-gradient(50% 60% at 50% 78%,
+        rgba(255, 150, 40, 0.5),
+        rgba(255, 90, 16, 0.22) 40%,
+        transparent 72%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .workpiece-zone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+    }
+
+    .workpiece {
+      position: relative;
+      z-index: 3;
+      font-family: var(--font-display);
+      font-optical-sizing: none;
+      font-size: clamp(150px, 34vmin, 330px);
+      font-weight: 400;
+      line-height: 0.92;
+      color: var(--steel);
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      will-change: transform, font-variation-settings, color, text-shadow;
+      filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.65));
+      margin-bottom: -0.13em;
+    }
+
+    .workpiece:active { cursor: grabbing; }
+
+    .anvil {
+      position: relative;
+      z-index: 2;
+      width: min(50vmin, 430px);
+      height: 86px;
+      flex: none;
+      background: linear-gradient(180deg, #4a423b 0%, #241e19 32%, #15100d 60%, #0b0907);
+      clip-path: polygon(0% 0%, 100% 0%, 94% 28%, 66% 34%, 66% 62%, 84% 88%, 84% 100%, 16% 100%, 16% 88%, 34% 62%, 34% 34%, 6% 28%);
+    }
+
+    .anvil-sheen {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 12px;
+      background: linear-gradient(90deg, transparent, rgba(255, 167, 70, 0.55), transparent);
+      opacity: 0;
+    }
+
+    .anvil-base {
+      z-index: 1;
+      width: min(58vmin, 500px);
+      height: 16px;
+      flex: none;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(180deg, #2a211a, #120e0b);
+      box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.6);
+    }
+
+    .stage-floor {
+      width: 100%;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 14px 16px 16px;
+      background: linear-gradient(180deg, rgba(8, 6, 5, 0.4), rgba(8, 6, 5, 0.85));
+    }
+
+    .char-stepper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--brass-dim);
+      border-radius: 3px;
+      color: var(--brass);
+      background: linear-gradient(180deg, #2a231b, #1a1511);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .step-btn:hover { border-color: var(--brass); color: var(--brass-bright); }
+    .step-btn:active { transform: translateY(1px); }
+
+    .char-current {
+      min-width: 44px;
+      padding: 3px 10px;
+      border: 1px solid #3a322a;
+      border-radius: 3px;
+      background: #0d0b09;
+      color: var(--brass-bright);
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 60, 'SOFT' 0, 'WONK' 0;
+      font-size: 21px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .stepper-hint {
+      color: #5c5145;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+
+    .stage-flash {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      padding: 6px 16px;
+      border: 1px solid rgba(216, 71, 43, 0.5);
+      border-radius: 3px;
+      background: rgba(20, 8, 5, 0.85);
+      color: #e88663;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+
+    .stage-flash.show { opacity: 1; }
+
+    /* ---- right column: tools ---- */
+    .tools-body { padding: 12px; display: grid; gap: 10px; }
+
+    .tool-btn {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 9px 10px 8px;
+      border: 1px solid #41372c;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #2e2740, transparent), linear-gradient(180deg, #2b231c, #171210);
+      background-blend-mode: normal;
+      color: #cdbd97;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.08s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .tool-btn { background: linear-gradient(180deg, #2b231c, #171210); }
+
+    .tool-btn:hover { border-color: var(--brass-dim); }
+    .tool-btn:active, .tool-btn.held {
+      transform: translateY(2px);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5), inset 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .tool-kanji {
+      font-size: 19px;
+      font-weight: 600;
+      font-variation-settings: 'opsz' 100, 'SOFT' 0, 'WONK' 0;
+      letter-spacing: 0.32em;
+      margin-right: -0.32em;
+    }
+
+    .tool-en {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.2em;
+      color: #877451;
+      text-transform: uppercase;
+    }
+
+    .tool-btn.bellows { border-color: #5a4424; }
+    .tool-btn.bellows .tool-kanji { color: var(--flame); }
+    .tool-btn.bellows.nudge { animation: nudge 1.6s ease-in-out infinite; }
+
+    @keyframes nudge {
+      0%, 100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), 0 0 0 0 rgba(255, 176, 46, 0); }
+      50% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), 0 0 18px 2px rgba(255, 176, 46, 0.35); }
+    }
+
+    .tool-btn.bellows .pleats {
+      width: 56px;
+      height: 9px;
+      margin-top: 4px;
+      border-radius: 2px;
+      background: repeating-linear-gradient(90deg, #4a3a20 0 5px, #1f1812 5px 10px);
+      transition: transform 0.1s;
+    }
+
+    .tool-btn.bellows.held .pleats { transform: scaleX(0.7); }
+
+    .tool-btn.quench .tool-kanji { color: #9cc4e0; }
+    .tool-btn.cast .tool-kanji { color: var(--brass-bright); }
+
+    .process-plate {
+      padding: 9px 12px 11px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .process-step {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 7px;
+      align-items: baseline;
+      color: #8d7e63;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .process-step b {
+      color: var(--brass-dim);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .process-step span em {
+      display: block;
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      color: #5c5145;
+    }
+
+    .process-note {
+      margin-top: 2px;
+      padding-top: 7px;
+      border-top: 1px dashed #2c241d;
+      color: #6a5c49;
+      font-size: 9.5px;
+      line-height: 1.55;
+    }
+
+    /* ============ footer: tray + proof ============ */
+    .galley {
+      position: relative;
+      z-index: 1;
+      flex: none;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+      padding: 0 18px 16px;
+    }
+
+    .tray-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 8px;
+    }
+
+    .melt-btn {
+      margin: 4px;
+      padding: 3px 10px;
+      border: 1px solid #4a2c20;
+      border-radius: 3px;
+      background: transparent;
+      color: #a05a40;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .melt-btn:hover { color: #e8765a; border-color: #7a4630; }
+
+    .tray {
+      display: flex;
+      gap: 8px;
+      min-height: 84px;
+      padding: 10px 12px;
+      overflow-x: auto;
+      align-items: center;
+    }
+
+    .tray-empty {
+      color: #4d4339;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+    }
+
+    .sort {
+      position: relative;
+      flex: none;
+      width: 64px;
+      height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: 1px solid #3d342c;
+      border-radius: 3px;
+      background: linear-gradient(155deg, #36302a, #1c1714 55%, #14100d);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 8px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      animation: sortPop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .sort:hover { border-color: #7a4630; transform: translateY(-2px); }
+
+    @keyframes sortPop {
+      0% { transform: translateY(-14px) scale(0.6); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .sort-face {
+      font-family: var(--font-display);
+      font-optical-sizing: none;
+      font-size: 34px;
+      line-height: 1;
+      color: #b9bdc2;
+      transform: scaleX(-1);
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.9);
+    }
+
+    .sort-meta {
+      font-family: var(--font-mono);
+      font-size: 7.5px;
+      color: #6a5c49;
+      letter-spacing: 0.06em;
+    }
+
+    .proof-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 84px;
+      padding: 10px 16px;
+    }
+
+    .proof-paper {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1px;
+      min-width: 60%;
+      max-width: 100%;
+      min-height: 64px;
+      padding: 12px 26px;
+      border-radius: 2px;
+      background:
+        linear-gradient(105deg, rgba(120, 96, 60, 0.08), transparent 30%, rgba(90, 70, 45, 0.1) 85%),
+        var(--paper);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), inset 0 0 22px rgba(120, 90, 50, 0.18);
+      transform: rotate(-0.6deg);
+    }
+
+    .proof-empty {
+      align-self: center;
+      color: #9b8a6d;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+    }
+
+    .proof-glyph {
+      font-family: var(--font-display);
+      font-optical-sizing: none;
+      font-size: 42px;
+      line-height: 1;
+      color: var(--ink);
+      text-shadow: 0.4px 0.4px 0.7px rgba(27, 21, 17, 0.55);
+    }
+
+    .smallprint {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #443b32;
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+    }
+
+    /* ============ responsive ============ */
+    @media (max-width: 980px) {
+      body { height: auto; }
+      .bench { grid-template-columns: 1fr 1fr; }
+      .stage { grid-column: 1 / -1; grid-row: 1; min-height: 64vh; }
+      .galley { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .bench { grid-template-columns: 1fr; }
+      .stage { min-height: 58vh; }
+      .mast-title { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fx"></canvas>
+  <div class="grain"></div>
+
+  <header class="masthead">
+    <div class="mast-left">
+      <span class="mast-title">TYPE FORGE</span>
+      <span class="mast-sub">活字鍛冶場 · Molten Typography Works · EST. 2026</span>
+    </div>
+    <div class="mast-right">
+      <button class="sound-toggle" id="soundToggle" type="button">♪ SOUND ON</button>
+      <a class="back-link" href="../">← TEXT / FONT GALLERY</a>
+    </div>
+  </header>
+
+  <main class="bench">
+    <div class="col-left">
+      <section class="panel">
+        <span class="panel-label">炉温計 <em>/ PYROMETER</em></span>
+        <div class="gauge-body">
+          <svg class="gauge-svg" id="gauge" viewBox="0 0 200 118"></svg>
+        </div>
+        <div class="temp-digital">
+          <span class="temp-value" id="tempVal">0020</span>
+          <span class="temp-unit">°C</span>
+        </div>
+        <div class="lamps">
+          <div class="lamp" id="lampMalleable">
+            <span class="lamp-bulb amber"></span>
+            <span>可鍛 MALLEABLE</span>
+          </div>
+          <div class="lamp" id="lampAnneal">
+            <span class="lamp-bulb blue"></span>
+            <span>焼鈍 ANNEALING</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <span class="panel-label">字軸計 <em>/ AXIS READOUT</em></span>
+        <div class="readouts">
+          <div class="readout">
+            <span class="readout-key">WGHT</span>
+            <span class="readout-bar"><span class="readout-fill" id="barWght"></span></span>
+            <span class="readout-val" id="valWght">400</span>
+          </div>
+          <div class="readout">
+            <span class="readout-key">OPSZ</span>
+            <span class="readout-bar"><span class="readout-fill" id="barOpsz"></span></span>
+            <span class="readout-val" id="valOpsz">26</span>
+          </div>
+          <div class="readout">
+            <span class="readout-key">WONK</span>
+            <span class="readout-bar"><span class="readout-fill" id="barWonk"></span></span>
+            <span class="readout-val" id="valWonk">0.00</span>
+          </div>
+          <div class="readout">
+            <span class="readout-key">SOFT</span>
+            <span class="readout-bar"><span class="readout-fill" id="barSoft"></span></span>
+            <span class="readout-val" id="valSoft">0</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="stage" id="stage">
+      <div class="furnace-glow" id="furnaceGlow"></div>
+      <div class="stage-flash" id="stageFlash">硬すぎる — まず加熱せよ / TOO COLD TO WORK</div>
+      <div class="workpiece-zone">
+        <div class="workpiece" id="workpiece">A</div>
+      </div>
+      <div class="anvil"><div class="anvil-sheen" id="anvilSheen"></div></div>
+      <div class="anvil-base"></div>
+      <div class="stage-floor">
+        <div class="char-stepper">
+          <button class="step-btn" id="prevChar" type="button" aria-label="前の字">◀</button>
+          <span class="char-current" id="charCurrent">A</span>
+          <button class="step-btn" id="nextChar" type="button" aria-label="次の字">▶</button>
+        </div>
+        <span class="stepper-hint">任意のキーで字種変更 / TYPE ANY KEY FOR A NEW BLANK</span>
+      </div>
+    </section>
+
+    <div class="col-right">
+      <section class="panel">
+        <span class="panel-label">工具掛 <em>/ TOOL RACK</em></span>
+        <div class="tools-body">
+          <button class="tool-btn bellows nudge" id="btnBellows" type="button">
+            <span class="tool-kanji">鞴</span>
+            <span class="tool-en">Bellows — hold [space]</span>
+            <span class="pleats"></span>
+          </button>
+          <button class="tool-btn quench" id="btnQuench" type="button">
+            <span class="tool-kanji">焼入</span>
+            <span class="tool-en">Quench [↓]</span>
+          </button>
+          <button class="tool-btn cast" id="btnCast" type="button">
+            <span class="tool-kanji">鋳込</span>
+            <span class="tool-en">Cast Sort [enter]</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <span class="panel-label">作業手順 <em>/ PROCESS</em></span>
+        <div class="process-plate">
+          <div class="process-step"><b>01</b><span>鞴を握って字を熱する<em>HOLD BELLOWS TO HEAT</em></span></div>
+          <div class="process-step"><b>02</b><span>灼けたら掴んで引き延ばす<em>DRAG HOT GLYPH — ↕ WGHT · ↔ OPSZ</em></span></div>
+          <div class="process-step"><b>03</b><span>鎚で打てば字が歪む<em>CLICK GLYPH TO STRIKE — WONK</em></span></div>
+          <div class="process-step"><b>04</b><span>焼き入れで形を固める<em>QUENCH TO SET</em></span></div>
+          <div class="process-step"><b>05</b><span>鋳込んで植字台へ並べる<em>CAST INTO THE STICK</em></span></div>
+          <div class="process-note">※ 1300°C超で歪みは焼き鈍され元に戻る。冷えた字は硬く、鍛えられない。</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="galley">
+    <section class="panel">
+      <div class="tray-head">
+        <span class="panel-label" style="border-bottom: none;">植字台 <em>/ COMPOSING STICK</em> — <em id="sortCount">0 SORTS</em></span>
+        <button class="melt-btn" id="btnMelt" type="button">鋳潰す / MELT DOWN</button>
+      </div>
+      <div class="tray" id="tray">
+        <span class="tray-empty">まだ活字がありません — 鍛えて、焼き入れて、鋳込んでください</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <span class="panel-label">試し刷り <em>/ PROOF</em></span>
+      <div class="proof-body">
+        <div class="proof-paper" id="proof">
+          <span class="proof-empty">— BLANK PROOF —</span>
+        </div>
+      </div>
+    </section>
+
+    <span class="smallprint">FRAUNCES STEEL · WGHT 100–900 · OPSZ 9–144 · SOFT 0–100 · WONK 0–1 · ALL SOUNDS SYNTHESISED IN-BROWSER</span>
+  </footer>
+
+  <script>
+    'use strict';
+
+    /* ================= state ================= */
+    const AMBIENT = 20;
+    const MAX_T = 1500;
+    const S = {
+      ch: 'A',
+      T: AMBIENT,
+      wght: 400,
+      opsz: 26,
+      wonk: 0,
+      soft: 0,
+      flare: 0,        // bellows flame burst (0..1, decays)
+      squash: 0,       // hammer squash (0..1, decays)
+      shake: 0,        // too-cold shake (0..1, decays)
+      temper: 0,       // quench blue flash (0..1, decays)
+      sorts: [],
+      muted: false,
+      everPumped: false,
+    };
+
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const malleability = () => clamp((S.T - 350) / 750, 0, 1);
+
+    const $ = (id) => document.getElementById(id);
+    const workpiece = $('workpiece');
+    const furnaceGlow = $('furnaceGlow');
+    const anvilSheen = $('anvilSheen');
+    const stageFlash = $('stageFlash');
+
+    /* ================= audio (all synthesised) ================= */
+    let AC = null;
+    let master = null;
+    let noiseBuf = null;
+
+    function audio() {
+      if (!AC) {
+        AC = new (window.AudioContext || window.webkitAudioContext)();
+        master = AC.createGain();
+        master.gain.value = S.muted ? 0 : 0.55;
+        master.connect(AC.destination);
+        const len = AC.sampleRate * 2;
+        noiseBuf = AC.createBuffer(1, len, AC.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (AC.state === 'suspended') AC.resume();
+      return AC;
+    }
+
+    function noiseSource() {
+      const src = AC.createBufferSource();
+      src.buffer = noiseBuf;
+      src.loop = true;
+      return src;
+    }
+
+    function envGain(peak, t0, attack, decay) {
+      const g = AC.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.linearRampToValueAtTime(peak, t0 + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + attack + decay);
+      g.connect(master);
+      return g;
+    }
+
+    function sfxClang(vel = 1) {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      const n = noiseSource();
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 2600;
+      bp.Q.value = 1.2;
+      n.connect(bp).connect(envGain(0.45 * vel, t0, 0.004, 0.1));
+      n.start(t0); n.stop(t0 + 0.18);
+      const partials = [421, 1190, 2208, 3470];
+      const gains = [0.34, 0.22, 0.15, 0.08];
+      partials.forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.frequency.value = f * (0.97 + Math.random() * 0.06);
+        o.connect(envGain(gains[i] * vel, t0, 0.002, 0.34 + i * 0.06));
+        o.start(t0); o.stop(t0 + 0.7);
+      });
+    }
+
+    function sfxTink() {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      [2900, 4150].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.frequency.value = f * (0.98 + Math.random() * 0.04);
+        o.connect(envGain(0.08 - i * 0.03, t0, 0.002, 0.09));
+        o.start(t0); o.stop(t0 + 0.15);
+      });
+    }
+
+    function sfxWhoosh() {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      const n = noiseSource();
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(220, t0);
+      lp.frequency.linearRampToValueAtTime(1050, t0 + 0.16);
+      lp.frequency.linearRampToValueAtTime(240, t0 + 0.44);
+      n.connect(lp).connect(envGain(0.38, t0, 0.1, 0.34));
+      n.start(t0); n.stop(t0 + 0.5);
+    }
+
+    function sfxHiss(big = true) {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      const n = noiseSource();
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 900;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(8000, t0);
+      lp.frequency.exponentialRampToValueAtTime(1400, t0 + (big ? 1.4 : 0.4));
+      n.connect(hp).connect(lp).connect(envGain(big ? 0.4 : 0.1, t0, 0.015, big ? 1.5 : 0.4));
+      n.start(t0); n.stop(t0 + (big ? 1.6 : 0.5));
+    }
+
+    function sfxThunk() {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      const o = ctx.createOscillator();
+      o.frequency.setValueAtTime(135, t0);
+      o.frequency.exponentialRampToValueAtTime(52, t0 + 0.2);
+      o.connect(envGain(0.6, t0, 0.004, 0.22));
+      o.start(t0); o.stop(t0 + 0.3);
+      const n = noiseSource();
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 500;
+      n.connect(lp).connect(envGain(0.3, t0, 0.002, 0.07));
+      n.start(t0); n.stop(t0 + 0.12);
+    }
+
+    function sfxDing() {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      [1318, 1985].forEach((f, i) => {
+        const o = ctx.createOscillator();
+        o.frequency.value = f * (0.995 + Math.random() * 0.01);
+        o.connect(envGain(0.07 - i * 0.025, t0 + 0.1, 0.005, 1.1));
+        o.start(t0 + 0.1); o.stop(t0 + 1.4);
+      });
+    }
+
+    function sfxClunk() {
+      const ctx = audio();
+      const t0 = ctx.currentTime;
+      const o = ctx.createOscillator();
+      o.frequency.setValueAtTime(210, t0);
+      o.frequency.exponentialRampToValueAtTime(85, t0 + 0.1);
+      o.connect(envGain(0.3, t0, 0.003, 0.13));
+      o.start(t0); o.stop(t0 + 0.2);
+    }
+
+    $('soundToggle').addEventListener('click', () => {
+      S.muted = !S.muted;
+      const btn = $('soundToggle');
+      btn.textContent = S.muted ? '♪ SOUND OFF' : '♪ SOUND ON';
+      btn.classList.toggle('off', S.muted);
+      if (master) master.gain.value = S.muted ? 0 : 0.55;
+      if (!S.muted) audio();
+    });
+
+    /* ================= particles ================= */
+    const canvas = $('fx');
+    const cx = canvas.getContext('2d');
+    let DPR = 1;
+
+    function resizeCanvas() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = innerWidth * DPR;
+      canvas.height = innerHeight * DPR;
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+    }
+    resizeCanvas();
+    addEventListener('resize', resizeCanvas);
+
+    const sparks = [];
+    const embers = [];
+    const steam = [];
+
+    function burstSparks(x, y, count) {
+      for (let i = 0; i < count; i++) {
+        const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;
+        const sp = 240 + Math.random() * 620;
+        sparks.push({
+          x, y,
+          vx: Math.cos(ang) * sp,
+          vy: Math.sin(ang) * sp,
+          life: 0,
+          max: 0.45 + Math.random() * 0.7,
+        });
+      }
+    }
+
+    function burstSteam(x, y, count) {
+      for (let i = 0; i < count; i++) {
+        steam.push({
+          x: x + (Math.random() - 0.5) * 90,
+          y: y + (Math.random() - 0.5) * 30,
+          vy: -(35 + Math.random() * 70),
+          vx: (Math.random() - 0.5) * 30,
+          r: 6 + Math.random() * 14,
+          life: 0,
+          max: 1.2 + Math.random() * 1.4,
+        });
+      }
+    }
+
+    let glyphRect = null;
+    let rectTimer = 0;
+
+    function spawnEmbers(dt) {
+      if (S.T < 650 || !glyphRect) return;
+      const rate = ((S.T - 650) / 850) * 26;
+      if (Math.random() < rate * dt) {
+        embers.push({
+          x: glyphRect.left + Math.random() * glyphRect.width,
+          y: glyphRect.top + Math.random() * glyphRect.height * 0.85,
+          vx: (Math.random() - 0.5) * 16,
+          vy: -(26 + Math.random() * 55),
+          r: 1 + Math.random() * 2.1,
+          life: 0,
+          max: 1.4 + Math.random() * 1.7,
+        });
+      }
+    }
+
+    function stepParticles(dt) {
+      cx.clearRect(0, 0, canvas.width, canvas.height);
+      cx.save();
+      cx.scale(DPR, DPR);
+
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.life += dt;
+        if (p.life > p.max) { sparks.splice(i, 1); continue; }
+        p.vy += 1150 * dt;
+        p.vx *= (1 - 1.4 * dt);
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        const k = 1 - p.life / p.max;
+        cx.strokeStyle = k > 0.65 ? '#fff3c9' : k > 0.35 ? '#ffb02e' : '#e84d12';
+        cx.globalAlpha = Math.min(1, k * 1.6);
+        cx.lineWidth = 1.6;
+        cx.beginPath();
+        cx.moveTo(p.x, p.y);
+        cx.lineTo(p.x - p.vx * 0.022, p.y - p.vy * 0.022);
+        cx.stroke();
+      }
+
+      for (let i = embers.length - 1; i >= 0; i--) {
+        const p = embers[i];
+        p.life += dt;
+        if (p.life > p.max) { embers.splice(i, 1); continue; }
+        p.x += (p.vx + Math.sin(p.life * 5 + p.y) * 14) * dt;
+        p.y += p.vy * dt;
+        const k = 1 - p.life / p.max;
+        cx.globalAlpha = k * 0.85;
+        cx.fillStyle = k > 0.5 ? '#ffb02e' : '#d8472b';
+        cx.beginPath();
+        cx.arc(p.x, p.y, p.r * k, 0, Math.PI * 2);
+        cx.fill();
+      }
+
+      for (let i = steam.length - 1; i >= 0; i--) {
+        const p = steam[i];
+        p.life += dt;
+        if (p.life > p.max) { steam.splice(i, 1); continue; }
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        const k = p.life / p.max;
+        cx.globalAlpha = (1 - k) * 0.28;
+        cx.fillStyle = '#cfd4d8';
+        cx.beginPath();
+        cx.arc(p.x, p.y, p.r * (0.6 + k * 1.8), 0, Math.PI * 2);
+        cx.fill();
+      }
+
+      cx.restore();
+      cx.globalAlpha = 1;
+    }
+
+    /* ================= heat colour ================= */
+    const HEAT_STOPS = [
+      [20, [154, 163, 173]],
+      [380, [128, 110, 102]],
+      [580, [150, 44, 26]],
+      [780, [218, 70, 22]],
+      [980, [255, 118, 26]],
+      [1180, [255, 176, 46]],
+      [1380, [255, 230, 168]],
+      [1500, [255, 248, 226]],
+    ];
+
+    function heatColor(T) {
+      let lo = HEAT_STOPS[0];
+      let hi = HEAT_STOPS[HEAT_STOPS.length - 1];
+      for (let i = 0; i < HEAT_STOPS.length - 1; i++) {
+        if (T >= HEAT_STOPS[i][0] && T <= HEAT_STOPS[i + 1][0]) {
+          lo = HEAT_STOPS[i];
+          hi = HEAT_STOPS[i + 1];
+          break;
+        }
+      }
+      const k = (T - lo[0]) / (hi[0] - lo[0] || 1);
+      const c = lo[1].map((v, i) => Math.round(v + (hi[1][i] - v) * k));
+      // quench flash: pull toward tempered blue-steel
+      if (S.temper > 0.01) {
+        const b = [127, 163, 192];
+        for (let i = 0; i < 3; i++) c[i] = Math.round(c[i] + (b[i] - c[i]) * S.temper);
+      }
+      return c;
+    }
+
+    /* ================= gauge (drawn once, needle updated) ================= */
+    const NS = 'http://www.w3.org/2000/svg';
+    const gauge = $('gauge');
+    const GCX = 100, GCY = 100, GR = 78;
+
+    function polar(deg, r) {
+      const rad = (deg * Math.PI) / 180;
+      return [GCX + Math.sin(rad) * r, GCY - Math.cos(rad) * r];
+    }
+
+    function svgEl(tag, attrs) {
+      const el = document.createElementNS(NS, tag);
+      for (const k in attrs) el.setAttribute(k, attrs[k]);
+      return el;
+    }
+
+    (function buildGauge() {
+      const [ax, ay] = polar(-90, GR);
+      const [bx, by] = polar(90, GR);
+      gauge.appendChild(svgEl('path', {
+        d: `M ${ax} ${ay} A ${GR} ${GR} 0 0 1 ${bx} ${by}`,
+        fill: 'none', stroke: '#3a322a', 'stroke-width': 7,
+      }));
+      const zDeg = (t) => -90 + (t / MAX_T) * 180;
+      const [zx, zy] = polar(zDeg(1200), GR);
+      const [wx, wy] = polar(zDeg(1500), GR);
+      gauge.appendChild(svgEl('path', {
+        d: `M ${zx} ${zy} A ${GR} ${GR} 0 0 1 ${wx} ${wy}`,
+        fill: 'none', stroke: '#d8472b', 'stroke-width': 7, opacity: 0.8,
+      }));
+      for (let t = 0; t <= MAX_T; t += 150) {
+        const deg = zDeg(t);
+        const major = t % 300 === 0;
+        const [x1, y1] = polar(deg, GR - 6);
+        const [x2, y2] = polar(deg, GR - (major ? 15 : 10));
+        gauge.appendChild(svgEl('line', {
+          x1, y1, x2, y2, stroke: major ? '#c9a24b' : '#6a5c49', 'stroke-width': major ? 1.6 : 1,
+        }));
+        if (major) {
+          const [tx, ty] = polar(deg, GR - 26);
+          const label = svgEl('text', {
+            x: tx, y: ty + 3, fill: '#877451', 'font-size': 8,
+            'font-family': "'IBM Plex Mono', monospace", 'text-anchor': 'middle',
+          });
+          label.textContent = t === 0 ? '0' : (t / 100).toFixed(0);
+          gauge.appendChild(label);
+        }
+      }
+      const hub = svgEl('circle', { cx: GCX, cy: GCY, r: 5, fill: '#c9a24b' });
+      const needle = svgEl('line', {
+        id: 'needle', x1: GCX, y1: GCY, x2: GCX, y2: GCY - (GR - 18),
+        stroke: '#ecd28a', 'stroke-width': 2, 'stroke-linecap': 'round',
+        transform: `rotate(-90 ${GCX} ${GCY})`,
+      });
+      gauge.appendChild(needle);
+      gauge.appendChild(hub);
+      const cap = svgEl('text', {
+        x: GCX, y: GCY + 14, fill: '#5c5145', 'font-size': 7,
+        'font-family': "'IBM Plex Mono', monospace", 'text-anchor': 'middle',
+        'letter-spacing': '2',
+      });
+      cap.textContent = '× 100 °C';
+      gauge.appendChild(cap);
+    })();
+
+    const needle = $('needle');
+
+    /* ================= forging interactions ================= */
+    let drag = null;
+
+    workpiece.addEventListener('pointerdown', (e) => {
+      audio();
+      e.preventDefault();
+      const m = malleability();
+      if (m < 0.05) {
+        S.shake = 1;
+        sfxTink();
+        flashStage();
+        return;
+      }
+      drag = {
+        id: e.pointerId,
+        x0: e.clientX,
+        y0: e.clientY,
+        wght0: S.wght,
+        opsz0: S.opsz,
+        moved: false,
+      };
+      try { workpiece.setPointerCapture(e.pointerId); } catch (_) { /* synthetic pointers */ }
+    });
+
+    workpiece.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dx = e.clientX - drag.x0;
+      const dy = e.clientY - drag.y0;
+      if (!drag.moved && Math.hypot(dx, dy) < 7) return;
+      drag.moved = true;
+      const m = malleability();
+      S.wght = clamp(drag.wght0 + dy * 1.7 * m, 100, 900);
+      S.opsz = clamp(drag.opsz0 + dx * 0.34 * m, 9, 144);
+    });
+
+    function endDrag(e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      const wasTap = !drag.moved;
+      drag = null;
+      if (wasTap) strike(e.clientX, e.clientY);
+    }
+
+    workpiece.addEventListener('pointerup', endDrag);
+    workpiece.addEventListener('pointercancel', (e) => {
+      if (drag && e.pointerId === drag.id) drag = null;
+    });
+
+    function strike(x, y) {
+      const m = malleability();
+      S.squash = 1;
+      S.wonk = clamp(S.wonk + 0.1 + Math.random() * 0.1, 0, 1);
+      S.wght = clamp(S.wght + (Math.random() * 2 - 1) * 40 * m, 100, 900);
+      S.opsz = clamp(S.opsz + (Math.random() * 2 - 1) * 9 * m, 9, 144);
+      burstSparks(x, y, 26 + Math.round(m * 26));
+      sfxClang(0.6 + m * 0.5);
+    }
+
+    let flashTimer = null;
+    function flashStage() {
+      stageFlash.classList.add('show');
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => stageFlash.classList.remove('show'), 1400);
+    }
+
+    /* ================= bellows ================= */
+    const btnBellows = $('btnBellows');
+    let pumpInterval = null;
+
+    function pump() {
+      S.T = Math.min(MAX_T, S.T + 128);
+      S.flare = 1;
+      S.everPumped = true;
+      btnBellows.classList.remove('nudge');
+      sfxWhoosh();
+    }
+
+    function startPump() {
+      if (pumpInterval) return;
+      audio();
+      btnBellows.classList.add('held');
+      pump();
+      pumpInterval = setInterval(pump, 250);
+    }
+
+    function stopPump() {
+      btnBellows.classList.remove('held');
+      clearInterval(pumpInterval);
+      pumpInterval = null;
+    }
+
+    btnBellows.addEventListener('pointerdown', (e) => { e.preventDefault(); startPump(); });
+    addEventListener('pointerup', stopPump);
+    btnBellows.addEventListener('pointerleave', stopPump);
+
+    /* ================= quench & cast ================= */
+    function quench() {
+      audio();
+      const wasHot = S.T > 150;
+      if (glyphRect) {
+        burstSteam(glyphRect.left + glyphRect.width / 2, glyphRect.top + glyphRect.height / 2, wasHot ? 34 : 6);
+      }
+      sfxHiss(wasHot);
+      if (wasHot) S.temper = 1;
+      S.T = AMBIENT;
+      S.soft = 0;
+    }
+
+    function cast() {
+      audio();
+      if (S.T > 150) quench();
+      S.sorts.push({
+        ch: S.ch,
+        wght: Math.round(S.wght),
+        opsz: Math.round(S.opsz),
+        wonk: +S.wonk.toFixed(2),
+        rot: (Math.random() * 2 - 1) * 2.4,
+        dy: (Math.random() * 2 - 1) * 4,
+      });
+      sfxThunk();
+      sfxDing();
+      renderSorts();
+    }
+
+    $('btnQuench').addEventListener('click', quench);
+    $('btnCast').addEventListener('click', cast);
+
+    $('btnMelt').addEventListener('click', () => {
+      if (!S.sorts.length) { sfxTink(); return; }
+      audio();
+      S.sorts = [];
+      sfxHiss(true);
+      sfxThunk();
+      renderSorts();
+    });
+
+    /* ================= sorts tray & proof ================= */
+    const tray = $('tray');
+    const proof = $('proof');
+    const sortCount = $('sortCount');
+
+    function fvs(sort) {
+      return `'opsz' ${sort.opsz}, 'wght' ${sort.wght}, 'SOFT' 0, 'WONK' ${sort.wonk}`;
+    }
+
+    function renderSorts() {
+      sortCount.textContent = `${String(S.sorts.length).padStart(2, '0')} SORTS`;
+      if (!S.sorts.length) {
+        tray.innerHTML = '<span class="tray-empty">まだ活字がありません — 鍛えて、焼き入れて、鋳込んでください</span>';
+        proof.innerHTML = '<span class="proof-empty">— BLANK PROOF —</span>';
+        return;
+      }
+      tray.innerHTML = '';
+      proof.innerHTML = '';
+      S.sorts.forEach((sort, i) => {
+        const tile = document.createElement('button');
+        tile.className = 'sort';
+        tile.type = 'button';
+        tile.title = 'クリックで鋳潰す / click to remove';
+        const face = document.createElement('span');
+        face.className = 'sort-face';
+        face.textContent = sort.ch;
+        face.style.fontVariationSettings = fvs(sort);
+        const meta = document.createElement('span');
+        meta.className = 'sort-meta';
+        meta.textContent = `${sort.wght}·${sort.opsz}`;
+        tile.appendChild(face);
+        tile.appendChild(meta);
+        tile.addEventListener('click', () => {
+          S.sorts.splice(i, 1);
+          sfxTink();
+          renderSorts();
+        });
+        tray.appendChild(tile);
+
+        const g = document.createElement('span');
+        g.className = 'proof-glyph';
+        g.textContent = sort.ch;
+        g.style.fontVariationSettings = fvs(sort);
+        g.style.transform = `rotate(${sort.rot}deg) translateY(${sort.dy}px)`;
+        proof.appendChild(g);
+      });
+    }
+
+    /* ================= blanks (character selection) ================= */
+    const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&?!§@';
+    const charCurrent = $('charCurrent');
+
+    function loadBlank(ch) {
+      S.ch = ch;
+      S.wght = 400;
+      S.opsz = 26;
+      S.wonk = 0;
+      S.T = AMBIENT;
+      S.soft = 0;
+      workpiece.textContent = ch;
+      charCurrent.textContent = ch;
+      sfxClunk();
+    }
+
+    function stepChar(dir) {
+      audio();
+      const i = CHARS.indexOf(S.ch);
+      const next = i === -1 ? 0 : (i + dir + CHARS.length) % CHARS.length;
+      loadBlank(CHARS[next]);
+    }
+
+    $('prevChar').addEventListener('click', () => stepChar(-1));
+    $('nextChar').addEventListener('click', () => stepChar(1));
+
+    /* ================= keyboard ================= */
+    addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        if (!e.repeat) startPump();
+        return;
+      }
+      if (e.repeat) return;
+      if (e.key === 'Enter') { cast(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); quench(); return; }
+      if (e.key === 'ArrowLeft') { stepChar(-1); return; }
+      if (e.key === 'ArrowRight') { stepChar(1); return; }
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        if (S.sorts.length) { S.sorts.pop(); sfxTink(); renderSorts(); }
+        return;
+      }
+      if (e.key.length === 1 && e.key !== ' ' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        audio();
+        loadBlank(e.key);
+      }
+    });
+
+    addEventListener('keyup', (e) => {
+      if (e.key === ' ') stopPump();
+    });
+
+    addEventListener('blur', stopPump);
+
+    /* ================= main loop ================= */
+    const valWght = $('valWght'), valOpsz = $('valOpsz'), valWonk = $('valWonk'), valSoft = $('valSoft');
+    const barWght = $('barWght'), barOpsz = $('barOpsz'), barWonk = $('barWonk'), barSoft = $('barSoft');
+    const tempVal = $('tempVal');
+    const lampMalleable = $('lampMalleable');
+    const lampAnneal = $('lampAnneal');
+
+    let last = performance.now();
+
+    function frame(now) {
+      const dtMs = Math.min(now - last, 50);
+      const dt = dtMs / 1000;
+      last = now;
+
+      // thermodynamics
+      S.T = AMBIENT + (S.T - AMBIENT) * Math.exp(-dtMs / 22000);
+      const softTarget = 100 * clamp((S.T - 250) / 950, 0, 1);
+      S.soft += (softTarget - S.soft) * (1 - Math.exp(-dtMs / 320));
+      if (S.T > 1300) S.wonk = Math.max(0, S.wonk - dt * 0.13);
+      S.flare *= Math.exp(-dtMs / 240);
+      S.squash *= Math.exp(-dtMs / 95);
+      S.shake *= Math.exp(-dtMs / 130);
+      S.temper *= Math.exp(-dtMs / 480);
+
+      const m = malleability();
+
+      // glyph rect cache (for particles)
+      rectTimer -= dtMs;
+      if (rectTimer <= 0) {
+        glyphRect = workpiece.getBoundingClientRect();
+        rectTimer = 400;
+      }
+
+      // workpiece rendering
+      const c = heatColor(S.T);
+      workpiece.style.color = `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+      const glow = clamp((S.T - 430) / 1070, 0, 1);
+      workpiece.style.textShadow = glow > 0.01
+        ? `0 0 ${8 + glow * 50}px rgba(255, 122, 26, ${0.55 * glow}),
+           0 0 ${glow * 130}px rgba(255, 64, 8, ${0.4 * glow}),
+           0 0 ${glow * 16}px rgba(255, 220, 160, ${0.5 * glow})`
+        : 'none';
+      workpiece.style.fontVariationSettings =
+        `'opsz' ${S.opsz.toFixed(1)}, 'wght' ${S.wght.toFixed(0)}, 'SOFT' ${S.soft.toFixed(1)}, 'WONK' ${S.wonk.toFixed(2)}`;
+
+      const wobX = m > 0.05 ? Math.sin(now * 0.006) * 1.2 * m : 0;
+      const wobY = m > 0.05 ? 1 + Math.sin(now * 0.0043) * 0.014 * m : 1;
+      const shakeX = Math.sin(now * 0.09) * S.shake * 5;
+      workpiece.style.transform =
+        `translateX(${shakeX.toFixed(1)}px) skewX(${wobX.toFixed(2)}deg) scaleY(${(wobY * (1 - 0.12 * S.squash)).toFixed(3)})`;
+
+      // furnace & anvil glow
+      furnaceGlow.style.opacity = (glow * 0.75 + S.flare * 0.35).toFixed(2);
+      anvilSheen.style.opacity = (glow * 0.8).toFixed(2);
+
+      // gauge & readouts
+      needle.setAttribute('transform', `rotate(${(-90 + (S.T / MAX_T) * 180).toFixed(1)} ${GCX} ${GCY})`);
+      tempVal.textContent = String(Math.round(S.T)).padStart(4, '0');
+      tempVal.style.color = glow > 0.4 ? '#ffd98a' : glow > 0.05 ? '#ffb02e' : '#8d7e63';
+      lampMalleable.classList.toggle('on', m > 0.15);
+      lampAnneal.classList.toggle('on', S.T > 1300);
+
+      valWght.textContent = Math.round(S.wght);
+      valOpsz.textContent = Math.round(S.opsz);
+      valWonk.textContent = S.wonk.toFixed(2);
+      valSoft.textContent = Math.round(S.soft);
+      barWght.style.width = `${((S.wght - 100) / 800) * 100}%`;
+      barOpsz.style.width = `${((S.opsz - 9) / 135) * 100}%`;
+      barWonk.style.width = `${S.wonk * 100}%`;
+      barSoft.style.width = `${S.soft}%`;
+
+      // particles
+      spawnEmbers(dt);
+      stepParticles(dt);
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
