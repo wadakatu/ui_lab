@@ -271,14 +271,25 @@ mark {
   box-shadow: 0 0 0 2px var(--color-b);
 }
 
-.graph__node--a:hover,
-.graph__node--a:focus-visible {
+.graph__node--a:hover {
   box-shadow: 0 0 0 2px var(--color-a);
 }
 
-.graph__node--b:hover,
-.graph__node--b:focus-visible {
+.graph__node--a:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-a), var(--focus-ring);
+}
+
+.graph__node--b:hover {
   box-shadow: 0 0 0 2px var(--color-b);
+}
+
+.graph__node--b:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-b), var(--focus-ring);
+}
+
+.graph__node--current:hover,
+.graph__node--current:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 /* Results */

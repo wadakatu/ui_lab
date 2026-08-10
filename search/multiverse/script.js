@@ -179,7 +179,6 @@ function escapeHtml(s) {
 (() => {
   const input = document.querySelector('[data-input]');
   const pathEl = document.querySelector('[data-path]');
-  const paneEl = document.querySelector('[data-pane]');
   const edgesEl = document.querySelector('[data-edges]');
   const nodesEl = document.querySelector('[data-nodes]');
   const statusEl = document.querySelector('[data-status]');
@@ -276,6 +275,11 @@ function escapeHtml(s) {
     compare = { on: false, aId: null, bId: null };
     currentId = node.id;
     render();
+    const btn = nodesEl.querySelector('[data-node-id="' + node.id + '"]');
+    if (btn) {
+      btn.focus();
+      btn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
   }
 
   function diffSets(a, b) {
@@ -532,6 +536,7 @@ function escapeHtml(s) {
   mergeOrBtn.addEventListener('click', () => mergeSelected('OR'));
 
   document.addEventListener('keydown', (e) => {
+    if (e.isComposing || e.keyCode === 229) return;
     if (e.key === 'Escape' && compare.on) {
       compare = { on: false, aId: null, bId: null };
       render();
