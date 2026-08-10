@@ -317,9 +317,9 @@ function escapeHtml(s) {
   }
 
   function commit() {
-    if (compare.on) compare = { on: false, aId: null, bId: null };
     const query = input.value.trim();
     if (query === '') return;
+    if (compare.on) compare = { on: false, aId: null, bId: null };
     const parent = nodeById(currentId);
     const node = findChildByQuery(parent, query) || createQueryNode(parent, query);
     currentId = node.id;
