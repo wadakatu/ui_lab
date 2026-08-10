@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multiverse Search Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>マルチバース検索 UI</h1>
+      <p class="page-header__subtitle">検索を分岐し、並行世界を比較・統合する</p>
+      <p class="page-header__back"><a href="../" class="page-header__link">← ギャラリーへ戻る</a></p>
+    </header>
+
+    <main class="container">
+      <div class="commit-bar">
+        <input
+          class="commit-bar__input"
+          type="text"
+          aria-label="絞り込みキーワードを追加"
+          placeholder="キーワードを追加して分岐…（Enter で確定）"
+          data-input
+        />
+        <p class="commit-bar__path" data-path></p>
+      </div>
+
+      <section class="graph" aria-label="検索履歴グラフ">
+        <div class="graph__toolbar">
+          <button class="graph__tool" type="button" data-reset>リセット</button>
+        </div>
+        <div class="graph__pane" data-pane>
+          <svg class="graph__edges" data-edges aria-hidden="true"></svg>
+          <div class="graph__nodes" role="group" aria-label="検索履歴ノード" data-nodes></div>
+        </div>
+      </section>
+
+      <section class="results" aria-label="検索結果">
+        <p class="results__status" aria-live="polite" data-status></p>
+        <div data-results></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
