@@ -249,6 +249,7 @@ function escapeHtml(s) {
   function renderSuggestions(query) {
     currentSuggestions = SEARCH_DATA.filter((item) => matches(item, query)).slice(0, MAX_SUGGESTIONS);
     activeIndex = -1;
+    input.removeAttribute('aria-activedescendant');
     if (currentSuggestions.length === 0) {
       closeSuggestions();
       return;
