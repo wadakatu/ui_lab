@@ -208,6 +208,7 @@ function escapeHtml(s) {
   }
 
   function runSearch(query) {
+    query = query.trim();
     closeSuggestions();
     clearBtn.hidden = query === '';
     if (query === '') {
@@ -247,6 +248,7 @@ function escapeHtml(s) {
   }
 
   function renderSuggestions(query) {
+    query = query.trim();
     currentSuggestions = SEARCH_DATA.filter((item) => matches(item, query)).slice(0, MAX_SUGGESTIONS);
     activeIndex = -1;
     input.removeAttribute('aria-activedescendant');
@@ -332,9 +334,9 @@ function escapeHtml(s) {
   input.addEventListener('blur', () => closeSuggestions());
 
   suggestionsEl.addEventListener('mousedown', (e) => {
+    e.preventDefault();
     const li = e.target.closest('[data-index]');
     if (!li) return;
-    e.preventDefault();
     const item = currentSuggestions[Number(li.dataset.index)];
     if (!item) return;
     input.value = item.title;

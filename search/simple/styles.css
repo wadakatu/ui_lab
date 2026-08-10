@@ -155,6 +155,7 @@ body {
   font-size: 14px;
 }
 
+.search__suggestion:hover,
 .search__suggestion--active {
   background: rgba(0, 245, 212, 0.12);
 }
