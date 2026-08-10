@@ -226,11 +226,41 @@ mark {
   transform: translateY(-2px);
   background: var(--bg-card-hover);
   box-shadow: var(--shadow);
+  z-index: 2;
 }
 
 .graph__node:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+  z-index: 2;
+}
+
+.graph__node::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max-content;
+  max-width: 320px;
+  white-space: normal;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease 0.12s;
+  z-index: 3;
+}
+
+.graph__node:hover::after,
+.graph__node:focus-visible::after {
+  opacity: 1;
 }
 
 .graph__node-label {

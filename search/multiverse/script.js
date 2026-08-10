@@ -447,7 +447,8 @@ function escapeHtml(s) {
             ' style="left: ' + pos.x + 'px; top: ' + pos.y + 'px; width: ' + NODE_W + 'px; height: ' + NODE_H + 'px;"' +
             (n.id === currentId ? ' aria-current="true"' : '') +
             ariaPressed +
-            ' aria-label="' + escapeHtml(ariaLabel) + '">' +
+            ' aria-label="' + escapeHtml(ariaLabel) + '"' +
+            ' data-tooltip="' + escapeHtml(label(n)) + '">' +
             '<span class="graph__node-label">' + escapeHtml(label(n)) + '</span>' +
             '<span class="graph__node-badge">' + n.resultIds.length + '件</span>' +
           '</button>'
