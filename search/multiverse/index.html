@@ -27,7 +27,11 @@
 
       <section class="graph" aria-label="検索履歴グラフ">
         <div class="graph__toolbar">
-          <button class="graph__tool" type="button" data-reset>リセット</button>
+          <button class="graph__tool" type="button" data-compare-toggle aria-pressed="false">比較</button>
+          <button class="graph__tool" type="button" data-merge-and disabled>∩ AND統合</button>
+          <button class="graph__tool" type="button" data-merge-or disabled>∪ OR統合</button>
+          <span class="graph__compare-info" data-compare-info hidden></span>
+          <button class="graph__tool graph__tool--reset" type="button" data-reset>リセット</button>
         </div>
         <div class="graph__pane" data-pane>
           <svg class="graph__edges" data-edges aria-hidden="true"></svg>

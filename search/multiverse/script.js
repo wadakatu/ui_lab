@@ -185,6 +185,10 @@ function escapeHtml(s) {
   const statusEl = document.querySelector('[data-status]');
   const resultsEl = document.querySelector('[data-results]');
   const resetBtn = document.querySelector('[data-reset]');
+  const compareToggleBtn = document.querySelector('[data-compare-toggle]');
+  const mergeAndBtn = document.querySelector('[data-merge-and]');
+  const mergeOrBtn = document.querySelector('[data-merge-or]');
+  const compareInfoEl = document.querySelector('[data-compare-info]');
 
   const X_GAP = 170;
   const Y_GAP = 84;
@@ -195,6 +199,7 @@ function escapeHtml(s) {
   let nodes = [];
   let nextId = 0;
   let currentId = 0;
+  let compare = { on: false, aId: null, bId: null };
 
   function nodeById(id) {
     return nodes.find((n) => n.id === id);
@@ -240,6 +245,49 @@ function escapeHtml(s) {
     );
   }
 
+  function createMergeNode(a, b, op) {
+    const aSet = new Set(a.resultIds);
+    const bSet = new Set(b.resultIds);
+    const resultIds = SEARCH_DATA
+      .map((_, i) => i)
+      .filter((i) => (op === 'AND' ? aSet.has(i) && bSet.has(i) : aSet.has(i) || bSet.has(i)));
+    const depth = Math.max(a.depth, b.depth) + 1;
+    const node = {
+      id: nextId++, kind: 'merge', query: null, op,
+      parents: [a.id, b.id], resultIds,
+      depth, row: findFreeRow(depth, Math.round((a.row + b.row) / 2)),
+    };
+    nodes.push(node);
+    return node;
+  }
+
+  function findMerge(aId, bId, op) {
+    return nodes.find(
+      (n) => n.kind === 'merge' && n.op === op &&
+        ((n.parents[0] === aId && n.parents[1] === bId) ||
+         (n.parents[0] === bId && n.parents[1] === aId))
+    );
+  }
+
+  function mergeSelected(op) {
+    if (!compare.on || compare.aId === null || compare.bId === null) return;
+    const node = findMerge(compare.aId, compare.bId, op) ||
+      createMergeNode(nodeById(compare.aId), nodeById(compare.bId), op);
+    compare = { on: false, aId: null, bId: null };
+    currentId = node.id;
+    render();
+  }
+
+  function diffSets(a, b) {
+    const aSet = new Set(a.resultIds);
+    const bSet = new Set(b.resultIds);
+    return {
+      both: a.resultIds.filter((i) => bSet.has(i)),
+      onlyA: a.resultIds.filter((i) => !bSet.has(i)),
+      onlyB: b.resultIds.filter((i) => !aSet.has(i)),
+    };
+  }
+
   function label(node) {
     if (node.kind === 'root') return 'すべて';
     if (node.kind === 'query') return node.query;
@@ -269,6 +317,7 @@ function escapeHtml(s) {
   }
 
   function commit() {
+    if (compare.on) compare = { on: false, aId: null, bId: null };
     const query = input.value.trim();
     if (query === '') return;
     const parent = nodeById(currentId);
@@ -281,13 +330,36 @@ function escapeHtml(s) {
   }
 
   function onNodeClick(id) {
+    if (compare.on) {
+      if (compare.aId === id) {
+        compare.aId = null;
+      } else if (compare.bId === id) {
+        compare.bId = null;
+      } else if (compare.aId === null) {
+        compare.aId = id;
+      } else {
+        compare.bId = id;
+      }
+      render();
+      return;
+    }
     currentId = id;
+    render();
+  }
+
+  function toggleCompare() {
+    compare.on = !compare.on;
+    if (!compare.on) {
+      compare.aId = null;
+      compare.bId = null;
+    }
     render();
   }
 
   function reset() {
     nodes = [];
     nextId = 0;
+    compare = { on: false, aId: null, bId: null };
     currentId = createRoot().id;
     render();
   }
@@ -300,6 +372,32 @@ function escapeHtml(s) {
         '<p class="results__card-desc">' + escapeHtml(item.description) + '</p>' +
       '</article>'
     );
+  }
+
+  function renderToolbar() {
+    compareToggleBtn.setAttribute('aria-pressed', String(compare.on));
+    compareToggleBtn.classList.toggle('graph__tool--active', compare.on);
+
+    const bothSelected = compare.on && compare.aId !== null && compare.bId !== null;
+    mergeAndBtn.disabled = !bothSelected;
+    mergeOrBtn.disabled = !bothSelected;
+
+    if (!compare.on) {
+      compareInfoEl.hidden = true;
+      compareInfoEl.innerHTML = '';
+      return;
+    }
+    compareInfoEl.hidden = false;
+    const chips = [];
+    if (compare.aId !== null) {
+      const a = nodeById(compare.aId);
+      chips.push('<span class="graph__compare-chip graph__compare-chip--a">A: ' + escapeHtml(label(a)) + '(' + a.resultIds.length + ')</span>');
+    }
+    if (compare.bId !== null) {
+      const b = nodeById(compare.bId);
+      chips.push('<span class="graph__compare-chip graph__compare-chip--b">B: ' + escapeHtml(label(b)) + '(' + b.resultIds.length + ')</span>');
+    }
+    compareInfoEl.innerHTML = chips.join('');
   }
 
   function renderGraph() {
@@ -330,11 +428,21 @@ function escapeHtml(s) {
         const classes = ['graph__node'];
         if (n.id === currentId) classes.push('graph__node--current');
         if (n.resultIds.length === 0) classes.push('graph__node--empty');
-        const ariaLabel = (n.kind === 'query' ? 'クエリ「' + n.query + '」' : label(n)) + ' ' + n.resultIds.length + '件';
+        if (n.id === compare.aId) classes.push('graph__node--a');
+        if (n.id === compare.bId) classes.push('graph__node--b');
+        let ariaText;
+        if (n.kind === 'query') ariaText = 'クエリ「' + n.query + '」';
+        else if (n.kind === 'merge') ariaText = '統合「' + label(n) + '」';
+        else ariaText = label(n);
+        const ariaLabel = ariaText + ' ' + n.resultIds.length + '件';
+        const ariaPressed = compare.on
+          ? ' aria-pressed="' + (n.id === compare.aId || n.id === compare.bId ? 'true' : 'false') + '"'
+          : '';
         return (
           '<button type="button" class="' + classes.join(' ') + '" data-node-id="' + n.id + '"' +
             ' style="left: ' + pos.x + 'px; top: ' + pos.y + 'px; width: ' + NODE_W + 'px; height: ' + NODE_H + 'px;"' +
             (n.id === currentId ? ' aria-current="true"' : '') +
+            ariaPressed +
             ' aria-label="' + escapeHtml(ariaLabel) + '">' +
             '<span class="graph__node-label">' + escapeHtml(label(n)) + '</span>' +
             '<span class="graph__node-badge">' + n.resultIds.length + '件</span>' +
@@ -353,7 +461,31 @@ function escapeHtml(s) {
     pathEl.textContent = path(nodeById(currentId));
   }
 
+  function resultsGroupHtml(cls, title, ids) {
+    const body = ids.length === 0
+      ? '<p class="results__group-none">なし</p>'
+      : '<div class="results__grid">' + ids.map((i) => cardHtml(SEARCH_DATA[i], '')).join('') + '</div>';
+    return (
+      '<section class="results__group results__group--' + cls + '">' +
+        '<h2 class="results__group-title">' + title + '</h2>' +
+        body +
+      '</section>'
+    );
+  }
+
   function renderResults() {
+    if (compare.on && compare.aId !== null && compare.bId !== null) {
+      const a = nodeById(compare.aId);
+      const b = nodeById(compare.bId);
+      const { both, onlyA, onlyB } = diffSets(a, b);
+      resultsEl.innerHTML =
+        resultsGroupHtml('both', '共通 ' + both.length + '件', both) +
+        resultsGroupHtml('a', 'Aのみ ' + onlyA.length + '件', onlyA) +
+        resultsGroupHtml('b', 'Bのみ ' + onlyB.length + '件', onlyB);
+      statusEl.textContent = '比較中: 共通' + both.length + '件 / Aのみ' + onlyA.length + '件 / Bのみ' + onlyB.length + '件';
+      return;
+    }
+
     const node = nodeById(currentId);
     const query = node.kind === 'query' ? node.query : '';
     const items = node.resultIds.map((i) => SEARCH_DATA[i]);
@@ -364,7 +496,13 @@ function escapeHtml(s) {
       resultsEl.innerHTML = '<div class="results__grid">' + items.map((item) => cardHtml(item, query)).join('') + '</div>';
     }
 
-    if (node.kind === 'root') {
+    if (compare.on) {
+      if (compare.aId === null) {
+        statusEl.textContent = '比較モード: ノードを2つ選んでください';
+      } else {
+        statusEl.textContent = '比較モード: A「' + label(nodeById(compare.aId)) + '」選択中。もう1つ選んでください';
+      }
+    } else if (node.kind === 'root') {
       statusEl.textContent = 'すべて ' + node.resultIds.length + '件';
     } else if (node.kind === 'query') {
       statusEl.textContent = '「' + node.query + '」で絞り込み: ' + node.resultIds.length + '件';
@@ -374,6 +512,7 @@ function escapeHtml(s) {
   }
 
   function render() {
+    renderToolbar();
     renderGraph();
     renderPath();
     renderResults();
@@ -387,6 +526,17 @@ function escapeHtml(s) {
   });
 
   resetBtn.addEventListener('click', reset);
+
+  compareToggleBtn.addEventListener('click', toggleCompare);
+  mergeAndBtn.addEventListener('click', () => mergeSelected('AND'));
+  mergeOrBtn.addEventListener('click', () => mergeSelected('OR'));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && compare.on) {
+      compare = { on: false, aId: null, bId: null };
+      render();
+    }
+  });
 
   nodesEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-node-id]');
