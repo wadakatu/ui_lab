@@ -314,6 +314,33 @@
       background: var(--accent-warm);
     }
 
+    .mv-graph {
+      width: 180px;
+      height: 110px;
+    }
+
+    .mv-edge {
+      stroke: rgba(255, 255, 255, 0.18);
+      stroke-width: 2;
+    }
+
+    .mv-node {
+      stroke: var(--bg-card);
+      stroke-width: 2;
+    }
+
+    .mv-node--root {
+      fill: var(--accent-warm);
+    }
+
+    .mv-node--a {
+      fill: var(--accent-cyan);
+    }
+
+    .mv-node--b {
+      fill: var(--accent-purple);
+    }
+
     .card-content {
       padding: 24px;
     }
@@ -434,7 +461,7 @@
 
     <div class="type-stats">
       <div class="type-stat">
-        <span class="type-value">01</span>
+        <span class="type-value">02</span>
         <span class="type-label">Variant</span>
       </div>
       <div class="type-stat">
@@ -488,6 +515,36 @@
             <span class="feature">Highlight</span>
             <span class="feature">Keyboard</span>
             <span class="feature">IME-aware</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="multiverse/" class="card">
+        <div class="card-preview">
+          <div class="card-preview-inner">
+            <svg class="mv-graph" viewBox="0 0 200 120">
+              <line class="mv-edge" x1="40" y1="60" x2="150" y2="26"/>
+              <line class="mv-edge" x1="40" y1="60" x2="150" y2="94"/>
+              <circle class="mv-node mv-node--root" cx="40" cy="60" r="9"/>
+              <circle class="mv-node mv-node--a" cx="150" cy="26" r="9"/>
+              <circle class="mv-node mv-node--b" cx="150" cy="94" r="9"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Parallel</span>
+          <h2 class="card-title">
+            Multiverse
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">検索履歴を並行世界として分岐・比較・統合する検索UI</p>
+          <div class="card-features">
+            <span class="feature">Branch</span>
+            <span class="feature">Diff</span>
+            <span class="feature">Merge</span>
+            <span class="feature">Time-travel</span>
           </div>
         </div>
       </a>
