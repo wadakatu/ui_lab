@@ -1139,6 +1139,180 @@
       letter-spacing: 0.1em;
     }
 
+    /* Search Previews */
+    .preview-search {
+      background: linear-gradient(135deg, #11151f 0%, #090a0d 100%);
+    }
+
+    .preview-search .search-preview {
+      width: 220px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+    }
+
+    .search-bar-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .search-bar-text {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .search-bar-caret {
+      display: inline-block;
+      width: 2px;
+      height: 14px;
+      margin-left: 2px;
+      vertical-align: middle;
+      background: var(--accent-warm);
+      animation: caretBlink 1.1s step-end infinite;
+    }
+
+    @keyframes caretBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .search-suggest-list {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      list-style: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .search-suggest-list mark {
+      padding: 0 1px;
+      border-radius: 2px;
+      color: #0a0a0f;
+      background: var(--accent-warm);
+    }
+
+    .mv-graph {
+      width: 180px;
+      height: 110px;
+    }
+
+    .mv-edge {
+      stroke: rgba(255, 255, 255, 0.18);
+      stroke-width: 2;
+    }
+
+    .mv-node {
+      stroke: var(--bg-card);
+      stroke-width: 2;
+    }
+
+    .mv-node--root { fill: var(--accent-warm); }
+    .mv-node--a { fill: var(--accent-cyan); }
+    .mv-node--b { fill: var(--accent-purple); }
+
+    .echo-preview {
+      position: relative;
+      width: 220px;
+      height: 150px;
+      overflow: hidden;
+      border: 1px solid rgba(201, 255, 104, 0.2);
+      background:
+        linear-gradient(rgba(201, 255, 104, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 255, 104, 0.04) 1px, transparent 1px),
+        #050908;
+      background-size: 18px 18px;
+    }
+
+    .echo-preview__ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--size);
+      height: var(--size);
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(201, 255, 104, 0.18);
+      border-radius: 50%;
+    }
+
+    .echo-preview__sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 132px;
+      height: 132px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: conic-gradient(from 270deg, transparent 0 78%, rgba(201, 255, 104, 0.18), transparent 96%);
+      animation: echoScan 5s linear infinite;
+    }
+
+    .echo-preview__core,
+    .echo-preview__point {
+      position: absolute;
+      border-radius: 50%;
+      background: #c9ff68;
+      box-shadow: 0 0 12px rgba(201, 255, 104, 0.8);
+    }
+
+    .echo-preview__core {
+      top: calc(50% - 4px);
+      left: calc(50% - 4px);
+      width: 8px;
+      height: 8px;
+    }
+
+    .echo-preview__point {
+      top: var(--y);
+      left: var(--x);
+      width: var(--point-size, 5px);
+      height: var(--point-size, 5px);
+      opacity: var(--point-opacity, 0.7);
+      animation: echoPoint 2.2s ease-in-out infinite alternate;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .echo-preview__caption {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      color: rgba(201, 255, 104, 0.7);
+      font-family: var(--font-mono);
+      font-size: 7px;
+      letter-spacing: 0.12em;
+    }
+
+    @keyframes echoScan {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes echoPoint {
+      to { opacity: 1; transform: scale(1.6); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .echo-preview__sweep,
+      .echo-preview__point {
+        animation: none;
+      }
+    }
+
     /* Card Content */
     .card-content {
       padding: 24px;
@@ -1268,11 +1442,11 @@
 
     <div class="stats-bar">
       <div class="stat">
-        <span class="stat-value">12</span>
+        <span class="stat-value">15</span>
         <span class="stat-label">Components</span>
       </div>
       <div class="stat">
-        <span class="stat-value">04</span>
+        <span class="stat-value">05</span>
         <span class="stat-label">Category</span>
       </div>
       <div class="stat">
@@ -1743,6 +1917,125 @@
             <span class="feature">Synth Audio</span>
             <span class="feature">Letterpress</span>
             <span class="feature">Claude Code</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Search Components Section -->
+    <div class="section-header" style="margin-top: 60px;">
+      <span class="section-title">// Search Components</span>
+      <div class="section-line"></div>
+      <a href="search/index.html" class="section-link">
+        <span class="section-link-text">View All</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="component-grid">
+      <!-- Simple Search -->
+      <a href="search/simple/" class="card">
+        <div class="card-preview preview-search">
+          <div class="card-preview-inner">
+            <div class="search-preview">
+              <div class="search-bar">
+                <svg class="search-bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="7"/>
+                  <line x1="16.65" y1="16.65" x2="21" y2="21"/>
+                </svg>
+                <span class="search-bar-text">け<span class="search-bar-caret"></span></span>
+              </div>
+              <ul class="search-suggest-list">
+                <li><mark>け</mark>んさくボックス</li>
+                <li><mark>け</mark>んさく候補</li>
+                <li><mark>け</mark>んさく結果一覧</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-basic">Basic</span>
+          <h2 class="card-title">
+            Simple Search
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">サジェスト＋結果一覧の一般的な検索UI。ハイライト、キーボード操作、IME に対応。</p>
+          <div class="card-features">
+            <span class="feature">Suggest</span>
+            <span class="feature">Highlight</span>
+            <span class="feature">Keyboard</span>
+            <span class="feature">IME-aware</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Multiverse Search -->
+      <a href="search/multiverse/" class="card">
+        <div class="card-preview preview-search">
+          <div class="card-preview-inner">
+            <svg class="mv-graph" viewBox="0 0 200 120">
+              <line class="mv-edge" x1="40" y1="60" x2="150" y2="26"/>
+              <line class="mv-edge" x1="40" y1="60" x2="150" y2="94"/>
+              <circle class="mv-node mv-node--root" cx="40" cy="60" r="9"/>
+              <circle class="mv-node mv-node--a" cx="150" cy="26" r="9"/>
+              <circle class="mv-node mv-node--b" cx="150" cy="94" r="9"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-advanced">Parallel</span>
+          <h2 class="card-title">
+            Multiverse
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">検索履歴を並行世界として分岐・比較・統合する検索UI。時間軸を行き来しながら条件を試せます。</p>
+          <div class="card-features">
+            <span class="feature">Branch</span>
+            <span class="feature">Diff</span>
+            <span class="feature">Merge</span>
+            <span class="feature">Time-travel</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Echo Field -->
+      <a href="search/echo-field/" class="card">
+        <div class="card-preview preview-search">
+          <div class="card-preview-inner">
+            <div class="echo-preview" aria-hidden="true">
+              <span class="echo-preview__ring" style="--size: 54px"></span>
+              <span class="echo-preview__ring" style="--size: 92px"></span>
+              <span class="echo-preview__ring" style="--size: 132px"></span>
+              <span class="echo-preview__sweep"></span>
+              <span class="echo-preview__core"></span>
+              <span class="echo-preview__point" style="--x: 25%; --y: 26%; --delay: -0.4s"></span>
+              <span class="echo-preview__point" style="--x: 74%; --y: 31%; --delay: -1.2s; --point-size: 7px"></span>
+              <span class="echo-preview__point" style="--x: 18%; --y: 68%; --delay: -1.7s; --point-opacity: 0.4"></span>
+              <span class="echo-preview__point" style="--x: 69%; --y: 74%; --delay: -0.8s"></span>
+              <span class="echo-preview__caption">LISTENING FOR THE UNKNOWN</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag tag-experimental">Unprecedented</span>
+          <h2 class="card-title">
+            Echo Field — 反響検索
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">曖昧な感覚を波として放ち、暗闇に眠る結果の反響を聴く検索UI。引き寄せと遠ざけで意味の場を彫ります。</p>
+          <div class="card-features">
+            <span class="feature">Resonance</span>
+            <span class="feature">Attract / Repel</span>
+            <span class="feature">Re-broadcast</span>
+            <span class="feature">Semantic Field</span>
           </div>
         </div>
       </a>
