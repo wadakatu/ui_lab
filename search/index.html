@@ -341,6 +341,85 @@
       fill: var(--accent-purple);
     }
 
+    .echo-preview {
+      position: relative;
+      width: 220px;
+      height: 150px;
+      overflow: hidden;
+      border: 1px solid rgba(201, 255, 104, 0.2);
+      background:
+        linear-gradient(rgba(201, 255, 104, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 255, 104, 0.04) 1px, transparent 1px),
+        #050908;
+      background-size: 18px 18px;
+    }
+
+    .echo-preview__ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--size);
+      height: var(--size);
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(201, 255, 104, 0.18);
+      border-radius: 50%;
+    }
+
+    .echo-preview__sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 132px;
+      height: 132px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: conic-gradient(from 270deg, transparent 0 78%, rgba(201, 255, 104, 0.18), transparent 96%);
+      animation: echoScan 5s linear infinite;
+    }
+
+    .echo-preview__core,
+    .echo-preview__point {
+      position: absolute;
+      border-radius: 50%;
+      background: #c9ff68;
+      box-shadow: 0 0 12px rgba(201, 255, 104, 0.8);
+    }
+
+    .echo-preview__core {
+      top: calc(50% - 4px);
+      left: calc(50% - 4px);
+      width: 8px;
+      height: 8px;
+    }
+
+    .echo-preview__point {
+      top: var(--y);
+      left: var(--x);
+      width: var(--point-size, 5px);
+      height: var(--point-size, 5px);
+      opacity: var(--point-opacity, 0.7);
+      animation: echoPoint 2.2s ease-in-out infinite alternate;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .echo-preview__caption {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      color: rgba(201, 255, 104, 0.7);
+      font-family: var(--font-mono);
+      font-size: 7px;
+      letter-spacing: 0.12em;
+    }
+
+    @keyframes echoScan {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @keyframes echoPoint {
+      to { opacity: 1; transform: scale(1.6); }
+    }
+
     .card-content {
       padding: 24px;
     }
@@ -437,6 +516,13 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      .echo-preview__sweep,
+      .echo-preview__point {
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -461,7 +547,7 @@
 
     <div class="type-stats">
       <div class="type-stat">
-        <span class="type-value">02</span>
+        <span class="type-value">03</span>
         <span class="type-label">Variant</span>
       </div>
       <div class="type-stat">
@@ -545,6 +631,41 @@
             <span class="feature">Diff</span>
             <span class="feature">Merge</span>
             <span class="feature">Time-travel</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="echo-field/" class="card">
+        <div class="card-preview">
+          <div class="card-preview-inner">
+            <div class="echo-preview" aria-hidden="true">
+              <span class="echo-preview__ring" style="--size: 54px"></span>
+              <span class="echo-preview__ring" style="--size: 92px"></span>
+              <span class="echo-preview__ring" style="--size: 132px"></span>
+              <span class="echo-preview__sweep"></span>
+              <span class="echo-preview__core"></span>
+              <span class="echo-preview__point" style="--x: 25%; --y: 26%; --delay: -0.4s"></span>
+              <span class="echo-preview__point" style="--x: 74%; --y: 31%; --delay: -1.2s; --point-size: 7px"></span>
+              <span class="echo-preview__point" style="--x: 18%; --y: 68%; --delay: -1.7s; --point-opacity: 0.4"></span>
+              <span class="echo-preview__point" style="--x: 69%; --y: 74%; --delay: -0.8s"></span>
+              <span class="echo-preview__caption">LISTENING FOR THE UNKNOWN</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Unprecedented</span>
+          <h2 class="card-title">
+            Echo Field
+            <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
+          </h2>
+          <p class="card-desc">曖昧な感覚を波として放ち、暗闇に眠る結果の反響を聴く検索UI</p>
+          <div class="card-features">
+            <span class="feature">Resonance</span>
+            <span class="feature">Attract / Repel</span>
+            <span class="feature">Re-broadcast</span>
+            <span class="feature">Semantic Field</span>
           </div>
         </div>
       </a>
